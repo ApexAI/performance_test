@@ -156,7 +156,7 @@ public:
       const FastRTPSQOSAdapter qos(m_ec.qos());
 
       eprosima::fastrtps::PublisherAttributes wparam;
-      wparam.topic.topicKind = NO_KEY;
+      wparam.topic.topicKind = eprosima::fastrtps::rtps::TopicKind_t::NO_KEY;
       wparam.topic.topicDataType = m_topic_type->getName();
       wparam.topic.topicName = Topic::topic_name();
       wparam.topic.historyQos.kind = qos.history_kind();
@@ -168,7 +168,7 @@ public:
       wparam.qos.m_reliability.kind = qos.reliability();
       wparam.qos.m_durability.kind = qos.durability();
       wparam.qos.m_publishMode.kind = qos.publish_mode();
-      m_publisher = Domain::createPublisher(m_participant, wparam);
+      m_publisher = eprosima::fastrtps::Domain::createPublisher(m_participant, wparam);
     }
     lock();
     data.time_(time.count());
@@ -192,7 +192,7 @@ public:
       const FastRTPSQOSAdapter qos(m_ec.qos());
 
       eprosima::fastrtps::SubscriberAttributes rparam;
-      rparam.topic.topicKind = NO_KEY;
+      rparam.topic.topicKind = eprosima::fastrtps::rtps::TopicKind_t::NO_KEY;;
       rparam.topic.topicDataType = m_topic_type->getName();
       rparam.topic.topicName = Topic::topic_name();
       rparam.topic.historyQos.kind = qos.history_kind();
@@ -201,7 +201,7 @@ public:
       rparam.topic.resourceLimitsQos.allocated_samples = 100;
       rparam.qos.m_reliability.kind = qos.reliability();
       rparam.qos.m_durability.kind = qos.durability();
-      m_subscriber = Domain::createSubscriber(m_participant, rparam);
+      m_subscriber = eprosima::fastrtps::Domain::createSubscriber(m_participant, rparam);
     }
 
     if (!m_ec.no_waitset()) {
@@ -209,7 +209,7 @@ public:
     }
     lock();
     while (m_subscriber->takeNextData(static_cast<void *>(&m_data), &m_info)) {
-      if (m_info.sampleKind == ALIVE) {
+      if (m_info.sampleKind == eprosima::fastrtps::rtps::ChangeKind_t::ALIVE) {
         if (m_prev_timestamp >= m_data.time_()) {
           throw std::runtime_error("Data consistency violated. Received sample with not strictly "
                   "older timestamp. Time diff: " + std::to_string(

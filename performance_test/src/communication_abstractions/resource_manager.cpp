@@ -53,7 +53,7 @@ eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
   PParam.rtps.builtin.m_simpleEDP.use_PublicationReaderANDSubscriptionWriter = true;
   PParam.rtps.builtin.m_simpleEDP.use_PublicationWriterANDSubscriptionReader = true;
   PParam.rtps.builtin.domainId = m_ec.dds_domain_id();
-  PParam.rtps.builtin.leaseDuration = c_TimeInfinite;
+  PParam.rtps.builtin.leaseDuration = eprosima::fastrtps::rtps::c_TimeInfinite;
   PParam.rtps.setName("performance_test_fastRTPS");
 
   if (!m_ec.use_single_participant()) {
