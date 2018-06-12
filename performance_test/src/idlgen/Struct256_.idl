@@ -1,0 +1,51 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__Struct256__idl__
+#define __performance_test_msgs__msg__Struct256__idl__
+
+#include "Struct16_.idl"
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+
+
+
+struct Struct256_
+{
+
+  performance_test_msgs::msg::dds_::Struct16_ struct160_;
+  performance_test_msgs::msg::dds_::Struct16_ struct161_;
+  performance_test_msgs::msg::dds_::Struct16_ struct162_;
+  performance_test_msgs::msg::dds_::Struct16_ struct163_;
+  performance_test_msgs::msg::dds_::Struct16_ struct164_;
+  performance_test_msgs::msg::dds_::Struct16_ struct165_;
+  performance_test_msgs::msg::dds_::Struct16_ struct166_;
+  performance_test_msgs::msg::dds_::Struct16_ struct167_;
+  performance_test_msgs::msg::dds_::Struct16_ struct168_;
+  performance_test_msgs::msg::dds_::Struct16_ struct169_;
+  performance_test_msgs::msg::dds_::Struct16_ struct16a_;
+  performance_test_msgs::msg::dds_::Struct16_ struct16b_;
+  performance_test_msgs::msg::dds_::Struct16_ struct16c_;
+  performance_test_msgs::msg::dds_::Struct16_ struct16d_;
+  performance_test_msgs::msg::dds_::Struct16_ struct16e_;
+  performance_test_msgs::msg::dds_::Struct16_ struct16f_;
+  double time_;
+  unsigned long long id_;
+
+};  // struct Struct256_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__Struct256__idl__

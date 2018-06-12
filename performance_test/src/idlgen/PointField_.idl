@@ -1,0 +1,52 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __sensor_msgs__msg__PointField__idl__
+#define __sensor_msgs__msg__PointField__idl__
+
+
+module sensor_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+  const octet PointField__INT8 =
+    1;
+  const octet PointField__UINT8 =
+    2;
+  const octet PointField__INT16 =
+    3;
+  const octet PointField__UINT16 =
+    4;
+  const octet PointField__INT32 =
+    5;
+  const octet PointField__UINT32 =
+    6;
+  const octet PointField__FLOAT32 =
+    7;
+  const octet PointField__FLOAT64 =
+    8;
+
+
+
+struct PointField_
+{
+
+  string name_;
+  unsigned long offset_;
+  octet datatype_;
+  unsigned long count_;
+
+};  // struct PointField_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module sensor_msgs
+
+#endif  // __sensor_msgs__msg__PointField__idl__

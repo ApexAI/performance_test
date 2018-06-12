@@ -1,0 +1,36 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__Array32k__idl__
+#define __performance_test_msgs__msg__Array32k__idl__
+
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+
+
+typedef octet performance_test_msgs__Array32k__octet_array_32768[32768];
+
+struct Array32k_
+{
+
+performance_test_msgs__Array32k__octet_array_32768 array_;
+  double time_;
+  unsigned long long id_;
+
+};  // struct Array32k_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__Array32k__idl__

@@ -1,0 +1,50 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__Struct16__idl__
+#define __performance_test_msgs__msg__Struct16__idl__
+
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+
+
+
+struct Struct16_
+{
+
+  octet struct0_;
+  octet struct1_;
+  octet struct2_;
+  octet struct3_;
+  octet struct4_;
+  octet struct5_;
+  octet struct6_;
+  octet struct7_;
+  octet struct8_;
+  octet struct9_;
+  octet structa_;
+  octet structb_;
+  octet structc_;
+  octet structd_;
+  octet structe_;
+  octet structf_;
+  double time_;
+  unsigned long long id_;
+
+};  // struct Struct16_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__Struct16__idl__

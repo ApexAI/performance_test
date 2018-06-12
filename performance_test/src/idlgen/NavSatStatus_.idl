@@ -1,0 +1,50 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__NavSatStatus__idl__
+#define __performance_test_msgs__msg__NavSatStatus__idl__
+
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+  const octet NavSatStatus__STATUS_NO_FIX =
+    255;
+  const octet NavSatStatus__STATUS_FIX =
+    0;
+  const octet NavSatStatus__STATUS_SBAS_FIX =
+    1;
+  const octet NavSatStatus__STATUS_GBAS_FIX =
+    2;
+  const unsigned short NavSatStatus__SERVICE_GPS =
+    1;
+  const unsigned short NavSatStatus__SERVICE_GLONASS =
+    2;
+  const unsigned short NavSatStatus__SERVICE_COMPASS =
+    4;
+  const unsigned short NavSatStatus__SERVICE_GALILEO =
+    8;
+
+
+
+struct NavSatStatus_
+{
+
+  octet status_;
+  unsigned short service_;
+
+};  // struct NavSatStatus_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__NavSatStatus__idl__

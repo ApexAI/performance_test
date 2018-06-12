@@ -1,0 +1,34 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__Polygon__idl__
+#define __performance_test_msgs__msg__Polygon__idl__
+
+#include "Point32_.idl"
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+
+
+
+struct Polygon_
+{
+
+  sequence<Point32_> points_;
+
+};  // struct Polygon_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__Polygon__idl__

@@ -1,0 +1,43 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__Struct32k__idl__
+#define __performance_test_msgs__msg__Struct32k__idl__
+
+#include "Struct4k_.idl"
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+
+
+
+struct Struct32k_
+{
+
+  performance_test_msgs::msg::dds_::Struct4k_ struct4k0_;
+  performance_test_msgs::msg::dds_::Struct4k_ struct4k1_;
+  performance_test_msgs::msg::dds_::Struct4k_ struct4k2_;
+  performance_test_msgs::msg::dds_::Struct4k_ struct4k3_;
+  performance_test_msgs::msg::dds_::Struct4k_ struct4k4_;
+  performance_test_msgs::msg::dds_::Struct4k_ struct4k5_;
+  performance_test_msgs::msg::dds_::Struct4k_ struct4k6_;
+  performance_test_msgs::msg::dds_::Struct4k_ struct4k7_;
+  double time_;
+  unsigned long long id_;
+
+};  // struct Struct32k_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__Struct32k__idl__

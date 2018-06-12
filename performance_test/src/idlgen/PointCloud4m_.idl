@@ -1,0 +1,47 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__PointCloud4m__idl__
+#define __performance_test_msgs__msg__PointCloud4m__idl__
+
+#include "PointField_.idl"
+#include "Header_.idl"
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+
+
+typedef sensor_msgs::msg::dds_::PointField_ performance_test_msgs__PointCloud4m__sensor_msgs__msg__dds___PointField__array_8[8];
+typedef octet performance_test_msgs__PointCloud4m__octet_array_4194304[4194304];
+
+struct PointCloud4m_
+{
+
+  std_msgs::msg::dds_::Header_ header_;
+  unsigned long height_;
+  unsigned long width_;
+performance_test_msgs__PointCloud4m__sensor_msgs__msg__dds___PointField__array_8 fields_;
+  boolean is_bigendian_;
+  unsigned long point_step_;
+  unsigned long row_step_;
+performance_test_msgs__PointCloud4m__octet_array_4194304 data_;
+  boolean is_dense_;
+  double time_;
+  unsigned long long id_;
+
+};  // struct PointCloud4m_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__PointCloud4m__idl__

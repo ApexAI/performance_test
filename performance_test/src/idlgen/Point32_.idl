@@ -1,0 +1,35 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__Point32__idl__
+#define __performance_test_msgs__msg__Point32__idl__
+
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+
+
+
+struct Point32_
+{
+
+  float x_;
+  float y_;
+  float z_;
+
+};  // struct Point32_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__Point32__idl__

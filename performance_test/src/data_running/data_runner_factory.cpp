@@ -1,0 +1,71 @@
+// Copyright 2017 Apex.AI, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include "data_runner_factory.hpp"
+
+#include <boost/mpl/for_each.hpp>
+
+#include <string>
+#include <memory>
+
+#include "data_runner.hpp"
+#include "../communication_abstractions/fast_rtps_communicator.hpp"
+#include "../communication_abstractions/ros2_callback_communicator.hpp"
+#ifdef CONNEXT_DDS_MICRO_ENABLED
+#include "../communication_abstractions/connext_dds_micro_communicator.hpp"
+#endif
+
+namespace performance_test
+{
+
+std::shared_ptr<DataRunnerBase> DataRunnerFactory::get(
+  const std::string & requested_topic_name,
+  CommunicationMean com_mean,
+  const RunType run_type)
+{
+  std::shared_ptr<DataRunnerBase> ptr;
+  boost::mpl::for_each<topics::TopicTypeList>([&ptr, requested_topic_name, com_mean,
+    run_type](auto topic) {
+      using T = decltype(topic);
+      if (T::topic_name() == requested_topic_name) {
+        if (ptr) {
+          throw std::runtime_error("It seems that two topics have the same name");
+        }
+        // TODO(andreas.pasternak): Perhaps abstract away the communication means better:
+// Using compiler defines to be able to use ROS2 and FASTRTP together.
+#ifdef PERFORMANCE_TEST_USE_FASTRTPS
+        if (com_mean == CommunicationMean::FASTRTPS) {
+          ptr = std::make_shared<DataRunner<FastRTPSCommunicator<T>>>(run_type);
+        }
+#endif
+#ifdef PERFORMANCE_TEST_USE_ROS2
+        else if (com_mean == CommunicationMean::ROS2) { // NOLINT (false positive)
+          ptr = std::make_shared<DataRunner<ROS2CallbackCommunicator<T>>>(run_type);
+        }
+#endif
+#ifdef CONNEXT_DDS_MICRO_ENABLED
+        else if (com_mean == CommunicationMean::CONNEXTDDSMICRO) { // NOLINT (false positive)
+          ptr = std::make_shared<DataRunner<RTIMicroDDSCommunicator<T>>>(run_type);
+        }
+#endif
+      }
+    });
+  if (!ptr) {
+    throw std::runtime_error(
+            "A topic with the requested name does not exist or communication mean not supported.");
+  }
+  return ptr;
+}
+
+}  // namespace performance_test

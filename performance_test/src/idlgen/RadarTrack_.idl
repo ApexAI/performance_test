@@ -1,0 +1,41 @@
+// generated from rosidl_generator_dds_idl/resource/msg.idl.em
+
+#ifndef __performance_test_msgs__msg__RadarTrack__idl__
+#define __performance_test_msgs__msg__RadarTrack__idl__
+
+#include "Polygon_.idl"
+#include "Vector3_.idl"
+
+
+module performance_test_msgs
+{
+
+module msg
+{
+
+module dds_
+{
+
+
+
+
+struct RadarTrack_
+{
+
+  unsigned short track_id_;
+  Polygon_ track_shape_;
+  Vector3_ linear_velocity_;
+  Vector3_ linear_acceleration_;
+  double time_;
+  unsigned long long id_;
+
+};  // struct RadarTrack_
+
+
+};  // module dds_
+
+};  // module msg
+
+};  // module performance_test_msgs
+
+#endif  // __performance_test_msgs__msg__RadarTrack__idl__
