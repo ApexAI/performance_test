@@ -34,7 +34,7 @@ ros2 run performance_test perf_test --help
 ```
 
 To be able to benchmark FastRPTS directly `--cmake-args -DPERFORMANCE_TEST_USE_FASTRTPS` must be set when building.
-This is due some issue when using ROS 2 with FastRTPS and FastRTPS directly in the same application.
+This is due to some issue when using ROS 2 with FastRTPS and FastRTPS directly in the same application.
 
 # Plot results
 
