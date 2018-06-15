@@ -34,23 +34,23 @@ ros2 run performance_test perf_test --help
 ```
 
 To be able to benchmark FastRPTS directly `--cmake-args -DPERFORMANCE_TEST_USE_FASTRTPS` must be set when building.
-This is due to some issue when using ROS 2 with FastRTPS and FastRTPS directly in the same application.
+This is due to some issue when using ROS 2 with FastRTPS (rmw_fastrtps_cpp) and FastRTPS directly in the same application.
 
 # Plot results
 
-After building a simple experiment can be run using:
+After building, a simple experiment can be run using:
 ```
 ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
 ```
 
-The generated log-files can then plotted into a PDF file using:
+The generated log-files can then be plotted into a PDF file using:
 ```
 python src/performance_test/performance_test/helper_scripts/performance_test_file_reader.py .
 ```
 
 # Batch run experiments (for advanced users)
 
-Multiple experiments can be run using using the the following command:
+Multiple experiments can be run using using the following command:
 
 ```
 python src/performance_test/performance_test/helper_scripts/run_experiment.py
