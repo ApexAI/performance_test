@@ -60,8 +60,7 @@ You need to edit the python script to call the performance test tool with the de
 
 # Troubleshooting
 
-** When running performance test it prints
+1. When running performance test it prints  
 `ERROR: You must compile with FastRTPS support to enable FastRTPS as communication mean.`
-**
 
 You need to build with `--cmake-args -DPERFORMANCE_TEST_USE_FASTRTPS` to switch from ROS 2 to FastRTPS.
