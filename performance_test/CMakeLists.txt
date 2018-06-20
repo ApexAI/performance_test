@@ -42,7 +42,7 @@ find_package(sensor_msgs REQUIRED)
 
 ament_export_include_directories(include)
 
-add_subdirectory(src/idlgen/fast_rtps)
+# add_subdirectory(src/idlgen/fast_rtps)
 include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR})
 
 #find_package(micro_dds_cmake_module)
@@ -168,7 +168,8 @@ if(${CONNEXT_DDS_MICRO_ENABLED})
         ${FastRTPS_LIBRARIES}
         ${MICRO_C_LIBS}
         rti_micro_idl
-        fast_rtps_idl)
+        #fast_rtps_idl
+            )
 else()
 
     ament_target_dependencies(${EXE_NAME}
