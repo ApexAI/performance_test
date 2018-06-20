@@ -103,6 +103,20 @@ DDSDomainParticipant * ResourceManager::connext_DDS_micro_participant() const
       throw std::runtime_error("failed to unregister udp");
     }
 
+    NETIO::SHMEM::InterfaceFactoryProperty *shmem_property_cxx = nullptr;
+
+    shmem_property_cxx = new NETIO::SHMEM::InterfaceFactoryProperty();
+    if (!registry->register_component(
+            NETIO_DEFAULT_SHMEM_NAME,
+            NETIO::SHMEM::InterfaceFactory::get_interface(),
+            &shmem_property_cxx->_parent._parent,
+            nullptr))
+    {
+      throw std::runtime_error("failed to register shared memory interface factory\n");
+    }
+
+
+
     udp_property = new UDP_InterfaceFactoryProperty();
 
     /* For additional allowed interface(s), increase maximum and length, and
@@ -148,6 +162,7 @@ DDSDomainParticipant * ResourceManager::connext_DDS_micro_participant() const
     *dp_qos.discovery.initial_peers.get_reference(0) = DDS_String_dup(peer);
 
     /* if there are more remote or local endpoints, you need to increase these limits */
+    //dp_qos.protocol.participant_id = 5;
     dp_qos.resource_limits.max_destination_ports = 32;
     dp_qos.resource_limits.max_receive_ports = 32;
     dp_qos.resource_limits.local_topic_allocation = 10;
@@ -158,24 +173,46 @@ DDSDomainParticipant * ResourceManager::connext_DDS_micro_participant() const
     dp_qos.resource_limits.remote_reader_allocation = 8;
     dp_qos.resource_limits.remote_writer_allocation = 8;
 
+    // This resource limit must not be 0.
     dp_qos.resource_limits.local_subscriber_allocation =
-      static_cast<decltype(dp_qos.resource_limits.local_subscriber_allocation)>(m_ec.
-      number_of_subscribers());
-    dp_qos.resource_limits.local_publisher_allocation =
-      static_cast<decltype(dp_qos.resource_limits.local_publisher_allocation)>(m_ec.
-      number_of_publishers());
+      std::max(static_cast<decltype(dp_qos.resource_limits.local_subscriber_allocation)>(m_ec.
+      number_of_subscribers()), 1);
 
-    if (m_ec.no_micro_intra()) {
-      REDA_StringSeq_set_maximum(&dp_qos.transports.enabled_transports, 1);
-      REDA_StringSeq_set_length(&dp_qos.transports.enabled_transports, 1);
-      *REDA_StringSeq_get_reference(&dp_qos.transports.enabled_transports, 0) = REDA_String_dup(
-        NETIO_DEFAULT_UDP_NAME);
-      /* Use only unicast for user-data traffic. */
-      REDA_StringSeq_set_maximum(&dp_qos.user_traffic.enabled_transports, 1);
-      REDA_StringSeq_set_length(&dp_qos.user_traffic.enabled_transports, 1);
-      *REDA_StringSeq_get_reference(&dp_qos.user_traffic.enabled_transports, 0) = REDA_String_dup(
-        "_udp://");
-    }
+    // This resource limit must not be 0.
+    dp_qos.resource_limits.local_publisher_allocation =
+      std::max(static_cast<decltype(dp_qos.resource_limits.local_publisher_allocation)>(m_ec.
+      number_of_publishers()), 1);
+
+    dp_qos.transports.enabled_transports.maximum(1);
+    dp_qos.transports.enabled_transports.length(1);
+
+    dp_qos.discovery.enabled_transports.maximum(1);
+    dp_qos.discovery.enabled_transports.length(1);
+
+    dp_qos.user_traffic.enabled_transports.maximum(1);
+    dp_qos.user_traffic.enabled_transports.length(1);
+
+    dp_qos.discovery.initial_peers.maximum(1);
+    dp_qos.discovery.initial_peers.length(1);
+
+
+    *dp_qos.transports.enabled_transports.get_reference(0) = DDS_String_dup("_shmem");
+    *dp_qos.discovery.enabled_transports.get_reference(0) = DDS_String_dup("_shmem://");
+    *dp_qos.user_traffic.enabled_transports.get_reference(0) = DDS_String_dup("_shmem://");
+    *dp_qos.discovery.initial_peers.get_reference(0) = DDS_String_dup("4@_shmem://");
+
+
+//    if (m_ec.no_micro_intra()) {
+//      REDA_StringSeq_set_maximum(&dp_qos.transports.enabled_transports, 1);
+//      REDA_StringSeq_set_length(&dp_qos.transports.enabled_transports, 1);
+//      *REDA_StringSeq_get_reference(&dp_qos.transports.enabled_transports, 0) = REDA_String_dup(
+//        NETIO_DEFAULT_UDP_NAME);
+//      /* Use only unicast for user-data traffic. */
+//      REDA_StringSeq_set_maximum(&dp_qos.user_traffic.enabled_transports, 1);
+//      REDA_StringSeq_set_length(&dp_qos.user_traffic.enabled_transports, 1);
+//      *REDA_StringSeq_get_reference(&dp_qos.user_traffic.enabled_transports, 0) = REDA_String_dup(
+//        "_udp://");
+//    }
 
     m_connext_dds_micro_participant = factory->create_participant(
       m_ec.dds_domain_id(),

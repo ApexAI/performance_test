@@ -5,19 +5,16 @@ import subprocess
 import sys
 import time
 
-# Select DDS implementation for ROS 2. This setting is only used when ROS 2 is used as a
-# communication mean.
+experiment_length = 300  # In seconds
 
-experiment_length = 1500  # In seconds
-
-topics = ["Array1k", "Array4k", "Array16k", "Array32k", "Array60k", "Array1m", "Array2m",
-          "Struct16", "Struct256", "Struct4k", "Struct32k"]
+topics = ["Array1k",  "Array60k",  "Array2m",
+           "Struct256","Struct32k"]
 current_index = 0
 
 
 def cmd(index):
     cmd = "ros2 run  performance_test perf_test"
-    args = "-l 'log' --communication FastRTPS --rate 1000 -p 1 -s 3 --topic "
+    args = "-l 'log' --communication ROS2 --rate 10000 -p 1 -s 3 --topic "
     return cmd + " " + args + topics[index]
 
 

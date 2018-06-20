@@ -17,6 +17,7 @@ module dds_
 
 typedef octet performance_test_msgs__Array1m__octet_array_1048576[1048576];
 
+@transfer_mode(SHMEM_REF)
 struct Array1m_
 {
 

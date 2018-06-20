@@ -151,12 +151,16 @@ public:
         throw std::runtime_error("failed datawriter narrow");
       }
     }
+    (void) data;
+
+    auto local_data = m_typed_datawriter->create_data();
+
     lock();
-    data.time_ = time.count();
-    data.id_ = next_sample_id();
+    local_data->time_ = time.count();
+    local_data->id_ = next_sample_id();
     increment_sent();  // We increment before publishing so we don't have to lock twice.
     unlock();
-    auto retcode = m_typed_datawriter->write(data, DDS_HANDLE_NIL);
+    auto retcode = m_typed_datawriter->write(*local_data, DDS_HANDLE_NIL);
     if (retcode != DDS_RETCODE_OK) {
       throw std::runtime_error("Failed to write to sample");
     }
