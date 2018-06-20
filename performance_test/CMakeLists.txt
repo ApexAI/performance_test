@@ -74,11 +74,14 @@ else()
 endif()
 
 set(MICRO_C_LIBS rti_me_cpp${RTI_LIB_SUFFIX_STATIC}
+        rti_me_netioshmem${RTI_LIB_SUFFIX_STATIC}
+        rti_me_netiosdm${RTI_LIB_SUFFIX_STATIC}
         rti_me_rhsm${RTI_LIB_SUFFIX_STATIC}
         rti_me_whsm${RTI_LIB_SUFFIX_STATIC}
         rti_me_discdpse${RTI_LIB_SUFFIX_STATIC}
         rti_me_discdpde${RTI_LIB_SUFFIX_STATIC}
-        rti_me${RTI_LIB_SUFFIX_STATIC})
+        rti_me${RTI_LIB_SUFFIX_STATIC}
+        )
 
 set(CONNEXT_DDS_MICRO_ENABLED TRUE)
 add_definitions(-DCONNEXT_DDS_MICRO_ENABLED)
