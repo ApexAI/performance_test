@@ -14,6 +14,10 @@
 
 set(SOURCE_EXTENSION cxx)
 
+include_directories(/home/andreas.pasternak/ros2_ws/src/rti_me.2.0/include)
+link_directories(/home/andreas.pasternak/ros2_ws/src/rti_me.2.0/lib/x64Linux3gcc5.4.0)
+
+
 set(RTIDDSGEN $ENV{RTIMEHOME}/rtiddsgen/scripts/rtiddsgen)
 set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
 
@@ -76,7 +80,8 @@ else()
   set(RTI_DEBUG_BUILD TRUE)
 endif()
 
-set(MICRO_C_LIBS rti_me_rhsm${RTI_LIB_SUFFIX_STATIC}
+set(MICRO_C_LIBS rti_me_cpp${RTI_LIB_SUFFIX_STATIC}
+    rti_me_rhsm${RTI_LIB_SUFFIX_STATIC}
     rti_me_whsm${RTI_LIB_SUFFIX_STATIC}
     rti_me_discdpse${RTI_LIB_SUFFIX_STATIC}
     rti_me_discdpde${RTI_LIB_SUFFIX_STATIC}
@@ -110,5 +115,6 @@ endforeach()
 
 add_library(rti_micro_idl
     ${IDL_GEN_H_LIST} ${IDL_GEN_C_LIST})
+target_link_libraries(rti_micro_idl ${MICRO_C_LIBS})
 set_compile_options(rti_micro_idl)
-set(RTI_MICRO_IDL_INCLUDE_DIR ${IDL_GEN_ROOT}/.. PARENT_SCOPE)
+set(RTI_MICRO_IDL_INCLUDE_DIR ${IDL_GEN_ROOT}/.. $ENV{RTIMEHOME}/include $ENV{RTIMEHOME}/include/rti_me PARENT_SCOPE)

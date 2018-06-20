@@ -7,7 +7,6 @@ import time
 
 # Select DDS implementation for ROS 2. This setting is only used when ROS 2 is used as a
 # communication mean.
-os.environ["RMW_IMPLEMENTATION"] = "rmw_micro_dds_c"
 
 experiment_length = 1500  # In seconds
 

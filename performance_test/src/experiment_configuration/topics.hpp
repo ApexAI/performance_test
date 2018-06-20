@@ -124,7 +124,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array1k_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Array1k_TypePlugin_get();
   }
@@ -146,7 +146,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array4k_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Array4k_TypePlugin_get();
   }
@@ -168,7 +168,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array16k_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Array16k_TypePlugin_get();
   }
@@ -190,7 +190,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array32k_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Array32k_TypePlugin_get();
   }
@@ -212,7 +212,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array60k_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Array60k_TypePlugin_get();
   }
@@ -234,7 +234,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array1m_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Array1m_TypePlugin_get();
   }
@@ -256,7 +256,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array2m_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Array2m_TypePlugin_get();
   }
@@ -277,7 +277,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Struct16_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Struct16_TypePlugin_get();
   }
@@ -298,7 +298,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Struct256_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Struct256_TypePlugin_get();
   }
@@ -319,7 +319,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Struct4k_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Struct4k_TypePlugin_get();
   }
@@ -340,7 +340,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Struct32k_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Struct32k_TypePlugin_get();
   }
@@ -361,7 +361,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__PointCloud512k_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__PointCloud512k_TypePlugin_get();
   }
@@ -382,7 +382,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__PointCloud1m_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__PointCloud1m_TypePlugin_get();
   }
@@ -403,7 +403,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__PointCloud2m_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__PointCloud2m_TypePlugin_get();
   }
@@ -424,7 +424,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__PointCloud4m_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__PointCloud4m_TypePlugin_get();
   }
@@ -445,7 +445,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Range_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__Range_TypePlugin_get();
   }
@@ -466,7 +466,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__NavSatFix_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__NavSatFix_TypePlugin_get();
   }
@@ -487,7 +487,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__RadarDetection_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__RadarDetection_TypePlugin_get();
   }
@@ -508,7 +508,7 @@ public:
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__RadarTrack_;
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  static auto * ConnextDDSMicroTypePlugin()
   {
     return performance_test_msgs_msg_dds__RadarTrack_TypePlugin_get();
   }
@@ -521,12 +521,13 @@ public:
 };
 ///  \endcond
 
-using TopicTypeList = boost::mpl::list<Array1k, Array4k, Array16k, Array32k, Array60k, Array1m,
-      Array2m,
-      Struct16, Struct256, Struct4k, Struct32k, PointCloud512k, PointCloud1m, PointCloud2m,
-      PointCloud4m,
-      Range, NavSatFix, RadarDetection, RadarTrack>;
+//using TopicTypeList = boost::mpl::list<Array1k, Array4k, Array16k, Array32k, Array60k, Array1m,
+//      Array2m,
+//      Struct16, Struct256, Struct4k, Struct32k, PointCloud512k, PointCloud1m, PointCloud2m,
+//      PointCloud4m,
+//      Range, NavSatFix, RadarDetection, RadarTrack>;
 
+using TopicTypeList = boost::mpl::list<Array1k>;
 /// Returns a vector of supported topic names.
 inline std::vector<std::string> supported_topic_names()
 {

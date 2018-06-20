@@ -21,7 +21,7 @@ add_definitions(-DPERFORMANCE_TEST_USE_ROS2)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 include(compile_options)
 project(performance_test)
-
+set(CMAKE_VERBOSE_MAKEFILE ON)
 # Default to C++14
 set(CMAKE_CXX_STANDARD 14)
 find_package(fastrtps_cmake_module REQUIRED)
@@ -45,19 +45,49 @@ ament_export_include_directories(include)
 add_subdirectory(src/idlgen/fast_rtps)
 include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR})
 
-find_package(micro_dds_cmake_module)
-if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
-    find_package(MicroDDS MODULE)
-    if(MicroDDS_FOUND)
-        set(CONNEXT_DDS_MICRO_ENABLED TRUE)
+#find_package(micro_dds_cmake_module)
+#if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
+#    find_package(MicroDDS MODULE)
+#    if(MicroDDS_FOUND)
+#        set(CONNEXT_DDS_MICRO_ENABLED TRUE)
+#
+#        add_definitions(-DCONNEXT_DDS_MICRO_ENABLED)
+#        add_subdirectory(src/idlgen/micro)
+#
+#        include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
+#        ament_export_definitions(${MicroDDS_DEFINITIONS})
+#    endif()
+#endif()
+set(RTI_LIB_PREFIX rti_me)
+set(RTI_LIB_SUFFIX_STATIC)
+set(RTI_LIB_SUFFIX_DYNAMIC)
 
-        add_definitions(-DCONNEXT_DDS_MICRO_ENABLED)
-        add_subdirectory(src/idlgen/micro)
-
-        include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-        ament_export_definitions(${MicroDDS_DEFINITIONS})
-    endif()
+if(${CMAKE_BUILD_TYPE} MATCHES "[Rr]elease")
+    set(RTI_LIB_SUFFIX_STATIC "z")
+    set(RTI_LIB_SUFFIX_DYNAMIC "")
+    set(RTI_DEBUG_BUILD FALSE)
+    add_definitions(-DNDEBUG)
+else()
+    set(RTI_LIB_SUFFIX_STATIC "zd")
+    set(RTI_LIB_SUFFIX_DYNAMIC "d")
+    set(RTI_DEBUG_BUILD TRUE)
 endif()
+
+set(MICRO_C_LIBS rti_me_cpp${RTI_LIB_SUFFIX_STATIC}
+        rti_me_rhsm${RTI_LIB_SUFFIX_STATIC}
+        rti_me_whsm${RTI_LIB_SUFFIX_STATIC}
+        rti_me_discdpse${RTI_LIB_SUFFIX_STATIC}
+        rti_me_discdpde${RTI_LIB_SUFFIX_STATIC}
+        rti_me${RTI_LIB_SUFFIX_STATIC})
+
+set(CONNEXT_DDS_MICRO_ENABLED TRUE)
+add_definitions(-DCONNEXT_DDS_MICRO_ENABLED)
+include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
+ament_export_definitions(${MicroDDS_DEFINITIONS})
+add_subdirectory(src/idlgen/micro)
+include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
+include_directories(/home/andreas.pasternak/ros2_ws/src/rti_me.2.0/include)
+link_directories(/home/andreas.pasternak/ros2_ws/src/rti_me.2.0/lib/x64Linux3gcc5.4.0)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
@@ -124,6 +154,9 @@ set_compile_options(${EXE_NAME})
 
 rosidl_target_interfaces(${EXE_NAME} ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
+
+MESSAGE(********** ${MICRO_C_LIBS})
+
 if(${CONNEXT_DDS_MICRO_ENABLED})
     ament_target_dependencies(${EXE_NAME}
         "rclcpp"
@@ -133,6 +166,7 @@ if(${CONNEXT_DDS_MICRO_ENABLED})
         ${Boost_LIBRARIES}
         ${MicroDDS_LIBRARIES}
         ${FastRTPS_LIBRARIES}
+        ${MICRO_C_LIBS}
         rti_micro_idl
         fast_rtps_idl)
 else()
