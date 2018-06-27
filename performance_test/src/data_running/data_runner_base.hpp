@@ -17,6 +17,11 @@
 
 #include <boost/core/noncopyable.hpp>
 
+#ifdef MEMORY_TOOLS_ENABLED
+#include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
+#include <osrf_testing_tools_cpp/scope_exit.hpp>
+#endif
+
 #include "../utilities/statistics_tracker.hpp"
 #include "../experiment_configuration/experiment_configuration.hpp"
 
@@ -39,7 +44,27 @@ class DataRunnerBase : boost::noncopyable
 public:
   DataRunnerBase()
   : m_ec(ExperimentConfiguration::get())
-  {}
+  {
+    if (m_ec.check_memory()) {
+#ifdef MEMORY_TOOLS_ENABLED
+      osrf_testing_tools_cpp::memory_tools::initialize();
+
+      const auto on_unexpected_memory =
+              [](osrf_testing_tools_cpp::memory_tools::MemoryToolsService &service) {
+                // this will cause a backtrace to be printed for each unexpected memory operations
+                service.print_backtrace();
+              };
+      osrf_testing_tools_cpp::memory_tools::on_unexpected_calloc(on_unexpected_memory);
+      osrf_testing_tools_cpp::memory_tools::on_unexpected_free(on_unexpected_memory);
+      osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(on_unexpected_memory);
+      osrf_testing_tools_cpp::memory_tools::on_unexpected_realloc(on_unexpected_memory);
+
+      osrf_testing_tools_cpp::memory_tools::enable_monitoring_in_all_threads();
+#else
+      throw std::runtime_error("OSRF memory tools is not installed. Memory check must be disabled.");
+#endif
+    }
+  }
   virtual ~DataRunnerBase() = default;
   /// Sum of the received samples per second.
   virtual uint64_t sum_received_samples() const = 0;

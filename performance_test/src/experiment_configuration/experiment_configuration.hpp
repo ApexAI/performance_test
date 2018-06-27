@@ -87,6 +87,8 @@ public:
   /// \returns Returns the configured number of subscribers. This will throw if the experiment
   /// configuration is not set up.
   uint32_t number_of_subscribers() const;
+  /// \returns Returns if memory operations should be logged.
+  bool check_memory() const;
   /// \returns Returns if ROS shm should be used. This will throw if the experiment
   /// configuration is not set up.
   bool use_ros_shm() const;
@@ -119,6 +121,7 @@ private:
     m_max_runtime(),
     m_number_of_publishers(),
     m_number_of_subscribers(),
+    m_check_memory(false),
     m_use_ros_shm(false),
     m_use_single_participant(false),
     m_no_waitset(false),
@@ -149,6 +152,7 @@ private:
 
   uint32_t m_number_of_publishers;
   uint32_t m_number_of_subscribers;
+  bool m_check_memory;
   bool m_use_ros_shm;
   bool m_use_single_participant;
   bool m_no_waitset;
