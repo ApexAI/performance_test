@@ -22,6 +22,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 include(compile_options)
 project(performance_test)
 
+SET(OPTIONAL_AMENT_DEPENDENCES)
+SET(OPTIONAL_LIBRARIES)
+
 # Default to C++14
 set(CMAKE_CXX_STANDARD 14)
 find_package(fastrtps_cmake_module REQUIRED)
@@ -40,6 +43,13 @@ find_package(builtin_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
+find_package(osrf_testing_tools_cpp)
+if(${osrf_testing_tools_cpp_FOUND})
+    LIST(APPEND OPTIONAL_AMENT_DEPENDENCES "osrf_testing_tools_cpp")
+    LIST(APPEND OPTIONAL_LIBRARIES osrf_testing_tools_cpp::memory_tools)
+    add_definitions(-DMEMORY_TOOLS_ENABLED)
+endif()
+
 ament_export_include_directories(include)
 
 add_subdirectory(src/idlgen/fast_rtps)
@@ -56,6 +66,9 @@ if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
 
         include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
         ament_export_definitions(${MicroDDS_DEFINITIONS})
+
+        LIST(APPEND OPTIONAL_AMENT_DEPENDENCES "MicroDDS")
+        LIST(APPEND OPTIONAL_LIBRARIES rti_micro_idl)
     endif()
 endif()
 
@@ -124,28 +137,15 @@ set_compile_options(${EXE_NAME})
 
 rosidl_target_interfaces(${EXE_NAME} ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-if(${CONNEXT_DDS_MICRO_ENABLED})
     ament_target_dependencies(${EXE_NAME}
-        "rclcpp"
-        "MicroDDS")
-
-    target_link_libraries(${EXE_NAME}
-        ${Boost_LIBRARIES}
-        ${MicroDDS_LIBRARIES}
-        ${FastRTPS_LIBRARIES}
-        rti_micro_idl
-        fast_rtps_idl)
-else()
-
-    ament_target_dependencies(${EXE_NAME}
-        "rclcpp")
+        "rclcpp" ${OPTIONAL_AMENT_DEPENDENCES})
 
     target_link_libraries(${EXE_NAME}
         ${Boost_LIBRARIES}
         ${FastRTPS_LIBRARIES}
         fast_rtps_idl
-        fastcdr)
-endif()
+        fastcdr
+        ${OPTIONAL_LIBRARIES})
 
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)

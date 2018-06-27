@@ -15,7 +15,7 @@ else:
     sys.exit(0)
 
 logfiles = []
-N = 14  # Number of line to skip before CSV data starts.
+N = 15  # Number of line to skip before CSV data starts.
 
 for file in os.listdir(directory):
     if file.startswith("log_"):
