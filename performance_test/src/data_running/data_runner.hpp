@@ -17,8 +17,7 @@
 
 #include "data_runner_base.hpp"
 #ifdef MEMORY_TOOLS_ENABLED
-#include "osrf_testing_tools_cpp/memory_tools/memory_tools.hpp"
-#include "osrf_testing_tools_cpp/scope_exit.hpp"
+#include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
 #endif
 #include <atomic>
 #include <thread>

@@ -48,7 +48,8 @@ public:
     if (m_ec.check_memory()) {
 #ifdef MEMORY_TOOLS_ENABLED
       osrf_testing_tools_cpp::memory_tools::initialize();
-
+      osrf_testing_tools_cpp::memory_tools::enable_monitoring_in_all_threads();
+      assert_memory_tools_is_working();
       const auto on_unexpected_memory =
               [](osrf_testing_tools_cpp::memory_tools::MemoryToolsService &service) {
                 // this will cause a backtrace to be printed for each unexpected memory operations
@@ -59,7 +60,6 @@ public:
       osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(on_unexpected_memory);
       osrf_testing_tools_cpp::memory_tools::on_unexpected_realloc(on_unexpected_memory);
 
-      osrf_testing_tools_cpp::memory_tools::enable_monitoring_in_all_threads();
 #else
       throw std::runtime_error("OSRF memory tools is not installed. Memory check must be disabled.");
 #endif
@@ -86,6 +86,35 @@ public:
 protected:
   /// A reference to the experiment configuration.
   const ExperimentConfiguration & m_ec;
+
+  void malloc_test_function(const std::string & str)
+  {
+    void * some_memory = std::malloc(1024);
+    // We need to do something with the malloc'ed memory to make sure this
+    // function doesn't get optimized away.  memset isn't enough, so we do a
+    // memcpy from a passed in string, which is enough to keep the optimizer away.
+    // see: https://github.com/osrf/osrf_testing_tools_cpp/pull/8
+    memcpy(some_memory, str.c_str(), str.length());
+    std::free(some_memory);
+  }
+
+  void assert_memory_tools_is_working()
+  {
+    bool saw_malloc = false;
+    auto on_malloc = [&saw_malloc]() {
+      std::cout << "MMMMMMMMMMMMMMMMMM" << std::endl;
+      saw_malloc = true;
+    };
+    OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(on_malloc());
+    {
+      const std::string test_str = "test message";
+      malloc_test_function(test_str);
+    }
+    if (!saw_malloc) {
+      throw std::runtime_error("Memory checking does not work properly. Please consult the documentation on how to "
+                               "properly set it up.");
+    }
+  }
 };
 
 }  // namespace performance_test
