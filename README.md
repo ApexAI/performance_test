@@ -17,7 +17,7 @@ ROS 2: https://github.com/ros2/ros2/wiki/Installation
 
 The script which generates the graphical plots needs matplotlib and pandas:
 ```
-sudo apt-get install python-matplotlib
+sudo apt-get install python-matplotlib python-pip
 pip install pandas
 ```
 
