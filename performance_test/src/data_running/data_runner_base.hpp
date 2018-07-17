@@ -101,11 +101,12 @@ protected:
   void assert_memory_tools_is_working()
   {
     bool saw_malloc = false;
-    auto on_malloc = [&saw_malloc]() {
+    auto on_malloc_cb = [&saw_malloc]() {
       std::cout << "MMMMMMMMMMMMMMMMMM" << std::endl;
       saw_malloc = true;
     };
-    OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(on_malloc());
+    osrf_testing_tools_cpp::memory_tools::on_malloc(on_malloc_cb);
+    OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(osrf_testing_tools_cpp::memory_tools::on_malloc(nullptr));
     {
       const std::string test_str = "test message";
       malloc_test_function(test_str);
