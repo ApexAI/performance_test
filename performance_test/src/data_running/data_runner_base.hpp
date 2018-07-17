@@ -102,7 +102,6 @@ protected:
   {
     bool saw_malloc = false;
     auto on_malloc_cb = [&saw_malloc]() {
-      std::cout << "MMMMMMMMMMMMMMMMMM" << std::endl;
       saw_malloc = true;
     };
     osrf_testing_tools_cpp::memory_tools::on_malloc(on_malloc_cb);
