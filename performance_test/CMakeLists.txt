@@ -15,7 +15,9 @@
 cmake_minimum_required(VERSION 3.5)
 
 # Workaround to get FastRTPS and ROS 2 running together.
-#add_definitions(-DPERFORMANCE_TEST_USE_FASTRTPS)
+# This woraround is not necessary anymore for ROS 2 bouncy
+# and therefore both are enabled now at the same time.
+add_definitions(-DPERFORMANCE_TEST_USE_FASTRTPS)
 add_definitions(-DPERFORMANCE_TEST_USE_ROS2)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
@@ -53,6 +55,8 @@ endif()
 ament_export_include_directories(include)
 
 add_subdirectory(src/idlgen/fast_rtps)
+# This is a workaround for broken include paths on some systems.
+include_directories(${FastRTPS_INCLUDE_DIR}/fastrtps/include ${fastcdr_INCLUDE_DIR})
 include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR})
 
 find_package(micro_dds_cmake_module)
