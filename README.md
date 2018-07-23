@@ -1,5 +1,8 @@
 # Introduction
 
+**WARNING: This version does not support ROS 2 Ardent anymore! Use the following commit if you are still using ROS 2
+Ardent: ee89af590f432c6bfd972358ce3c7f3f4292a4c2**
+
 This test allows you to test performance and latency of various communication means
 like ROS 2, FastRTPS and Connext DDS Micro.
 
@@ -27,7 +30,7 @@ pip install pandas
 source ros2_install_path/setup.bash
 mkdir -p perf_test_ws/src
 cd perf_test_ws/src
-git clone git@github.com:ApexAI/performance_test
+git clone https://github.com/ApexAI/performance_test.git
 cd ..
 ament build --parallel --build-tests --cmake-args -DCMAKE_BUILD_TYPE=Release
 ros2 run performance_test perf_test --help
