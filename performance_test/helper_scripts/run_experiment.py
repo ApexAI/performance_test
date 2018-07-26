@@ -4,35 +4,51 @@ import signal
 import subprocess
 import sys
 import time
+import itertools
 
 # Select DDS implementation for ROS 2. This setting is only used when ROS 2 is used as a
 # communication mean.
 os.environ["RMW_IMPLEMENTATION"] = "rmw_fastrtps_cpp"
 
-experiment_length = 1500  # In seconds
+experiment_length = 2  # In seconds
 
 topics = ["Array1k", "Array4k", "Array16k", "Array32k", "Array60k", "Array1m", "Array2m",
-          "Struct16", "Struct256", "Struct4k", "Struct32k"]
+          "Struct16", "Struct256", "Struct4k", "Struct32k", "PointCloud512k", "PointCloud1m", "PointCloud2m",
+          "PointCloud4m", "Range", "NavSatFix", "RadarDetection", "RadarTrack"]
+
+rates = ["50", "1000"]
+
+num_subs = ["1", "3", "10"]
+
+reliability = ["", "--reliable"]
+durability = ["", "--transient"]
+
 current_index = 0
 
-
 def cmd(index):
-    cmd = "ros2 run  performance_test perf_test"
-    args = "-l 'log' --communication FastRTPS --rate 1000 -p 1 -s 3 --topic "
-    return cmd + " " + args + topics[index]
+    command = "ros2 run  performance_test perf_test"
+
+    product = list(itertools.product(topics, rates, num_subs, reliability, durability))
+    c = product[index]
+
+    fixed_args = "-l 'log' --communication ROS2 -p 1 "
+    dyn_args = " --topic " + c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
+
+    return command + " " + fixed_args + dyn_args
 
 
 def exec_cmd(index):
-    p = subprocess.Popen(cmd(current_index), shell=True)
+    print(cmd(index))
+    p = subprocess.Popen(cmd(index), shell=True)
     # We sleeping here to make sure the process is started before changing its priority.
     time.sleep(2)
     # Enabling (pseudo-)realtime
-    subprocess.Popen('chrt -p 99 $(ps -o pid -C "perf_test" --no-headers)', shell=True)
+    # subprocess.Popen('chrt -p 99 $(ps -o pid -C "perf_test" --no-headers)', shell=True)
 
     return p
 
 
-p = exec_cmd(0)
+p = exec_cmd(current_index)
 
 
 def signal_handler(signal, frame):
