@@ -8,9 +8,8 @@ import itertools
 
 # Select DDS implementation for ROS 2. This setting is only used when ROS 2 is used as a
 # communication mean.
-os.environ["RMW_IMPLEMENTATION"] = "rmw_fastrtps_cpp"
 
-experiment_length = 2  # In seconds
+experiment_length = 120  # In seconds
 
 topics = ["Array1k", "Array4k", "Array16k", "Array32k", "Array60k", "Array1m", "Array2m",
           "Struct16", "Struct256", "Struct4k", "Struct32k", "PointCloud512k", "PointCloud1m", "PointCloud2m",
@@ -31,8 +30,13 @@ def cmd(index):
     product = list(itertools.product(topics, rates, num_subs, reliability, durability))
     c = product[index]
 
-    fixed_args = "-l 'log' --communication ROS2 -p 1 "
-    dyn_args = " --topic " + c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
+
+    dir = "rate_"+c[1]+"/subs_"+c[2]
+
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    fixed_args = " --communication ROS2 -p 1 "
+    dyn_args = "-l '" + dir + "/log' " + "--topic " + c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
 
     return command + " " + fixed_args + dyn_args
 
