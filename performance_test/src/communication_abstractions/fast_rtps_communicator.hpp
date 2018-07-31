@@ -156,6 +156,7 @@ public:
       const FastRTPSQOSAdapter qos(m_ec.qos());
 
       eprosima::fastrtps::PublisherAttributes wparam;
+      eprosima::fastrtps::Domain::getDefaultPublisherAttributes(wparam);
       wparam.topic.topicKind = eprosima::fastrtps::rtps::TopicKind_t::NO_KEY;
       wparam.topic.topicDataType = m_topic_type->getName();
       wparam.topic.topicName = Topic::topic_name();
@@ -192,6 +193,7 @@ public:
       const FastRTPSQOSAdapter qos(m_ec.qos());
 
       eprosima::fastrtps::SubscriberAttributes rparam;
+      eprosima::fastrtps::Domain::getDefaultSubscriberAttributes(rparam);
       rparam.topic.topicKind = eprosima::fastrtps::rtps::TopicKind_t::NO_KEY;;
       rparam.topic.topicDataType = m_topic_type->getName();
       rparam.topic.topicName = Topic::topic_name();

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profiles>
+    <publisher profile_name="constrained_publisher" is_default_profile="true">
+        <topic>
+            <resourceLimitsQos>
+                <max_samples>20</max_samples>
+                <allocated_samples>20</allocated_samples>
+            </resourceLimitsQos>
+        </topic>
+    </publisher>
+
+    <subscriber profile_name="constrained_publisher" is_default_profile="true">
+        <topic>
+            <resourceLimitsQos>
+                <max_samples>20</max_samples>
+                <allocated_samples>20</allocated_samples>
+            </resourceLimitsQos>
+        </topic>
+    </subscriber>
+</profiles>

@@ -44,6 +44,7 @@ eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
   eprosima::fastrtps::Participant * result = nullptr;
 
   eprosima::fastrtps::ParticipantAttributes PParam;
+  eprosima::fastrtps::Domain::getDefaultParticipantAttributes(PParam);
   PParam.rtps.defaultSendPort = 11511;
   PParam.rtps.use_IP6_to_send = true;
   PParam.rtps.sendSocketBufferSize = 1048576;
