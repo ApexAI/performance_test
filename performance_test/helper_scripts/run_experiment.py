@@ -22,27 +22,31 @@ num_subs = ["1", "3", "10"]
 reliability = ["", "--reliable"]
 durability = ["", "--transient"]
 
+product = list(itertools.product(topics, rates, num_subs, reliability, durability))
+
+
 current_index = 0
 
 def cmd(index):
     command = "ros2 run  performance_test perf_test"
 
-    product = list(itertools.product(topics, rates, num_subs, reliability, durability))
     c = product[index]
-
-
+    
     dir = "rate_"+c[1]+"/subs_"+c[2]
 
     if not os.path.exists(dir):
         os.makedirs(dir)
-    fixed_args = " --communication ROS2 -p 1 "
+    fixed_args = " --communication ROS2 -p 1 --use_drive_px_rt "
     dyn_args = "-l '" + dir + "/log' " + "--topic " + c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
 
     return command + " " + fixed_args + dyn_args
 
 
 def exec_cmd(index):
+    print("*******************")
     print(cmd(index))
+    print("*******************")
+
     p = subprocess.Popen(cmd(index), shell=True)
     # We sleeping here to make sure the process is started before changing its priority.
     time.sleep(2)
@@ -67,9 +71,9 @@ def timer_handler(signal, frame):
     global current_index
     global p
     p.kill()
-    subprocess.Popen("killall perf_test", shell=True)
+    subprocess.Popen("killall -9 perf_test", shell=True)
     current_index = current_index + 1
-    if current_index >= len(topics):
+    if current_index >= len(product):
         print("Done with experiments.")
         exit(0)
     p = exec_cmd(current_index)
