@@ -108,7 +108,14 @@ public:
   void publish(DataType & data, const std::chrono::duration<double> time)
   {
     if (!m_publisher) {
-      const auto qos = ROS2QOSAdapter(m_ec.qos()).get();
+      auto qos = ROS2QOSAdapter(m_ec.qos()).get();
+      // Workaround for bug where RMW/FastRPS keeps history of volatile publisher.
+      if(qos.durability == rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_VOLATILE) {
+        qos.history = rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+        qos.depth = std::size_t(10); // Setting depth higher than 10 as a safety net.
+      }
+      // End of workaround.
+      
       m_publisher = m_node->create_publisher<DataType>(Topic::topic_name(), qos);
     }
     lock();
