@@ -100,7 +100,7 @@ inline int32_t proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
     // NOTE: The entire process mem should be allocated during init phase.
     // Since that is not the case now, locking the future memory
     //
-    res = mlockall(MCL_CURRENT | MCL_FUTURE);
+    res = mlockall(MCL_CURRENT);
     if (res < 0) {
       std::cerr << "proc rt init mem locking failed" << strerror(errno) << std::endl;
       throw std::runtime_error("proc rt init mem locking failed");
