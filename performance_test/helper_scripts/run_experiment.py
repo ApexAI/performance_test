@@ -36,7 +36,7 @@ def cmd(index):
 
     if not os.path.exists(dir):
         os.makedirs(dir)
-    fixed_args = " --communication ROS2 -p 1 --use_drive_px_rt "
+    fixed_args = " --communication ROS2 -p 1 "
     dyn_args = "-l '" + dir + "/log' " + "--topic " + c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
 
     return command + " " + fixed_args + dyn_args
