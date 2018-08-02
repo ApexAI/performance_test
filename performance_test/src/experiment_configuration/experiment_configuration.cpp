@@ -42,6 +42,7 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
            "\nMaximum runtime (sec): " << e.max_runtime() <<
            "\nNumber of publishers: " << e.number_of_publishers() <<
            "\nNumber of subscribers:" << e.number_of_subscribers() <<
+           "\nMemory check enabled: " << e.check_memory() <<
            "\nUse ros SHM: " << e.use_ros_shm() <<
            "\nUse single participant: " << e.use_single_participant() <<
            "\nNot using waitset: " << e.no_waitset() <<
@@ -77,11 +78,11 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "Maximum number of publisher threads.")("num_sub_threads,s",
     po::value<uint32_t>()->default_value(1),
     "Maximum number of subscriber threads.")("use_ros_shm",
-    "Use Ros SHM support.")("use_drive_px_rt",
-    "Enable RT. Only the Drive PX has the right configuration to support this.")(
-    "use_single_participant",
-    "Uses only one participant per process. By default every thread has its own.")("no_waitset",
-    "Disables the wait set for new data. The subscriber takes as fast as possible.")(
+    "Use Ros SHM support.")("check_memory",
+    "Prints backtrace of all memory operations performed by the middleware. This will slow down the application!")
+    ("use_drive_px_rt", "Enable RT. Only the Drive PX has the right configuration to support this.")(
+    "use_single_participant", "Uses only one participant per process. By default every thread has its own.")
+    ("no_waitset", "Disables the wait set for new data. The subscriber takes as fast as possible.")(
     "no_micro_intra", "Disables the Connext DDS Micro INTRA transport.")
   ;
   po::variables_map vm;
@@ -107,6 +108,10 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 
     if (vm.count("rate")) {
       m_rate = vm["rate"].as<uint32_t>();
+    }
+
+    if (vm.count("check_memory")) {
+      m_check_memory = true;
     }
 
     if (vm["communication"].as<std::string>() == "ROS2") {
@@ -265,6 +270,12 @@ uint32_t ExperimentConfiguration::number_of_subscribers() const
 {
   check_setup();
   return m_number_of_subscribers;
+}
+
+bool ExperimentConfiguration::check_memory() const
+{
+  check_setup();
+  return m_check_memory;
 }
 
 bool ExperimentConfiguration::use_ros_shm() const

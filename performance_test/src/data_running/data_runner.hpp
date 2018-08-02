@@ -16,7 +16,9 @@
 #define DATA_RUNNING__DATA_RUNNER_HPP_
 
 #include "data_runner_base.hpp"
-
+#ifdef MEMORY_TOOLS_ENABLED
+#include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
+#endif
 #include <atomic>
 #include <thread>
 
@@ -148,7 +150,27 @@ private:
       if (m_ec.rate() > 0 && m_run_type == RunType::PUBLISHER) {
         std::this_thread::sleep_until(next_run);
       }
+
+      // Enabling memory checker after the first run:
+      enable_memory_tools();
     }
+  }
+
+  /// Enables the memory tool checker.
+  void enable_memory_tools() {
+    #ifdef MEMORY_TOOLS_ENABLED
+    // Do not turn the memory tools on several times.
+    if(m_memory_tools_on) {
+      return;
+    }
+
+    osrf_testing_tools_cpp::memory_tools::expect_no_calloc_begin();
+    osrf_testing_tools_cpp::memory_tools::expect_no_free_begin();
+    osrf_testing_tools_cpp::memory_tools::expect_no_malloc_begin();
+    osrf_testing_tools_cpp::memory_tools::expect_no_realloc_begin();
+
+    m_memory_tools_on = true;
+    #endif
   }
   TCommunicator m_com;
   std::atomic<bool> m_run;
@@ -167,6 +189,8 @@ private:
   const RunType m_run_type;
 
   std::thread m_thread;
+
+  bool m_memory_tools_on = false;
 };
 
 }  // namespace performance_test
