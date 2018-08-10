@@ -130,7 +130,7 @@ private:
       const auto next_run = std::chrono::steady_clock::now() +
         std::chrono::duration<double>(1.0 / m_ec.rate());
       if (m_run_type == RunType::PUBLISHER) {
-        std::chrono::duration<double> epoc_time =
+        std::chrono::nanoseconds epoc_time =
           std::chrono::steady_clock::now().time_since_epoch();
         m_com.publish(data, epoc_time);
       }

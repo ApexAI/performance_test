@@ -36,7 +36,7 @@ struct Struct4k_
   performance_test_msgs::msg::dds_::Struct256_ struct256d_;
   performance_test_msgs::msg::dds_::Struct256_ struct256e_;
   performance_test_msgs::msg::dds_::Struct256_ struct256f_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct Struct4k_

@@ -43,7 +43,7 @@ public:
    * \brief Adds a sample timestamp to the latency statistics.
    * \param sample_timestamp The timestamp the sample was sent.
    */
-  void add_latency_to_statistics(const double sample_timestamp);
+  void add_latency_to_statistics(const std::int64_t sample_timestamp);
   /// Returns stored latency statistics.
   StatisticsTracker latency_statistics() const;
   /// Resets all internal counters.
@@ -73,8 +73,8 @@ protected:
 
   /// The experiment configuration.
   const ExperimentConfiguration & m_ec;
-  /// The time the last sample was received [s since epoc].
-  double m_prev_timestamp;
+  /// The time the last sample was received [ns since epoc].
+  std::int64_t m_prev_timestamp;
 
   /// Lock the spinlock.
   void lock();

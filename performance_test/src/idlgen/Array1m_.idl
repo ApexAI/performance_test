@@ -22,7 +22,7 @@ struct Array1m_
 {
 
 performance_test_msgs__Array1m__octet_array_1048576 array_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct Array1m_
