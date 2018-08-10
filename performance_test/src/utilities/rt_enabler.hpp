@@ -97,8 +97,10 @@ inline int32_t proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
   if (proc_rt_info.is_rt) {
     //
     // Lock the current memory in RAM.
-    // Locking future memory is not supported by many middleware implementations 
-    // And therefore not enabled.
+    // Based on various QoS settings, certain middleware implementaions, allocates excessive
+    // virtual memory dynamically. Locking this excessive virtual memory into physical memory will
+    // cause running out of physical memory. Therefore, MCL_FUTURE option is disabled.
+    //
     res = mlockall(MCL_CURRENT);
     if (res < 0) {
       std::cerr << "proc rt init mem locking failed" << strerror(errno) << std::endl;
