@@ -49,6 +49,9 @@ public:
   {
   }
 
+  DataRunner & operator=(const DataRunner&) = delete;
+  DataRunner(const DataRunner&) = delete;
+
   ~DataRunner() noexcept override {
     m_run = false;
     m_thread.join();
