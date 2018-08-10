@@ -28,7 +28,7 @@ struct Struct32k_
   performance_test_msgs::msg::dds_::Struct4k_ struct4k5_;
   performance_test_msgs::msg::dds_::Struct4k_ struct4k6_;
   performance_test_msgs::msg::dds_::Struct4k_ struct4k7_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct Struct32k_

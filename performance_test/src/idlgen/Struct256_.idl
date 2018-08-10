@@ -36,7 +36,7 @@ struct Struct256_
   performance_test_msgs::msg::dds_::Struct16_ struct16d_;
   performance_test_msgs::msg::dds_::Struct16_ struct16e_;
   performance_test_msgs::msg::dds_::Struct16_ struct16f_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct Struct256_

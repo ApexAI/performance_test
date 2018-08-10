@@ -35,7 +35,7 @@ struct Struct16_
   octet structd_;
   octet structe_;
   octet structf_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct Struct16_

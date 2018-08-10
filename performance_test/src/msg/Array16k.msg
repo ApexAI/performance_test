@@ -1,5 +1,5 @@
 byte[16384] array
-float64 time
+int64 time
 uint64 id
 
 

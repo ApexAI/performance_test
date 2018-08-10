@@ -45,6 +45,6 @@ uint8 COVARIANCE_TYPE_KNOWN = 3
 uint8 position_covariance_type
 
 # Support data for the performance test
-float64 time
+int64 time
 uint64 id
 

@@ -10,5 +10,5 @@ Vector3 velocity              # range_rate rectangular transformation to x and y
 float64 amplitude                           # The detection amplitude in dB.
 
 # Support data for the performance test
-float64 time
+int64 time
 uint64 id

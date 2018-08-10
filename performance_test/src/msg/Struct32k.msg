@@ -6,7 +6,7 @@ Struct4k struct4k4
 Struct4k struct4k5
 Struct4k struct4k6
 Struct4k struct4k7
-float64 time
+int64 time
 uint64 id
 
 

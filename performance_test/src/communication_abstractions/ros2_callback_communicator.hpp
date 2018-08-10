@@ -105,7 +105,7 @@ public:
    * \param data The data to publish.
    * \param time The time to fill into the data field.
    */
-  void publish(DataType & data, const std::chrono::duration<double> time)
+  void publish(DataType & data, const std::chrono::nanoseconds time)
   {
     if (!m_publisher) {
       auto qos = ROS2QOSAdapter(m_ec.qos()).get();

@@ -32,7 +32,7 @@ performance_test_msgs__PointCloud4m__sensor_msgs__msg__dds___PointField__array_8
   unsigned long row_step_;
 performance_test_msgs__PointCloud4m__octet_array_4194304 data_;
   boolean is_dense_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct PointCloud4m_
