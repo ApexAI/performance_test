@@ -14,11 +14,11 @@
 
 set(SOURCE_EXTENSION cxx)
 
-include_directories(/home/andreas.pasternak/ros2_ws/src/rti_me.2.0/include)
-link_directories(/home/andreas.pasternak/ros2_ws/src/rti_me.2.0/lib/x64Linux3gcc5.4.0)
+include_directories(/home/pasa/rti_connext_micro_secure.2.5.0/source/unix/include)
+link_directories(/home/pasa/rti_connext_micro_secure.2.5.0/source/unix/build/cmake/build/lib)
 
 
-set(RTIDDSGEN $ENV{RTIMEHOME}/rtiddsgen/scripts/rtiddsgen)
+set(RTIDDSGEN /home/pasa/rtiddsgen/scripts/rtiddsgen)
 set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
 
 set(IDL_SOURCE_C

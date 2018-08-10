@@ -85,12 +85,12 @@ set(MICRO_C_LIBS rti_me_cpp${RTI_LIB_SUFFIX_STATIC}
 
 set(CONNEXT_DDS_MICRO_ENABLED TRUE)
 add_definitions(-DCONNEXT_DDS_MICRO_ENABLED)
-include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-ament_export_definitions(${MicroDDS_DEFINITIONS})
+#include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
+#ament_export_definitions(${MicroDDS_DEFINITIONS})
 add_subdirectory(src/idlgen/micro)
 include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-include_directories(/home/andreas.pasternak/ros2_ws/src/rti_me.2.0/include)
-link_directories(/home/andreas.pasternak/ros2_ws/src/rti_me.2.0/lib/x64Linux3gcc5.4.0)
+include_directories(/home/pasa/rti_connext_micro_secure.2.5.0/source/unix/include)
+link_directories(/home/pasa/rti_connext_micro_secure.2.5.0/source/unix/build/cmake/build/lib)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
