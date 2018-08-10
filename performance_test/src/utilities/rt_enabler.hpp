@@ -96,11 +96,10 @@ inline int32_t proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
 
   if (proc_rt_info.is_rt) {
     //
-    // Lock the current and future memory in RAM.
-    // NOTE: The entire process mem should be allocated during init phase.
-    // Since that is not the case now, locking the future memory
-    //
-    res = mlockall(MCL_CURRENT | MCL_FUTURE);
+    // Lock the current memory in RAM.
+    // Locking future memory is not supported by many middleware implementations 
+    // And therefore not enabled.
+    res = mlockall(MCL_CURRENT);
     if (res < 0) {
       std::cerr << "proc rt init mem locking failed" << strerror(errno) << std::endl;
       throw std::runtime_error("proc rt init mem locking failed");
