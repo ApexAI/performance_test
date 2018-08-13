@@ -8,28 +8,16 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt # noqa:
 
-if len(sys.argv) == 2:
-    directory = sys.argv[1]
-else:
-    print("Usage: python performance_test_file_reader.py /path_to_log_files")
-    sys.exit(0)
-
-logfiles = []
-N = 15  # Number of line to skip before CSV data starts.
-
-for file in os.listdir(directory):
-    if file.startswith("log_"):
-        print(os.path.join(directory, file))
-        logfiles.append(os.path.join(directory, file))
-
-for f in logfiles:
+def parse_file(file):
+    if not os.path.basename(file).startswith("log_") or file.endswith(".pdf"):
+        print("Skipping "+str(file))
+        return
     try:
-        print("Parsing file:" + str(f))
-        dataframe = pd.read_csv(f, skiprows=N + 1, sep="[ \t]*,[ \t]*", engine='python')
+        print("Parsing file:" + str(file))
+        dataframe = pd.read_csv(file, skiprows=N + 1, sep="[ \t]*,[ \t]*", engine='python')
         # dataframe = dataframe.drop(columns=['Unnamed: 19'])
-        with open(f) as myfile:
+        with open(file) as myfile:
             head = [next(myfile) for x in range(0, N)]
-            print(''.join(head))
 
         if not dataframe.empty:
             pd.options.display.float_format = '{:.4f}'.format
@@ -44,8 +32,22 @@ for f in logfiles:
             plt.figtext(0.0, 1.0, ''.join(head), fontsize=8, horizontalalignment='left')
             plt.figtext(0.65, 0.9, dataframe.mean().round(4), fontsize=8,
                         horizontalalignment='left')
-            plt.savefig(os.path.basename(f) + ".pdf",
+            plt.savefig(os.path.basename(file) + ".pdf",
                         bbox_inches=matplotlib.transforms.Bbox(np.array(((0, 0), (8, 8)))))
+            plt.close('all')
     except:  # noqa: E722 I do rethrow.
-        print("Could not parse file: " + str(f) + "\n")
-        raise
+        print("Could not parse file: " + str(file) + "\n")
+
+
+if len(sys.argv) == 3:
+    directory = sys.argv[1]
+else:
+    print("Usage: python performance_test_file_reader.py path_to_log_files output_directory")
+    sys.exit(0)
+
+logfiles = []
+N = 15  # Number of line to skip before CSV data starts.
+
+for root, subdirs, files in os.walk(directory):
+    for file in files:
+        parse_file(os.path.join(root, file))
