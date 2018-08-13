@@ -12,31 +12,40 @@ def parse_file(file):
     if not os.path.basename(file).startswith("log_") or file.endswith(".pdf"):
         print("Skipping "+str(file))
         return
-    try:
-        print("Parsing file:" + str(file))
-        dataframe = pd.read_csv(file, skiprows=N + 1, sep="[ \t]*,[ \t]*", engine='python')
-        # dataframe = dataframe.drop(columns=['Unnamed: 19'])
-        with open(file) as myfile:
-            head = [next(myfile) for x in range(0, N)]
+#try:
+    print("Parsing file:" + str(file))
+    dataframe = pd.read_csv(file, skiprows=N + 1, sep="[ \t]*,[ \t]*", engine='python')
+    # dataframe = dataframe.drop(columns=['Unnamed: 19'])
+    with open(file) as myfile:
+        head = [next(myfile) for x in range(0, N)]
 
-        if not dataframe.empty:
-            pd.options.display.float_format = '{:.4f}'.format
-            dataframe.drop(list(dataframe.filter(regex='ru_')), axis=1, inplace=True)
-            dataframe["latency_variance (ms) * 100"] = 100.0 * dataframe["latency_variance (ms)"]
-            dataframe[["T_experiment",
-                       "latency_min (ms)",
-                       "latency_max (ms)",
-                       "latency_mean (ms)",
-                       "latency_variance (ms) * 100"]] \
-                .plot(x='T_experiment')
-            plt.figtext(0.0, 1.0, ''.join(head), fontsize=8, horizontalalignment='left')
-            plt.figtext(0.65, 0.9, dataframe.mean().round(4), fontsize=8,
-                        horizontalalignment='left')
-            plt.savefig(os.path.basename(file) + ".pdf",
-                        bbox_inches=matplotlib.transforms.Bbox(np.array(((0, 0), (8, 8)))))
-            plt.close('all')
-    except:  # noqa: E722 I do rethrow.
-        print("Could not parse file: " + str(file) + "\n")
+    if not dataframe.empty:
+        pd.options.display.float_format = '{:.4f}'.format
+        dataframe = dataframe.iloc[10:]
+        dataframe["maxrss"] = dataframe["ru_maxrss"] / 1e3
+        dataframe.drop(list(dataframe.filter(regex='ru_')), axis=1, inplace=True)
+        dataframe["latency_variance (ms) * 100"] = 100.0 * dataframe["latency_variance (ms)"]
+        # ru_maxrss is in KB: http://man7.org/linux/man-pages/man2/getrusage.2.html. Converting to Mb
+        dataframe["maxrss (Mb)"] = dataframe["maxrss"] / 1e3
+        dataframe[["T_experiment",
+                   "latency_min (ms)",
+                   "latency_max (ms)",
+                   "latency_mean (ms)",
+                   "latency_variance (ms) * 100",
+                    "maxrss (Mb)"]] \
+            .plot(x='T_experiment', secondary_y=["maxrss (Mb)"])
+
+        # dataframe[["T_experiment",
+        #            "maxrss (Mb)"]] \
+        #     .plot(x='T_experiment', secondary_y=[])
+        plt.figtext(0.0, 1.0, ''.join(head), fontsize=8, horizontalalignment='left')
+        plt.figtext(0.65, 0.9, dataframe.mean().round(4), fontsize=8,
+                    horizontalalignment='left')
+        plt.savefig(os.path.basename(file) + ".pdf",
+                    bbox_inches=matplotlib.transforms.Bbox(np.array(((0, 0), (8, 8)))))
+        plt.close('all')
+#except:  # noqa: E722 I do rethrow.
+#    print("Could not parse file: " + str(file) + "\n")
 
 
 if len(sys.argv) == 3:
