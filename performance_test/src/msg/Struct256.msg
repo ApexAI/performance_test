@@ -14,5 +14,5 @@ Struct16 struct16c
 Struct16 struct16d
 Struct16 struct16e
 Struct16 struct16f
-float64 time
+int64 time
 uint64 id

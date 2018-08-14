@@ -70,11 +70,14 @@ void Communicator::update_lost_samples_counter(const std::uint64_t sample_id)
   m_num_lost_samples += sample_id - m_prev_sample_id - 1;
   m_prev_sample_id = sample_id;
 }
-void Communicator::add_latency_to_statistics(const double sample_timestamp)
+void Communicator::add_latency_to_statistics(const std::int64_t sample_timestamp)
 {
-  const double epoc_secs = std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1>>>(
-    std::chrono::steady_clock::now().time_since_epoch()).count();
-  m_latency.add_sample(epoc_secs - sample_timestamp);
+  std::chrono::nanoseconds st(sample_timestamp);
+  const auto diff = std::chrono::steady_clock::now().time_since_epoch() - st;
+  const auto sec_diff = std::chrono::duration_cast<std::chrono::duration<double>>(diff).count();
+  // Converting to double for easier calculations. Because the two timestamps are very close
+  // double precision is enough.
+  m_latency.add_sample(sec_diff);
 }
 StatisticsTracker Communicator::latency_statistics() const
 {

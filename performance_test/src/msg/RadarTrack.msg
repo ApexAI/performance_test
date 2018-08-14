@@ -16,5 +16,5 @@ Vector3 linear_velocity       # Only the x and y components are valid.
 Vector3 linear_acceleration   # Only the x component is valid.
 
 # Support data for the performance test
-float64 time
+int64 time
 uint64 id

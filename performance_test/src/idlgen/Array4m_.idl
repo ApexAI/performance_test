@@ -21,7 +21,7 @@ struct Array4m_
 {
 
 performance_test_msgs__Array4m__octet_array_4194304 array_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct Array4m_

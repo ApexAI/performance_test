@@ -21,7 +21,7 @@ struct Array32k_
 {
 
 performance_test_msgs__Array32k__octet_array_32768 array_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct Array32k_

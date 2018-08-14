@@ -30,7 +30,7 @@ struct Range_
   float min_range_;
   float max_range_;
   float range_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct Range_

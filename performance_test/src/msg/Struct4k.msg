@@ -14,5 +14,5 @@ Struct256 struct256c
 Struct256 struct256d
 Struct256 struct256e
 Struct256 struct256f
-float64 time
+int64 time
 uint64 id

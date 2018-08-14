@@ -39,5 +39,5 @@ float32 range           # range data [m]
                         # (Object out of range)
 
 # Support data for the performance test
-float64 time
+int64 time
 uint64 id

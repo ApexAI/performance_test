@@ -26,7 +26,7 @@ struct RadarTrack_
   Polygon_ track_shape_;
   Vector3_ linear_velocity_;
   Vector3_ linear_acceleration_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct RadarTrack_

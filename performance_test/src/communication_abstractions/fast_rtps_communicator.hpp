@@ -150,7 +150,7 @@ public:
    * \param data The data to publish.
    * \param time The time to fill into the data field.
    */
-  void publish(DataType & data, const std::chrono::duration<double> time)
+  void publish(DataType & data, const std::chrono::nanoseconds time)
   {
     if (!m_publisher) {
       const FastRTPSQOSAdapter qos(m_ec.qos());

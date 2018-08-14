@@ -14,5 +14,5 @@ byte structc
 byte structd
 byte structe
 byte structf
-float64 time
+int64 time
 uint64 id

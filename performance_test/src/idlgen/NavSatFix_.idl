@@ -37,7 +37,7 @@ struct NavSatFix_
   double altitude_;
 performance_test_msgs__NavSatFix__double_array_9 position_covariance_;
   octet position_covariance_type_;
-  double time_;
+  long long time_;
   unsigned long long id_;
 
 };  // struct NavSatFix_
