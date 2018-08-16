@@ -133,12 +133,13 @@ public:
       DDS_DataWriterQos dw_qos;
       ResourceManager::get().connext_dds_micro_publisher(publisher, dw_qos);
 
-      dw_qos.resource_limits.max_samples = 32;
-      dw_qos.resource_limits.max_samples_per_instance = 32;
+      dw_qos.resource_limits.max_samples = 256;
+      dw_qos.resource_limits.max_samples_per_instance = 256;
       dw_qos.resource_limits.max_instances = 1;
 
       ConnextDDSMicroQOSAdapter qos_adapter(m_ec.qos());
       qos_adapter.apply(dw_qos);
+      dw_qos.protocol.kbits_per_seconds = 100000000;
 
       m_datawriter = publisher->create_datawriter(m_topic,
           dw_qos, nullptr, DDS_STATUS_MASK_NONE);
@@ -182,12 +183,13 @@ public:
       DDS_DataReaderQos dr_qos;
       ResourceManager::get().connext_dds_micro_subscriber(subscriber, dr_qos);
 
-      dr_qos.resource_limits.max_samples = 32;
+      dr_qos.resource_limits.max_samples = 256;
       dr_qos.resource_limits.max_instances = 10;
-      dr_qos.resource_limits.max_samples_per_instance = 32;
+      dr_qos.resource_limits.max_samples_per_instance = 256;
       /* if there are more remote writers, you need to increase these limits */
       dr_qos.reader_resource_limits.max_remote_writers = 10;
       dr_qos.reader_resource_limits.max_remote_writers_per_instance = 10;
+      dr_qos.resource_limits.max_samples = 256;
 
       ConnextDDSMicroQOSAdapter qos_adapter(m_ec.qos());
       qos_adapter.apply(dr_qos);

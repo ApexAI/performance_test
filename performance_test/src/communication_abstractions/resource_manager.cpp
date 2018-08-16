@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <string>
+#include <netio_shmem/netio_shmem.h>
 
 namespace performance_test
 {
@@ -46,8 +47,8 @@ eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
   eprosima::fastrtps::ParticipantAttributes PParam;
   PParam.rtps.defaultSendPort = 11511;
   PParam.rtps.use_IP6_to_send = true;
-  PParam.rtps.sendSocketBufferSize = 1048576;
-  PParam.rtps.listenSocketBufferSize = 4194304;
+  PParam.rtps.sendSocketBufferSize = 1048576000;
+  PParam.rtps.listenSocketBufferSize = 4194304000;
   PParam.rtps.builtin.use_SIMPLE_RTPSParticipantDiscoveryProtocol = true;
   PParam.rtps.builtin.use_SIMPLE_EndpointDiscoveryProtocol = true;
   PParam.rtps.builtin.m_simpleEDP.use_PublicationReaderANDSubscriptionWriter = true;
@@ -104,8 +105,11 @@ DDSDomainParticipant * ResourceManager::connext_DDS_micro_participant() const
     }
 
     NETIO::SHMEM::InterfaceFactoryProperty *shmem_property_cxx = nullptr;
-
     shmem_property_cxx = new NETIO::SHMEM::InterfaceFactoryProperty();
+    shmem_property_cxx->max_message_size = 2*1024*1024;
+    shmem_property_cxx->received_message_count_max = 256;
+    shmem_property_cxx->receive_buffer_size  = 2*1024*1024;
+
     if (!registry->register_component(
             NETIO_DEFAULT_SHMEM_NAME,
             NETIO::SHMEM::InterfaceFactory::get_interface(),
@@ -114,6 +118,7 @@ DDSDomainParticipant * ResourceManager::connext_DDS_micro_participant() const
     {
       throw std::runtime_error("failed to register shared memory interface factory\n");
     }
+
 
 
 
@@ -172,7 +177,6 @@ DDSDomainParticipant * ResourceManager::connext_DDS_micro_participant() const
     dp_qos.resource_limits.remote_participant_allocation = 8;
     dp_qos.resource_limits.remote_reader_allocation = 8;
     dp_qos.resource_limits.remote_writer_allocation = 8;
-
     // This resource limit must not be 0.
     dp_qos.resource_limits.local_subscriber_allocation =
       std::max(static_cast<decltype(dp_qos.resource_limits.local_subscriber_allocation)>(m_ec.
