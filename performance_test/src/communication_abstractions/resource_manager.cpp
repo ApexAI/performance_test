@@ -106,9 +106,9 @@ DDSDomainParticipant * ResourceManager::connext_DDS_micro_participant() const
 
     NETIO::SHMEM::InterfaceFactoryProperty *shmem_property_cxx = nullptr;
     shmem_property_cxx = new NETIO::SHMEM::InterfaceFactoryProperty();
-    shmem_property_cxx->max_message_size = 2*1024*1024;
+    //shmem_property_cxx->max_message_size = 2*1024*1024;
     shmem_property_cxx->received_message_count_max = 256;
-    shmem_property_cxx->receive_buffer_size  = 2*1024*1024;
+    shmem_property_cxx->receive_buffer_size  = 16*1024*1024;
 
     if (!registry->register_component(
             NETIO_DEFAULT_SHMEM_NAME,
