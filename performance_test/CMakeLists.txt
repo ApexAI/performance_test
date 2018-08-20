@@ -57,7 +57,7 @@ ament_export_include_directories(include)
 add_subdirectory(src/idlgen/fast_rtps)
 # This is a workaround for broken include paths on some systems.
 include_directories(${FastRTPS_INCLUDE_DIR}/fastrtps/include ${fastcdr_INCLUDE_DIR})
-include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR})
+include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR} ${osrf_testing_tools_cpp_INCLUDE_DIR})
 
 #find_package(micro_dds_cmake_module)
 #if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
