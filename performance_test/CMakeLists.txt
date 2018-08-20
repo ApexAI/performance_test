@@ -173,4 +173,7 @@ install(TARGETS
     ${EXE_NAME}
     DESTINATION lib/${PROJECT_NAME})
 
+install(PROGRAMS
+    helper_scripts/performance_test_file_reader.py
+    DESTINATION lib/${PROJECT_NAME})
 ament_package()

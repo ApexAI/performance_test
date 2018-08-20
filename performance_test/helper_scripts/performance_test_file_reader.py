@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright 2017 Apex.AI, Inc.
 
 # flake8: noqa This file is for plotting data. Its dependencies are not necessarily on the CI.
