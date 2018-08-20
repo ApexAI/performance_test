@@ -22,12 +22,10 @@ def parse_file(file, single_file=None):
 
         if not dataframe.empty:
             pd.options.display.float_format = '{:.4f}'.format
-            dataframe = dataframe.iloc[10:]
-            dataframe["maxrss"] = dataframe["ru_maxrss"] / 1e3
+            # ru_maxrss is in KB: http://man7.org/linux/man-pages/man2/getrusage.2.html. Converting to Mb
+            dataframe["maxrss (Mb)"] = dataframe["ru_maxrss"] / 1e3
             dataframe.drop(list(dataframe.filter(regex='ru_')), axis=1, inplace=True)
             dataframe["latency_variance (ms) * 100"] = 100.0 * dataframe["latency_variance (ms)"]
-            # ru_maxrss is in KB: http://man7.org/linux/man-pages/man2/getrusage.2.html. Converting to Mb
-            dataframe["maxrss (Mb)"] = dataframe["maxrss"] / 1e3
             dataframe[["T_experiment",
                        "latency_min (ms)",
                        "latency_max (ms)",
