@@ -173,7 +173,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     }
 
     m_use_ros_shm = false;
-    if (vm.count("use_ros2_shm")) {
+    if (vm.count("use_ros_shm")) {
       if (m_com_mean != CommunicationMean::ROS2) {
         throw std::invalid_argument("Must use ROS2 for this option for ROS2 SHM!");
       }
