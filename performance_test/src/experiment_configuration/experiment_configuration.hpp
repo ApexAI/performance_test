@@ -101,6 +101,9 @@ public:
   /// \returns Returns if Connext DSS Micro INTRA transport should be disabled. This will throw if
   /// the experiment configuration is not set up.
   bool no_micro_intra() const;
+  /// \returns Returns if security is enabled for ROS2. This will throw if the configured mean
+  ///  of communication is not ROS2
+  bool is_with_security() const;
   /// \returns Returns the randomly generated unique ID of the experiment. This will throw if the
   /// experiment configuration is not set up.
   boost::uuids::uuid id() const;
@@ -157,6 +160,7 @@ private:
   bool m_use_single_participant;
   bool m_no_waitset;
   bool m_no_micro_intra;
+  bool m_with_security;
 };
 
 /// Outstream operator for ExperimentConfiguration.
