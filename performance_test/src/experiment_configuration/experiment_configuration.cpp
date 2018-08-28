@@ -83,7 +83,8 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     ("use_drive_px_rt", "Enable RT. Only the Drive PX has the right configuration to support this.")(
     "use_single_participant", "Uses only one participant per process. By default every thread has its own.")
     ("no_waitset", "Disables the wait set for new data. The subscriber takes as fast as possible.")(
-    "no_micro_intra", "Disables the Connext DDS Micro INTRA transport.")
+    "no_micro_intra", "Disables the Connext DDS Micro INTRA transport.")(
+      "with_security", "Enables the security with ROS2")
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
@@ -209,6 +210,15 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
         m_no_micro_intra = true;
       }
     }
+    m_with_security = false;
+    if (vm.count("with_security")) {
+      if (m_com_mean != CommunicationMean::ROS2) {
+        throw std::invalid_argument(
+            "Only ROS2 supports security!");
+      } else {
+        m_with_security = true;
+      }
+    }
     m_is_setup = true;
 
     // Logfile needs to be opened at the end, as the experiment configuration influences the
@@ -300,6 +310,12 @@ bool ExperimentConfiguration::no_micro_intra() const
 {
   check_setup();
   return m_no_micro_intra;
+}
+
+bool ExperimentConfiguration::is_with_security() const
+{
+  check_setup();
+  return m_with_security;
 }
 
 

@@ -33,7 +33,14 @@ std::shared_ptr<rclcpp::Node> ResourceManager::ros2_node() const
 //    }
 //    return m_node;
 
-  std::string rand_str = std::to_string(std::rand());
+  std::string rand_str;
+  // if security is enabled
+  if (m_ec.is_with_security()) {
+    static uint32_t id=0;
+    rand_str = std::to_string(id++);
+  } else {
+    rand_str = std::to_string(std::rand());
+  }
   return rclcpp::Node::make_shared("performance_test" + rand_str, "", m_ec.use_ros_shm());
 }
 
