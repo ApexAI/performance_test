@@ -89,8 +89,8 @@ add_definitions(-DCONNEXT_DDS_MICRO_ENABLED)
 #ament_export_definitions(${MicroDDS_DEFINITIONS})
 add_subdirectory(src/idlgen/micro)
 include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-include_directories(/home/pasa/rti_connext_micro_secure.2.5.0/source/unix/include)
-link_directories(/home/pasa/rti_connext_micro_secure.2.5.0/source/unix/build/cmake/build/lib)
+include_directories(/home/andreas.pasternak/rti/source/unix/include)
+link_directories(/home/andreas.pasternak/rti/source/unix/build/cmake/build/lib)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"

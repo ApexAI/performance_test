@@ -133,8 +133,8 @@ public:
       DDS_DataWriterQos dw_qos;
       ResourceManager::get().connext_dds_micro_publisher(publisher, dw_qos);
 
-      dw_qos.resource_limits.max_samples = 256;
-      dw_qos.resource_limits.max_samples_per_instance = 256;
+      dw_qos.resource_limits.max_samples = 64;
+      dw_qos.resource_limits.max_samples_per_instance = 64;
       dw_qos.resource_limits.max_instances = 1;
 
       ConnextDDSMicroQOSAdapter qos_adapter(m_ec.qos());
@@ -154,7 +154,7 @@ public:
     }
     (void) data;
 
-    auto local_data = m_typed_datawriter->create_data();
+    static auto local_data = m_typed_datawriter->create_data();
 
     lock();
     local_data->time_ = time.count();
@@ -183,13 +183,13 @@ public:
       DDS_DataReaderQos dr_qos;
       ResourceManager::get().connext_dds_micro_subscriber(subscriber, dr_qos);
 
-      dr_qos.resource_limits.max_samples = 256;
-      dr_qos.resource_limits.max_instances = 10;
-      dr_qos.resource_limits.max_samples_per_instance = 256;
+      dr_qos.resource_limits.max_samples = 64;
+      dr_qos.resource_limits.max_instances = 1;
+      dr_qos.resource_limits.max_samples_per_instance = 64;
       /* if there are more remote writers, you need to increase these limits */
-      dr_qos.reader_resource_limits.max_remote_writers = 10;
-      dr_qos.reader_resource_limits.max_remote_writers_per_instance = 10;
-      dr_qos.resource_limits.max_samples = 256;
+      dr_qos.reader_resource_limits.max_remote_writers = 64;
+      dr_qos.reader_resource_limits.max_remote_writers_per_instance = 64;
+      dr_qos.resource_limits.max_samples = 64;
 
       ConnextDDSMicroQOSAdapter qos_adapter(m_ec.qos());
       qos_adapter.apply(dr_qos);
@@ -269,12 +269,17 @@ private:
       if (retcode != DDS_RETCODE_OK) {
         throw std::runtime_error("failed to register type");
       }
+      std::srand(m_ec.id().data[0]);
+      static std::string rand_str = std::to_string(std::rand());
+      //static std::string rand_str = "";
       m_topic = m_participant->create_topic(
-        Topic::topic_name().c_str(),
+        (Topic::topic_name()+rand_str).c_str(),
         Topic::topic_name().c_str(),
         DDS_TOPIC_QOS_DEFAULT,
         nullptr,
         DDS_STATUS_MASK_NONE);
+      //std::cout << "TopicName: " << (Topic::topic_name()+rand_str).c_str() << std::endl;
+
       if (m_topic == nullptr) {
         throw std::runtime_error("topic == nullptr");
       }
