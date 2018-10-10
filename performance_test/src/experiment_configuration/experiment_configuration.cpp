@@ -100,6 +100,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 
     if (vm.count("help")) {
       std::cout << desc << "\n";
+      exit(0);
     }
 
     if (!vm.count("topic")) {
@@ -170,7 +171,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     m_number_of_subscribers = vm["num_sub_threads"].as<uint32_t>();
 
     if (m_number_of_publishers > 1) {
-      throw std::invalid_argument("More then one publisher is not supported at the moment");
+      throw std::invalid_argument("More than one publisher is not supported at the moment");
     }
 
     m_use_ros_shm = false;
