@@ -24,8 +24,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 include(compile_options)
 project(performance_test)
 
-SET(OPTIONAL_AMENT_DEPENDENCES)
-SET(OPTIONAL_LIBRARIES)
+set(OPTIONAL_AMENT_DEPENDENCES)
+set(OPTIONAL_LIBRARIES)
 
 # Default to C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -47,8 +47,8 @@ find_package(sensor_msgs REQUIRED)
 
 find_package(osrf_testing_tools_cpp)
 if(${osrf_testing_tools_cpp_FOUND})
-    LIST(APPEND OPTIONAL_AMENT_DEPENDENCES "osrf_testing_tools_cpp")
-    LIST(APPEND OPTIONAL_LIBRARIES osrf_testing_tools_cpp::memory_tools)
+    list(APPEND OPTIONAL_AMENT_DEPENDENCES "osrf_testing_tools_cpp")
+    list(APPEND OPTIONAL_LIBRARIES osrf_testing_tools_cpp::memory_tools)
     add_definitions(-DMEMORY_TOOLS_ENABLED)
 endif()
 

@@ -49,10 +49,11 @@ public:
   {
   }
 
-  DataRunner & operator=(const DataRunner&) = delete;
-  DataRunner(const DataRunner&) = delete;
+  DataRunner & operator=(const DataRunner &) = delete;
+  DataRunner(const DataRunner &) = delete;
 
-  ~DataRunner() noexcept override {
+  ~DataRunner() noexcept override
+  {
     m_run = false;
     m_thread.join();
   }
@@ -160,10 +161,11 @@ private:
   }
 
   /// Enables the memory tool checker.
-  void enable_memory_tools() {
+  void enable_memory_tools()
+  {
     #ifdef MEMORY_TOOLS_ENABLED
     // Do not turn the memory tools on several times.
-    if(m_memory_tools_on) {
+    if (m_memory_tools_on) {
       return;
     }
 

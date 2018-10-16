@@ -16,6 +16,7 @@
 #define DATA_RUNNING__DATA_RUNNER_BASE_HPP_
 
 #include <boost/core/noncopyable.hpp>
+#include <string>
 
 #ifdef MEMORY_TOOLS_ENABLED
 #include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
@@ -51,17 +52,18 @@ public:
       osrf_testing_tools_cpp::memory_tools::enable_monitoring_in_all_threads();
       assert_memory_tools_is_working();
       const auto on_unexpected_memory =
-              [](osrf_testing_tools_cpp::memory_tools::MemoryToolsService &service) {
-                // this will cause a backtrace to be printed for each unexpected memory operations
-                service.print_backtrace();
-              };
+        [](osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service) {
+          // this will cause a backtrace to be printed for each unexpected memory operations
+          service.print_backtrace();
+        };
       osrf_testing_tools_cpp::memory_tools::on_unexpected_calloc(on_unexpected_memory);
       osrf_testing_tools_cpp::memory_tools::on_unexpected_free(on_unexpected_memory);
       osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(on_unexpected_memory);
       osrf_testing_tools_cpp::memory_tools::on_unexpected_realloc(on_unexpected_memory);
 
 #else
-      throw std::runtime_error("OSRF memory tools is not installed. Memory check must be disabled.");
+      throw std::runtime_error(
+              "OSRF memory tools is not installed. Memory check must be disabled.");
 #endif
     }
   }
@@ -102,8 +104,8 @@ protected:
   {
     bool saw_malloc = false;
     auto on_malloc_cb = [&saw_malloc]() {
-      saw_malloc = true;
-    };
+        saw_malloc = true;
+      };
     osrf_testing_tools_cpp::memory_tools::on_malloc(on_malloc_cb);
     OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(osrf_testing_tools_cpp::memory_tools::on_malloc(nullptr));
     {
@@ -111,8 +113,9 @@ protected:
       malloc_test_function(test_str);
     }
     if (!saw_malloc) {
-      throw std::runtime_error("Memory checking does not work properly. Please consult the documentation on how to "
-                               "properly set it up.");
+      throw std::runtime_error(
+              "Memory checking does not work properly. Please consult the documentation on how to "
+              "properly set it up.");
     }
   }
 };

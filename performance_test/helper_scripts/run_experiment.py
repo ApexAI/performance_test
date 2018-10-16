@@ -1,4 +1,17 @@
 # Copyright 2017 Apex.AI, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import signal
 import subprocess
@@ -12,8 +25,8 @@ import itertools
 experiment_length = 120  # In seconds
 
 topics = ["Array1k", "Array4k", "Array16k", "Array32k", "Array60k", "Array1m", "Array2m",
-          "Struct16", "Struct256", "Struct4k", "Struct32k", "PointCloud512k", "PointCloud1m", "PointCloud2m",
-          "PointCloud4m", "Range", "NavSatFix", "RadarDetection", "RadarTrack"]
+          "Struct16", "Struct256", "Struct4k", "Struct32k", "PointCloud512k", "PointCloud1m",
+          "PointCloud2m", "PointCloud4m", "Range", "NavSatFix", "RadarDetection", "RadarTrack"]
 
 rates = ["50", "1000"]
 
@@ -27,17 +40,19 @@ product = list(itertools.product(topics, rates, num_subs, reliability, durabilit
 
 current_index = 0
 
+
 def cmd(index):
     command = "ros2 run  performance_test perf_test"
 
     c = product[index]
-    
-    dir = "rate_"+c[1]+"/subs_"+c[2]
+
+    dir = "rate_" + c[1] + "/subs_" + c[2]
 
     if not os.path.exists(dir):
         os.makedirs(dir)
     fixed_args = " --communication ROS2 -p 1 "
-    dyn_args = "-l '" + dir + "/log' " + "--topic " + c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
+    dyn_args = "-l '" + dir + "/log' " + "--topic " + c[0] + " --rate " + c[1] + " -s " + c[2] +\
+        " " + c[3] + " " + c[4]
 
     return command + " " + fixed_args + dyn_args
 

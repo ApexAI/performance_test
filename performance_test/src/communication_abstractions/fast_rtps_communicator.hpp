@@ -192,7 +192,7 @@ public:
       const FastRTPSQOSAdapter qos(m_ec.qos());
 
       eprosima::fastrtps::SubscriberAttributes rparam;
-      rparam.topic.topicKind = eprosima::fastrtps::rtps::TopicKind_t::NO_KEY;;
+      rparam.topic.topicKind = eprosima::fastrtps::rtps::TopicKind_t::NO_KEY;
       rparam.topic.topicDataType = m_topic_type->getName();
       rparam.topic.topicName = Topic::topic_name();
       rparam.topic.historyQos.kind = qos.history_kind();
