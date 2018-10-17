@@ -53,6 +53,7 @@ if(${osrf_testing_tools_cpp_FOUND})
 endif()
 
 ament_export_include_directories(include)
+ament_export_dependencies(rosidl_default_runtime)
 
 add_subdirectory(src/idlgen/fast_rtps)
 # This is a workaround for broken include paths on some systems.
