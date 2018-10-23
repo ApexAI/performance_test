@@ -36,7 +36,7 @@ std::shared_ptr<rclcpp::Node> ResourceManager::ros2_node() const
   std::string rand_str;
   // if security is enabled
   if (m_ec.is_with_security()) {
-    static uint32_t id=0;
+    static uint32_t id = 0;
     rand_str = std::to_string(id++);
   } else {
     rand_str = std::to_string(std::rand());

@@ -62,7 +62,7 @@ ros2 run performance_test performance_test_file_reader.py .
 
 # Batch run experiments (for advanced users)
 
-Multiple experiments can be run using using the following command:
+Multiple experiments can be run using the following command:
 
 ```
 python src/performance_test/performance_test/helper_scripts/run_experiment.py
@@ -85,7 +85,7 @@ Note that enabling this feature will cause a huge performance impact.
 
 # Troubleshooting
 
-1. When running performance test it prints  
+1. When running performance test it prints
 `ERROR: You must compile with FastRTPS support to enable FastRTPS as communication mean.`
 
 You need to build with `--cmake-args -DPERFORMANCE_TEST_USE_FASTRTPS` to switch from ROS 2 to FastRTPS.

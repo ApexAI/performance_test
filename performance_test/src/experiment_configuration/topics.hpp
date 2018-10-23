@@ -522,10 +522,10 @@ public:
 ///  \endcond
 
 using TopicTypeList = boost::mpl::list<Array1k, Array4k, Array16k, Array32k, Array60k, Array1m,
-      Array2m,
-      Struct16, Struct256, Struct4k, Struct32k, PointCloud512k, PointCloud1m, PointCloud2m,
-      PointCloud4m,
-      Range, NavSatFix, RadarDetection, RadarTrack>;
+    Array2m,
+    Struct16, Struct256, Struct4k, Struct32k, PointCloud512k, PointCloud1m, PointCloud2m,
+    PointCloud4m,
+    Range, NavSatFix, RadarDetection, RadarTrack>;
 
 /// Returns a vector of supported topic names.
 inline std::vector<std::string> supported_topic_names()

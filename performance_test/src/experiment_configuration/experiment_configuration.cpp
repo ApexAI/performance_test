@@ -79,12 +79,14 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     po::value<uint32_t>()->default_value(1),
     "Maximum number of subscriber threads.")("use_ros_shm",
     "Use Ros SHM support.")("check_memory",
-    "Prints backtrace of all memory operations performed by the middleware. This will slow down the application!")
-    ("use_drive_px_rt", "Enable RT. Only the Drive PX has the right configuration to support this.")(
-    "use_single_participant", "Uses only one participant per process. By default every thread has its own.")
-    ("no_waitset", "Disables the wait set for new data. The subscriber takes as fast as possible.")(
+    "Prints backtrace of all memory operations performed by the middleware. "
+    "This will slow down the application!")("use_drive_px_rt",
+    "Enable RT. Only the Drive PX has the right configuration to support this.")(
+    "use_single_participant",
+    "Uses only one participant per process. By default every thread has its own.")("no_waitset",
+    "Disables the wait set for new data. The subscriber takes as fast as possible.")(
     "no_micro_intra", "Disables the Connext DDS Micro INTRA transport.")(
-      "with_security", "Enables the security with ROS2")
+    "with_security", "Enables the security with ROS2")
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
@@ -215,7 +217,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     if (vm.count("with_security")) {
       if (m_com_mean != CommunicationMean::ROS2) {
         throw std::invalid_argument(
-            "Only ROS2 supports security!");
+                "Only ROS2 supports security!");
       } else {
         m_with_security = true;
       }
