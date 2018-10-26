@@ -23,7 +23,6 @@
 
 #include "qos_abstraction.hpp"
 #include "communication_mean.hpp"
-#include "../utilities/rt_enabler.hpp"
 
 namespace performance_test
 {

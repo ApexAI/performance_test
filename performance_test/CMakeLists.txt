@@ -14,12 +14,6 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-# Workaround to get FastRTPS and ROS 2 running together.
-# This woraround is not necessary anymore for ROS 2 bouncy
-# and therefore both are enabled now at the same time.
-add_definitions(-DPERFORMANCE_TEST_USE_FASTRTPS)
-add_definitions(-DPERFORMANCE_TEST_USE_ROS2)
-
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 include(compile_options)
 project(performance_test)
@@ -29,10 +23,23 @@ set(OPTIONAL_LIBRARIES)
 
 # Default to C++14
 set(CMAKE_CXX_STANDARD 14)
-find_package(fastrtps_cmake_module REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(ament_cmake REQUIRED)
-find_package(FastRTPS REQUIRED)
+
+# FastRTPS
+find_package(fastrtps_cmake_module QUIET)
+find_package(FastRTPS QUIET)
+if(FastRTPS_FOUND)
+  if(DEFINED FASTRTPS_ENABLED AND NOT FASTRTPS_ENABLED)
+    message(STATUS "-- FastRTPS found, but won't be enabled.")
+  else()
+    add_definitions(-DFASTRTPS_ENABLED)
+    set(FASTRTPS_ENABLED true)
+  endif()
+else()
+  message(STATUS "-- FastRTPS not found.")
+endif()
+
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
 find_package(builtin_interfaces REQUIRED)
@@ -55,7 +62,10 @@ endif()
 ament_export_include_directories(include)
 ament_export_dependencies(rosidl_default_runtime)
 
-add_subdirectory(src/idlgen/fast_rtps)
+if(FASTRTPS_ENABLED)
+  add_subdirectory(src/idlgen/fast_rtps)
+endif()
+
 # This is a workaround for broken include paths on some systems.
 include_directories(${FastRTPS_INCLUDE_DIR}/fastrtps/include ${fastcdr_INCLUDE_DIR})
 include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR} ${osrf_testing_tools_cpp_INCLUDE_DIR})
@@ -112,45 +122,57 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
-set(EXE_NAME perf_test)
-add_executable(${EXE_NAME}
+set(sources
     src/main.cpp
     src/communication_abstractions/communicator.hpp
     src/communication_abstractions/communicator.cpp
-    src/communication_abstractions/ros2_callback_communicator.hpp
-    src/experiment_configuration/topics.hpp
-    src/data_running/data_runner_base.hpp
-    src/data_running/data_runner.hpp
-    src/communication_abstractions/fast_rtps_communicator.hpp
     src/communication_abstractions/resource_manager.cpp
     src/communication_abstractions/resource_manager.hpp
+    src/communication_abstractions/ros2_callback_communicator.hpp
+    src/experiment_configuration/topics.hpp
+    src/data_running/data_runner.hpp
+    src/data_running/data_runner_base.hpp
+    src/data_running/data_runner_factory.cpp
+    src/data_running/data_runner_factory.hpp
     src/experiment_execution/analyze_runner.cpp
     src/experiment_execution/analyze_runner.hpp
     src/experiment_execution/analysis_result.cpp
     src/experiment_execution/analysis_result.hpp
-    src/utilities/rt_enabler.hpp
-    src/utilities/statistics_tracker.hpp
     src/experiment_configuration/communication_mean.hpp
     src/experiment_configuration/qos_abstraction.cpp
     src/experiment_configuration/qos_abstraction.hpp
     src/experiment_configuration/experiment_configuration.cpp
     src/experiment_configuration/experiment_configuration.hpp
-    src/data_running/data_runner_factory.cpp
-    src/data_running/data_runner_factory.hpp
-    src/utilities/spin_lock.hpp)
+    src/utilities/rt_enabler.hpp
+    src/utilities/spin_lock.hpp
+    src/utilities/statistics_tracker.hpp
+)
+
+if(FASTRTPS_ENABLED)
+    set(sources ${sources}
+        src/communication_abstractions/fast_rtps_communicator.hpp
+    )
+endif()
+
+set(EXE_NAME perf_test)
+add_executable(${EXE_NAME} ${sources})
 set_compile_options(${EXE_NAME})
 
 rosidl_target_interfaces(${EXE_NAME} ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-    ament_target_dependencies(${EXE_NAME}
-        "rclcpp" ${OPTIONAL_AMENT_DEPENDENCES})
+ament_target_dependencies(${EXE_NAME}
+    "rclcpp" ${OPTIONAL_AMENT_DEPENDENCES})
 
-    target_link_libraries(${EXE_NAME}
-        ${Boost_LIBRARIES}
-        ${FastRTPS_LIBRARIES}
-        fast_rtps_idl
-        fastcdr
-        ${OPTIONAL_LIBRARIES})
+target_link_libraries(${EXE_NAME}
+    ${Boost_LIBRARIES}
+    ${OPTIONAL_LIBRARIES})
+
+if(FASTRTPS_ENABLED)
+  target_link_libraries(${EXE_NAME}
+      ${FastRTPS_LIBRARIES}
+      fast_rtps_idl
+      fastcdr)
+endif()
 
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)

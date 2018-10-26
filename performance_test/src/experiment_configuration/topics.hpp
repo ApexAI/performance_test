@@ -50,57 +50,59 @@
 #include <performance_test/msg/radar_track.hpp>
 
 // FastRTPS Types:
-#include <fast_rtps/Array1k_PubSubTypes.h>
-#include <fast_rtps/Array4k_PubSubTypes.h>
-#include <fast_rtps/Array16k_PubSubTypes.h>
-#include <fast_rtps/Array32k_PubSubTypes.h>
-#include <fast_rtps/Array60k_PubSubTypes.h>
-#include <fast_rtps/Array1m_PubSubTypes.h>
-#include <fast_rtps/Array2m_PubSubTypes.h>
-#include <fast_rtps/Array4m_PubSubTypes.h>
+#ifdef FASTRTPS_ENABLED
+  #include <fast_rtps/Array1k_PubSubTypes.h>
+  #include <fast_rtps/Array4k_PubSubTypes.h>
+  #include <fast_rtps/Array16k_PubSubTypes.h>
+  #include <fast_rtps/Array32k_PubSubTypes.h>
+  #include <fast_rtps/Array60k_PubSubTypes.h>
+  #include <fast_rtps/Array1m_PubSubTypes.h>
+  #include <fast_rtps/Array2m_PubSubTypes.h>
+  #include <fast_rtps/Array4m_PubSubTypes.h>
 
-#include <fast_rtps/Struct16_PubSubTypes.h>
-#include <fast_rtps/Struct256_PubSubTypes.h>
-#include <fast_rtps/Struct4k_PubSubTypes.h>
-#include <fast_rtps/Struct32k_PubSubTypes.h>
+  #include <fast_rtps/Struct16_PubSubTypes.h>
+  #include <fast_rtps/Struct256_PubSubTypes.h>
+  #include <fast_rtps/Struct4k_PubSubTypes.h>
+  #include <fast_rtps/Struct32k_PubSubTypes.h>
 
-#include <fast_rtps/PointCloud512k_PubSubTypes.h>
-#include <fast_rtps/PointCloud1m_PubSubTypes.h>
-#include <fast_rtps/PointCloud2m_PubSubTypes.h>
-#include <fast_rtps/PointCloud4m_PubSubTypes.h>
+  #include <fast_rtps/PointCloud512k_PubSubTypes.h>
+  #include <fast_rtps/PointCloud1m_PubSubTypes.h>
+  #include <fast_rtps/PointCloud2m_PubSubTypes.h>
+  #include <fast_rtps/PointCloud4m_PubSubTypes.h>
 
-#include <fast_rtps/Range_PubSubTypes.h>
-#include <fast_rtps/NavSatFix_PubSubTypes.h>
+  #include <fast_rtps/Range_PubSubTypes.h>
+  #include <fast_rtps/NavSatFix_PubSubTypes.h>
 
-#include <fast_rtps/RadarDetection_PubSubTypes.h>
-#include <fast_rtps/RadarTrack_PubSubTypes.h>
+  #include <fast_rtps/RadarDetection_PubSubTypes.h>
+  #include <fast_rtps/RadarTrack_PubSubTypes.h>
+#endif
 
-#ifdef CONNEXT_DDS_MICRO_ENABLED
 // Connext DDS Micro Types:
-#include <micro/Array1k_Support.h>
-#include <micro/Array4k_Support.h>
-#include <micro/Array16k_Support.h>
-#include <micro/Array32k_Support.h>
-#include <micro/Array60k_Support.h>
-#include <micro/Array1m_Support.h>
-#include <micro/Array2m_Support.h>
-#include <micro/Array4m_Support.h>
+#ifdef CONNEXT_DDS_MICRO_ENABLED
+  #include <micro/Array1k_Support.h>
+  #include <micro/Array4k_Support.h>
+  #include <micro/Array16k_Support.h>
+  #include <micro/Array32k_Support.h>
+  #include <micro/Array60k_Support.h>
+  #include <micro/Array1m_Support.h>
+  #include <micro/Array2m_Support.h>
+  #include <micro/Array4m_Support.h>
 
-#include <micro/Struct16_Support.h>
-#include <micro/Struct256_Support.h>
-#include <micro/Struct4k_Support.h>
-#include <micro/Struct32k_Support.h>
+  #include <micro/Struct16_Support.h>
+  #include <micro/Struct256_Support.h>
+  #include <micro/Struct4k_Support.h>
+  #include <micro/Struct32k_Support.h>
 
-#include <micro/PointCloud512k_Support.h>
-#include <micro/PointCloud1m_Support.h>
-#include <micro/PointCloud2m_Support.h>
-#include <micro/PointCloud4m_Support.h>
+  #include <micro/PointCloud512k_Support.h>
+  #include <micro/PointCloud1m_Support.h>
+  #include <micro/PointCloud2m_Support.h>
+  #include <micro/PointCloud4m_Support.h>
 
-#include <micro/Range_Support.h>
-#include <micro/NavSatFix_Support.h>
+  #include <micro/Range_Support.h>
+  #include <micro/NavSatFix_Support.h>
 
-#include <micro/RadarDetection_Support.h>
-#include <micro/RadarTrack_Support.h>
+  #include <micro/RadarDetection_Support.h>
+  #include <micro/RadarTrack_Support.h>
 #endif
 
 #include <algorithm>
@@ -119,8 +121,10 @@ class Array1k
 public:
   using RosType = performance_test::msg::Array1k;
 
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Array1k_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array1k_;
@@ -141,8 +145,10 @@ class Array4k
 public:
   using RosType = performance_test::msg::Array4k;
 
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Array4k_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array4k_;
@@ -163,8 +169,10 @@ class Array16k
 public:
   using RosType = performance_test::msg::Array16k;
 
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Array16k_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array16k_;
@@ -185,8 +193,10 @@ class Array32k
 public:
   using RosType = performance_test::msg::Array32k;
 
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Array32k_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array32k_;
@@ -207,8 +217,10 @@ class Array60k
 public:
   using RosType = performance_test::msg::Array60k;
 
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Array60k_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array60k_;
@@ -229,8 +241,10 @@ class Array1m
 public:
   using RosType = performance_test::msg::Array1m;
 
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Array1m_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array1m_;
@@ -251,8 +265,10 @@ class Array2m
 public:
   using RosType = performance_test::msg::Array2m;
 
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Array2m_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Array2m_;
@@ -272,8 +288,10 @@ class Struct16
 {
 public:
   using RosType = performance_test::msg::Struct16;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Struct16_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Struct16_;
@@ -293,8 +311,10 @@ class Struct256
 {
 public:
   using RosType = performance_test::msg::Struct256;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Struct256_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Struct256_;
@@ -314,8 +334,10 @@ class Struct4k
 {
 public:
   using RosType = performance_test::msg::Struct4k;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Struct4k_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Struct4k_;
@@ -335,8 +357,10 @@ class Struct32k
 {
 public:
   using RosType = performance_test::msg::Struct32k;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Struct32k_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Struct32k_;
@@ -356,8 +380,10 @@ class PointCloud512k
 {
 public:
   using RosType = performance_test::msg::PointCloud512k;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::PointCloud512k_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__PointCloud512k_;
@@ -377,8 +403,10 @@ class PointCloud1m
 {
 public:
   using RosType = performance_test::msg::PointCloud1m;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::PointCloud1m_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__PointCloud1m_;
@@ -398,8 +426,10 @@ class PointCloud2m
 {
 public:
   using RosType = performance_test::msg::PointCloud2m;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::PointCloud2m_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__PointCloud2m_;
@@ -419,8 +449,10 @@ class PointCloud4m
 {
 public:
   using RosType = performance_test::msg::PointCloud4m;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::PointCloud4m_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__PointCloud4m_;
@@ -440,8 +472,10 @@ class Range
 {
 public:
   using RosType = performance_test::msg::Range;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::Range_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__Range_;
@@ -461,8 +495,10 @@ class NavSatFix
 {
 public:
   using RosType = performance_test::msg::NavSatFix;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::NavSatFix_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__NavSatFix_;
@@ -482,8 +518,10 @@ class RadarDetection
 {
 public:
   using RosType = performance_test::msg::RadarDetection;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::RadarDetection_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__RadarDetection_;
@@ -503,8 +541,10 @@ class RadarTrack
 {
 public:
   using RosType = performance_test::msg::RadarTrack;
+#ifdef FASTRTPS_ENABLED
   using EprosimaTopicType = performance_test_msgs::msg::dds_::RadarTrack_PubSubType;
   using EprosimaType = typename EprosimaTopicType::type;
+#endif
 
 #ifdef CONNEXT_DDS_MICRO_ENABLED
   using ConnextDDSMicroType = performance_test_msgs_msg_dds__RadarTrack_;
