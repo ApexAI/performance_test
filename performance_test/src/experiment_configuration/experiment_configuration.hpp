@@ -53,6 +53,13 @@ public:
 
   ExperimentConfiguration & operator=(ExperimentConfiguration &&) = delete;
 
+  /// Specifies the selected roundtrip mode.
+  enum RoundTripMode {
+    NONE, /// No roundtrip. Samples are only sent from sender to reciever.
+    MAIN, /// Sends packages to the relay and receives packages from the relay.
+    RELAY /// Relays packages from MAIN back to MAIN.
+  };
+
   /**
    * \brief Derives an experiment configuration from command line arguments.
    * \param argc The argc parameter from the main function.
@@ -103,6 +110,12 @@ public:
   /// \returns Returns if security is enabled for ROS2. This will throw if the configured mean
   ///  of communication is not ROS2
   bool is_with_security() const;
+  /// \returns Returns the roundtrip mode.
+  RoundTripMode roundtrip_mode() const;
+  /// \returns Returns the publishing topic postfix
+  std::string pub_topic_postfix() const;
+  /// \returns Returns the subscribing topic postfix
+  std::string sub_topic_postfix() const;
   /// \returns Returns the randomly generated unique ID of the experiment. This will throw if the
   /// experiment configuration is not set up.
   boost::uuids::uuid id() const;
@@ -127,7 +140,8 @@ private:
     m_use_ros_shm(false),
     m_use_single_participant(false),
     m_no_waitset(false),
-    m_no_micro_intra(false)
+    m_no_micro_intra(false),
+    m_roundtrip_mode(RoundTripMode::NONE)
   {}
 
   /// Throws #std::runtime_error if the experiment is not set up.
@@ -160,7 +174,13 @@ private:
   bool m_no_waitset;
   bool m_no_micro_intra;
   bool m_with_security;
+
+  RoundTripMode m_roundtrip_mode;
 };
+
+/// Outstream operator for RoundTripMode.
+  std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration::RoundTripMode & e);
+
 
 /// Outstream operator for ExperimentConfiguration.
 std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration & e);
