@@ -21,11 +21,11 @@
 
 #include "../communication_abstractions/ros2_callback_communicator.hpp"
 
-#ifdef FASTRTPS_ENABLED
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   #include "../communication_abstractions/fast_rtps_communicator.hpp"
 #endif
 
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   #include "../communication_abstractions/connext_dds_micro_communicator.hpp"
 #endif
 
@@ -50,11 +50,11 @@ std::shared_ptr<DataRunnerBase> DataRunnerFactory::get(
         }
         if (com_mean == CommunicationMean::ROS2) {
           ptr = std::make_shared<DataRunner<ROS2CallbackCommunicator<T>>>(run_type);
-#ifdef FASTRTPS_ENABLED
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
         } else if (com_mean == CommunicationMean::FASTRTPS) {
           ptr = std::make_shared<DataRunner<FastRTPSCommunicator<T>>>(run_type);
 #endif
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
         } else if (com_mean == CommunicationMean::CONNEXTDDSMICRO) {
           ptr = std::make_shared<DataRunner<RTIMicroDDSCommunicator<T>>>(run_type);
 #endif

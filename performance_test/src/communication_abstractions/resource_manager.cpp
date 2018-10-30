@@ -44,7 +44,7 @@ std::shared_ptr<rclcpp::Node> ResourceManager::ros2_node() const
   return rclcpp::Node::make_shared("performance_test" + rand_str, "", m_ec.use_ros_shm());
 }
 
-#ifdef FASTRTPS_ENABLED
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
 eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
 {
   std::lock_guard<std::mutex> lock(m_global_mutex);
@@ -76,7 +76,7 @@ eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
 }
 #endif
 
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
 DDSDomainParticipant * ResourceManager::connext_DDS_micro_participant() const
 {
   std::lock_guard<std::mutex> lock(m_global_mutex);

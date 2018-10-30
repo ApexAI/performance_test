@@ -18,7 +18,7 @@
 #include <boost/core/noncopyable.hpp>
 #include <string>
 
-#ifdef MEMORY_TOOLS_ENABLED
+#ifdef PERFORMANCE_TEST_MEMORYTOOLS_ENABLED
 #include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
 #include <osrf_testing_tools_cpp/scope_exit.hpp>
 #endif
@@ -47,7 +47,7 @@ public:
   : m_ec(ExperimentConfiguration::get())
   {
     if (m_ec.check_memory()) {
-#ifdef MEMORY_TOOLS_ENABLED
+#ifdef PERFORMANCE_TEST_MEMORYTOOLS_ENABLED
       osrf_testing_tools_cpp::memory_tools::initialize();
       osrf_testing_tools_cpp::memory_tools::enable_monitoring_in_all_threads();
       assert_memory_tools_is_working();

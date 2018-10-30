@@ -24,10 +24,10 @@ namespace performance_test
 enum class CommunicationMean
 {
   ROS2
-#ifdef FASTRTPS_ENABLED
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   , FASTRTPS
 #endif
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   , CONNEXTDDSMICRO
 #endif
 };
@@ -37,11 +37,11 @@ inline std::ostream & operator<<(std::ostream & stream, const CommunicationMean 
 {
   if (cm == CommunicationMean::ROS2) {
     return stream << "ROS2";
-#ifdef FASTRTPS_ENABLED
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   } else if (cm == CommunicationMean::FASTRTPS) {
     return stream << "FASTRTPS";
 #endif
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   } else if (cm == CommunicationMean::CONNEXTDDSMICRO) {
     return stream << "CONNEXTDDSMICRO";
 #endif

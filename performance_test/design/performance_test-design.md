@@ -32,8 +32,8 @@ Note that `pandas` is required to run this script.
 
 ##### CMAKE options
 
-* `-DCONNEXT_DDS_MICRO_ENABLED` Enable Connext DDS Micro support. Enabled by default.
-* `-DFASTRTPS_ENABLED` Enables FastRTPS support. Enabled by default.
+* `-DPERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED` Enable Connext DDS Micro support. Enabled by default.
+* `-DPERFORMANCE_TEST_FASTRTPS_ENABLED` Enables FastRTPS support. Enabled by default.
 
 > ROS 2 support is always enabled.
 

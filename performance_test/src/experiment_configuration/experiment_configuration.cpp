@@ -122,14 +122,14 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     if (vm["communication"].as<std::string>() == "ROS2") {
       m_com_mean = CommunicationMean::ROS2;
     } else if (vm["communication"].as<std::string>() == "FastRTPS") {
-#ifdef FASTRTPS_ENABLED
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
       m_com_mean = CommunicationMean::FASTRTPS;
 #else
       throw std::invalid_argument(
               "You must compile with FastRTPS support to enable it as communication mean.");
 #endif
     } else if (vm["communication"].as<std::string>() == "ConnextDDSMicro") {
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
       m_com_mean = CommunicationMean::CONNEXTDDSMICRO;
 #else
       throw std::invalid_argument(
@@ -207,7 +207,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     }
 
     m_no_micro_intra = false;
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
     if (vm.count("no_micro_intra")) {
       if (m_com_mean != CommunicationMean::CONNEXTDDSMICRO) {
         throw std::invalid_argument(

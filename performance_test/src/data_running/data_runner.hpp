@@ -16,7 +16,7 @@
 #define DATA_RUNNING__DATA_RUNNER_HPP_
 
 #include "data_runner_base.hpp"
-#ifdef MEMORY_TOOLS_ENABLED
+#ifdef PERFORMANCE_TEST_MEMORYTOOLS_ENABLED
 #include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
 #endif
 #include <atomic>
@@ -163,7 +163,7 @@ private:
   /// Enables the memory tool checker.
   void enable_memory_tools()
   {
-    #ifdef MEMORY_TOOLS_ENABLED
+    #ifdef PERFORMANCE_TEST_MEMORYTOOLS_ENABLED
     // Do not turn the memory tools on several times.
     if (m_memory_tools_on) {
       return;
