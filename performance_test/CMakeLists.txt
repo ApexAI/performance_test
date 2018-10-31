@@ -37,6 +37,7 @@ if(FastRTPS_FOUND)
     set(PERFORMANCE_TEST_FASTRTPS_ENABLED true)
   endif()
 else()
+  set(PERFORMANCE_TEST_FASTRTPS_ENABLED false)
   message(STATUS "-- FastRTPS not found.")
 endif()
 
