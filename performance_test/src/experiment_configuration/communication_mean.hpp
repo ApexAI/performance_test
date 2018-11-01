@@ -23,9 +23,13 @@ namespace performance_test
  */
 enum class CommunicationMean
 {
-  ROS2,
-  FASTRTPS,
-  CONNEXTDDSMICRO
+  ROS2
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
+  , FASTRTPS
+#endif
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
+  , CONNEXTDDSMICRO
+#endif
 };
 
 /// Outstream operator for CommunicationMean.
@@ -33,10 +37,14 @@ inline std::ostream & operator<<(std::ostream & stream, const CommunicationMean 
 {
   if (cm == CommunicationMean::ROS2) {
     return stream << "ROS2";
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   } else if (cm == CommunicationMean::FASTRTPS) {
     return stream << "FASTRTPS";
+#endif
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   } else if (cm == CommunicationMean::CONNEXTDDSMICRO) {
     return stream << "CONNEXTDDSMICRO";
+#endif
   } else {
     throw std::invalid_argument("Enum value not supported!");
   }

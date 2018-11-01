@@ -16,11 +16,15 @@
 #define COMMUNICATION_ABSTRACTIONS__RESOURCE_MANAGER_HPP_
 
 #include <rclcpp/rclcpp.hpp>
-#include <fastrtps/participant/Participant.h>
-#include <fastrtps/attributes/ParticipantAttributes.h>
-#include <fastrtps/Domain.h>
-#ifdef CONNEXT_DDS_MICRO_ENABLED
-#include <rti_me_cpp.hxx>
+
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
+  #include <fastrtps/participant/Participant.h>
+  #include <fastrtps/attributes/ParticipantAttributes.h>
+  #include <fastrtps/Domain.h>
+#endif
+
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
+  #include <rti_me_cpp.hxx>
 #endif
 
 #include <cstdlib>
@@ -53,9 +57,12 @@ public:
   /// Returns the ROS 2 node.
   std::shared_ptr<rclcpp::Node> ros2_node() const;
 
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   /// Returns FastRTPS participant.
   eprosima::fastrtps::Participant * fastrtps_participant() const;
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#endif
+
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   /// Returns Connext DDS Micro participant.
   DDSDomainParticipant * connext_DDS_micro_participant() const;
 
@@ -77,9 +84,11 @@ public:
 private:
   ResourceManager()
   : m_ec(ExperimentConfiguration::get()),
-    m_node(nullptr),
-    m_fastrtps_participant(nullptr)
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+    m_node(nullptr)
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
+    , m_fastrtps_participant(nullptr)
+#endif
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
     , m_connext_dds_micro_participant(nullptr)
 #endif
   {}
@@ -87,8 +96,12 @@ private:
   const ExperimentConfiguration & m_ec;
 
   mutable std::shared_ptr<rclcpp::Node> m_node;
+
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   mutable eprosima::fastrtps::Participant * m_fastrtps_participant;
-#ifdef CONNEXT_DDS_MICRO_ENABLED
+#endif
+
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   mutable DDSDomainParticipant * m_connext_dds_micro_participant;
 #endif
 

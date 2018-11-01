@@ -14,8 +14,10 @@
 
 #include "analyze_runner.hpp"
 
-#include <vector>
 #include <algorithm>
+#include <iostream>
+#include <sstream>
+#include <vector>
 
 #include "analysis_result.hpp"
 

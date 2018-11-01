@@ -19,12 +19,18 @@
 #include <string>
 #include <memory>
 
-#include "data_runner.hpp"
-#include "../communication_abstractions/fast_rtps_communicator.hpp"
 #include "../communication_abstractions/ros2_callback_communicator.hpp"
-#ifdef CONNEXT_DDS_MICRO_ENABLED
-#include "../communication_abstractions/connext_dds_micro_communicator.hpp"
+
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
+  #include "../communication_abstractions/fast_rtps_communicator.hpp"
 #endif
+
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
+  #include "../communication_abstractions/connext_dds_micro_communicator.hpp"
+#endif
+
+#include "data_runner.hpp"
+#include "../experiment_configuration/topics.hpp"
 
 namespace performance_test
 {
@@ -42,23 +48,17 @@ std::shared_ptr<DataRunnerBase> DataRunnerFactory::get(
         if (ptr) {
           throw std::runtime_error("It seems that two topics have the same name");
         }
-        // TODO(andreas.pasternak): Perhaps abstract away the communication means better:
-// Using compiler defines to be able to use ROS2 and FASTRTP together.
-#ifdef PERFORMANCE_TEST_USE_FASTRTPS
-        if (com_mean == CommunicationMean::FASTRTPS) {
-          ptr = std::make_shared<DataRunner<FastRTPSCommunicator<T>>>(run_type);
-        }
-#endif
-#ifdef PERFORMANCE_TEST_USE_ROS2
-        else if (com_mean == CommunicationMean::ROS2) { // NOLINT (false positive)
+        if (com_mean == CommunicationMean::ROS2) {
           ptr = std::make_shared<DataRunner<ROS2CallbackCommunicator<T>>>(run_type);
-        }
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
+        } else if (com_mean == CommunicationMean::FASTRTPS) {
+          ptr = std::make_shared<DataRunner<FastRTPSCommunicator<T>>>(run_type);
 #endif
-#ifdef CONNEXT_DDS_MICRO_ENABLED
-        else if (com_mean == CommunicationMean::CONNEXTDDSMICRO) { // NOLINT (false positive)
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
+        } else if (com_mean == CommunicationMean::CONNEXTDDSMICRO) {
           ptr = std::make_shared<DataRunner<RTIMicroDDSCommunicator<T>>>(run_type);
-        }
 #endif
+        }
       }
     });
   if (!ptr) {

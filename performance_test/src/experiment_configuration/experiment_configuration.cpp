@@ -23,6 +23,7 @@
 #include <exception>
 #include <string>
 
+#include "../utilities/rt_enabler.hpp"
 #include "topics.hpp"
 
 namespace performance_test
@@ -120,19 +121,20 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 
     if (vm["communication"].as<std::string>() == "ROS2") {
       m_com_mean = CommunicationMean::ROS2;
-
-#ifndef PERFORMANCE_TEST_USE_ROS2
-      throw std::invalid_argument(
-              "You must compile with ROS2 support to enable ROS2 as communication mean.");
-#endif
     } else if (vm["communication"].as<std::string>() == "FastRTPS") {
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
       m_com_mean = CommunicationMean::FASTRTPS;
-#ifndef PERFORMANCE_TEST_USE_FASTRTPS
+#else
       throw std::invalid_argument(
-              "You must compile with FastRTPS support to enable FastRTPS as communication mean.");
+              "You must compile with FastRTPS support to enable it as communication mean.");
 #endif
     } else if (vm["communication"].as<std::string>() == "ConnextDDSMicro") {
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
       m_com_mean = CommunicationMean::CONNEXTDDSMICRO;
+#else
+      throw std::invalid_argument(
+              "You must compile with ConnextDDSMicro support to enable it as communication mean.");
+#endif
     }
 
     if (vm.count("dds_domain_id")) {
@@ -205,6 +207,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     }
 
     m_no_micro_intra = false;
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
     if (vm.count("no_micro_intra")) {
       if (m_com_mean != CommunicationMean::CONNEXTDDSMICRO) {
         throw std::invalid_argument(
@@ -213,6 +216,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
         m_no_micro_intra = true;
       }
     }
+#endif
     m_with_security = false;
     if (vm.count("with_security")) {
       if (m_com_mean != CommunicationMean::ROS2) {

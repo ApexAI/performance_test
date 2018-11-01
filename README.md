@@ -32,14 +32,10 @@ mkdir -p perf_test_ws/src
 cd perf_test_ws/src
 git clone https://github.com/ApexAI/performance_test.git
 cd ..
-ament build --parallel --build-tests --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
 ros2 run performance_test perf_test --help
 ```
-
-To be able to benchmark FastRPTS directly `--cmake-args -DPERFORMANCE_TEST_USE_FASTRTPS` must be set when building.
-This is due to some issue when using ROS 2 with FastRTPS (rmw_fastrtps_cpp) and FastRTPS directly in the same application.
-
 # Plot results
 
 After building, a simple experiment can be run using the following.
