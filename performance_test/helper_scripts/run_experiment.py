@@ -16,18 +16,19 @@ import os
 import signal
 import subprocess
 import sys
-import time
 import itertools
 from enum import Enum
 experiment_length = 120  # In seconds
+
 
 class Type(Enum):
     PUBLISHER = 0
     SUBSCRIBER = 1
     BOTH = 2
 
+
 class Instance:
-    def __init__(self, type):
+    def __init__(self, operation_type):
 
         topics = ["Array1k", "Array4k", "Array16k", "Array32k", "Array60k", "Array1m", "Array2m",
                   "Struct16", "Struct256", "Struct4k", "Struct32k", "PointCloud512k", "PointCloud1m", "PointCloud2m",
@@ -43,9 +44,14 @@ class Instance:
         self.product = list(itertools.product(topics, rates, num_subs, reliability, durability))
         self.process = None
 
-        self.type = type
+        self.type = operation_type
 
     def run(self, index):
+        """
+
+        :param index:
+        :return:
+        """
         print("*******************")
         print(self.cmd(index))
         print("*******************")
@@ -55,7 +61,6 @@ class Instance:
         # time.sleep(2)
         # Enabling (pseudo-)realtime
         # subprocess.Popen('chrt -p 99 $(ps -o pid -C "perf_test" --no-headers)', shell=True)
-
 
     def cmd(self, index):
         command = "ros2 run  performance_test perf_test"
@@ -70,14 +75,16 @@ class Instance:
         elif self.type == Type.BOTH:
             pubs_args = " -p1 "
         else:
-            raise "Unsupported type"
+            raise ValueError("Unsupported type")
 
-        dir = "rate_"+c[1]+"/subs_"+c[2]
+        dir_name = "rate_"+c[1]+"/subs_"+c[2]
 
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
         fixed_args = " --communication ROS2 "
-        dyn_args = "-l '" + dir + "/log' " + "--topic " + c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
+        dyn_args = \
+            "-l '" + dir_name + "/log' " + "--topic " + \
+            c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
 
         return command + " " + fixed_args + dyn_args + pubs_args
 
@@ -91,28 +98,26 @@ class Instance:
     def __del__(self):
         self.kill()
 
+
 current_index = 0
 
-num_pubs = 1
-num_subs = 30
-num_both = 0
+num_pub_processes = 0
+num_sub_processes = 0
+num_both = 1
 
-pub_list = [Instance(Type.PUBLISHER) for _ in range(0, num_pubs)]
-sub_list = [Instance(Type.SUBSCRIBER) for _ in range(0, num_subs)]
+pub_list = [Instance(Type.PUBLISHER) for _ in range(0, num_pub_processes)]
+sub_list = [Instance(Type.SUBSCRIBER) for _ in range(0, num_sub_processes)]
 both_list = [Instance(Type.BOTH) for _ in range(0, num_both)]
 full_list = pub_list + sub_list + both_list
 
 
-
-def signal_handler(signal, frame):
-    global p
+def signal_handler(sig, frame):
     print('You pressed Ctrl+C! Terminating experiment')
-    p.kill()
     subprocess.Popen("killall perf_test", shell=True)
     sys.exit(0)
 
 
-def timer_handler(signal=None, frame=None):
+def timer_handler(sig=None, frame=None):
     global current_index
     global full_list
 
