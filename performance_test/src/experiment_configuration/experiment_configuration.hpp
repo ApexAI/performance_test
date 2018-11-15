@@ -54,10 +54,11 @@ public:
   ExperimentConfiguration & operator=(ExperimentConfiguration &&) = delete;
 
   /// Specifies the selected roundtrip mode.
-  enum RoundTripMode {
-    NONE, /// No roundtrip. Samples are only sent from sender to reciever.
-    MAIN, /// Sends packages to the relay and receives packages from the relay.
-    RELAY /// Relays packages from MAIN back to MAIN.
+  enum RoundTripMode
+  {
+    NONE,  /// No roundtrip. Samples are only sent from sender to reciever.
+    MAIN,  /// Sends packages to the relay and receives packages from the relay.
+    RELAY  /// Relays packages from MAIN back to MAIN.
   };
 
   /**
@@ -179,7 +180,7 @@ private:
 };
 
 /// Outstream operator for RoundTripMode.
-  std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration::RoundTripMode & e);
+std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration::RoundTripMode & e);
 
 
 /// Outstream operator for ExperimentConfiguration.

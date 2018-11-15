@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "analyze_runner.hpp"
+#include <boost/algorithm/string.hpp>
 
 #include <algorithm>
-#include <boost/algorithm/string.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <vector>
 
+#include "analyze_runner.hpp"
+
 #include "analysis_result.hpp"
+
 
 namespace performance_test
 {
@@ -35,13 +38,12 @@ AnalyzeRunner::AnalyzeRunner()
 
   // Reading optional environment variable for additional information.
   {
-      const auto ptr = std::getenv("APEX_PERFORMANCE_TEST");
-      if(ptr)
-      {
-        std::string env(ptr);
-        boost::trim(env);
-        m_ec.log(env);
-      }
+    const auto ptr = std::getenv("APEX_PERFORMANCE_TEST");
+    if (ptr) {
+      std::string env(ptr);
+      boost::trim(env);
+      m_ec.log(env);
+    }
   }
   for (uint32_t i = 0; i < m_ec.number_of_publishers(); ++i) {
     m_pub_runners.push_back(DataRunnerFactory::get(m_ec.topic_name(), m_ec.com_mean(),

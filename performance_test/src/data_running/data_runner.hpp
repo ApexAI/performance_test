@@ -136,7 +136,9 @@ private:
       const auto next_run = std::chrono::steady_clock::now() +
         std::chrono::duration<double>(1.0 / m_ec.rate());
 
-      if (m_run_type == RunType::PUBLISHER && m_ec.roundtrip_mode() != ExperimentConfiguration::RoundTripMode::RELAY) {
+      if (m_run_type == RunType::PUBLISHER &&
+        m_ec.roundtrip_mode() != ExperimentConfiguration::RoundTripMode::RELAY)
+      {
         std::chrono::nanoseconds epoc_time =
           std::chrono::steady_clock::now().time_since_epoch();
         m_com.publish(data, epoc_time);
@@ -153,9 +155,10 @@ private:
         m_lock.unlock();
       }
       if (m_ec.rate() > 0 &&
-          m_run_type == RunType::PUBLISHER &&
-          // Relays should never sleep.
-          m_ec.roundtrip_mode() != ExperimentConfiguration::RoundTripMode::RELAY) {
+        m_run_type == RunType::PUBLISHER &&
+        // Relays should never sleep.
+        m_ec.roundtrip_mode() != ExperimentConfiguration::RoundTripMode::RELAY)
+      {
         std::this_thread::sleep_until(next_run);
       }
 

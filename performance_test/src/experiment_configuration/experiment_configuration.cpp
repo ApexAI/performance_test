@@ -29,14 +29,13 @@
 namespace performance_test
 {
 
-std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration::RoundTripMode & e) {
-  if(e == ExperimentConfiguration::RoundTripMode::NONE) {
+std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration::RoundTripMode & e)
+{
+  if (e == ExperimentConfiguration::RoundTripMode::NONE) {
     stream << "NONE";
-  }
-  else if(e == ExperimentConfiguration::RoundTripMode::MAIN) {
+  } else if (e == ExperimentConfiguration::RoundTripMode::MAIN) {
     stream << "MAIN";
-  }
-  else if(e == ExperimentConfiguration::RoundTripMode::RELAY) {
+  } else if (e == ExperimentConfiguration::RoundTripMode::RELAY) {
     stream << "RELAY";
   }
   return stream;
@@ -102,7 +101,8 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "Disables the wait set for new data. The subscriber takes as fast as possible.")(
     "no_micro_intra", "Disables the Connext DDS Micro INTRA transport.")(
     "with_security", "Enables the security with ROS2")("roundtrip_mode",
-    po::value<std::string>()->default_value("None"),"Selects the round trip mode (None, Main, Relay).")
+    po::value<std::string>()->default_value("None"),
+    "Selects the round trip mode (None, Main, Relay).")
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
@@ -247,18 +247,15 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
       }
     }
     m_roundtrip_mode = RoundTripMode::NONE;
-    if(vm.count("roundtrip_mode")) {
+    if (vm.count("roundtrip_mode")) {
       const auto mode = vm["roundtrip_mode"].as<std::string>();
-      if(mode == "None") {
+      if (mode == "None") {
         m_roundtrip_mode = RoundTripMode::NONE;
-      }
-      else if(mode == "Main") {
+      } else if (mode == "Main") {
         m_roundtrip_mode = RoundTripMode::MAIN;
-      }
-      else if(mode == "Relay") {
+      } else if (mode == "Relay") {
         m_roundtrip_mode = RoundTripMode::RELAY;
-      }
-      else {
+      } else {
         throw std::invalid_argument("Invalid roundtrip mode: " + mode);
       }
     }
@@ -361,30 +358,31 @@ bool ExperimentConfiguration::is_with_security() const
   return m_with_security;
 }
 
-ExperimentConfiguration::RoundTripMode ExperimentConfiguration::roundtrip_mode() const {
+ExperimentConfiguration::RoundTripMode ExperimentConfiguration::roundtrip_mode() const
+{
   check_setup();
   return m_roundtrip_mode;
 }
 
-std::string ExperimentConfiguration::pub_topic_postfix() const {
+std::string ExperimentConfiguration::pub_topic_postfix() const
+{
   check_setup();
   std::string fix;
-  if(m_roundtrip_mode == ExperimentConfiguration::RoundTripMode::MAIN) {
+  if (m_roundtrip_mode == ExperimentConfiguration::RoundTripMode::MAIN) {
     fix = "main";
-  }
-  else if(m_roundtrip_mode == ExperimentConfiguration::RoundTripMode::RELAY) {
+  } else if (m_roundtrip_mode == ExperimentConfiguration::RoundTripMode::RELAY) {
     fix = "relay";
   }
   return fix;
 }
 
-std::string ExperimentConfiguration::sub_topic_postfix() const {
+std::string ExperimentConfiguration::sub_topic_postfix() const
+{
   check_setup();
   std::string fix;
-  if(m_roundtrip_mode == ExperimentConfiguration::RoundTripMode::MAIN) {
+  if (m_roundtrip_mode == ExperimentConfiguration::RoundTripMode::MAIN) {
     fix = "relay";
-  }
-  else if(m_roundtrip_mode == ExperimentConfiguration::RoundTripMode::RELAY) {
+  } else if (m_roundtrip_mode == ExperimentConfiguration::RoundTripMode::RELAY) {
     fix = "main";
   }
   return fix;

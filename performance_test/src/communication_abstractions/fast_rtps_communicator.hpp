@@ -157,7 +157,7 @@ public:
 
       eprosima::fastrtps::PublisherAttributes wparam;
       wparam.topic.topicKind = eprosima::fastrtps::rtps::TopicKind_t::NO_KEY;
-      wparam.topic.topicDataType = m_topic_type->getName()+m_ec.pub_topic_postfix();
+      wparam.topic.topicDataType = m_topic_type->getName() + m_ec.pub_topic_postfix();
       wparam.topic.topicName = Topic::topic_name();
       wparam.topic.historyQos.kind = qos.history_kind();
       wparam.topic.historyQos.depth = qos.history_depth();
@@ -193,7 +193,7 @@ public:
 
       eprosima::fastrtps::SubscriberAttributes rparam;
       rparam.topic.topicKind = eprosima::fastrtps::rtps::TopicKind_t::NO_KEY;
-      rparam.topic.topicDataType = m_topic_type->getName()+m_ec.sub_topic_postfix();
+      rparam.topic.topicDataType = m_topic_type->getName() + m_ec.sub_topic_postfix();
       rparam.topic.topicName = Topic::topic_name();
       rparam.topic.historyQos.kind = qos.history_kind();
       rparam.topic.historyQos.depth = qos.history_depth();
@@ -219,12 +219,11 @@ public:
         }
 
 
-        if(m_ec.roundtrip_mode() == ExperimentConfiguration::RoundTripMode::RELAY) {
+        if (m_ec.roundtrip_mode() == ExperimentConfiguration::RoundTripMode::RELAY) {
           unlock();
           publish(m_data, std::chrono::nanoseconds(m_data.time_()));
           lock();
-        }
-        else {
+        } else {
           m_prev_timestamp = m_data.time_();
           update_lost_samples_counter(m_data.id_());
           add_latency_to_statistics(m_data.time_());
