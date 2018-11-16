@@ -99,6 +99,9 @@ public:
   /// \returns Returns if Connext DSS Micro INTRA transport should be disabled. This will throw if
   /// the experiment configuration is not set up.
   bool no_micro_intra() const;
+  /// \returns Returns if Drivepx RT is set or not. This will throw if the experiment configuration
+  /// is not set up.
+  bool is_drivepx_rt() const;
   /// \returns Returns the randomly generated unique ID of the experiment. This will throw if the
   /// experiment configuration is not set up.
   boost::uuids::uuid id() const;
@@ -122,7 +125,8 @@ private:
     m_use_ros_shm(false),
     m_use_single_participant(false),
     m_no_waitset(false),
-    m_no_micro_intra(false)
+    m_no_micro_intra(false),
+    m_is_drivepx_rt(false)
   {}
 
   /// Throws #std::runtime_error if the experiment is not set up.
@@ -153,6 +157,7 @@ private:
   bool m_use_single_participant;
   bool m_no_waitset;
   bool m_no_micro_intra;
+  bool m_is_drivepx_rt;
 };
 
 /// Outstream operator for ExperimentConfiguration.

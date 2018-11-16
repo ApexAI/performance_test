@@ -40,6 +40,7 @@ AnalyzeRunner::AnalyzeRunner()
 
 void AnalyzeRunner::run() const
 {
+  static bool is_first_entry = true;
   m_ec.log("---EXPERIMENT-START---");
   m_ec.log(AnalysisResult::csv_header(true));
 
@@ -52,6 +53,12 @@ void AnalyzeRunner::run() const
 
     std::for_each(m_pub_runners.begin(), m_pub_runners.end(), [](auto & a) {a->sync_reset();});
     std::for_each(m_sub_runners.begin(), m_sub_runners.end(), [](auto & a) {a->sync_reset();});
+
+    /// Id drivepx_rt is set and this is the first loop, set the post RT init settings
+    if (is_first_entry && m_ec.is_drivepx_rt()) {
+      post_proc_rt_init(); 
+      is_first_entry = false;
+    }
 
     auto now = std::chrono::steady_clock::now();
     auto loop_diff_start = now - loop_start;

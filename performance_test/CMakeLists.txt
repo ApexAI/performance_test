@@ -45,6 +45,13 @@ ament_export_include_directories(include)
 # add_subdirectory(src/idlgen/fast_rtps)
 include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR})
 
+if(NOT DEFINED RTI_SRC_INSTALL_DIR)
+    message(ERROR " :Set the path to source dir of installed RTI micro")
+    return()
+endif()
+
+message("RTI Src Dir: ${RTI_SRC_INSTALL_DIR}")
+
 #find_package(micro_dds_cmake_module)
 #if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
 #    find_package(MicroDDS MODULE)
@@ -89,8 +96,9 @@ add_definitions(-DCONNEXT_DDS_MICRO_ENABLED)
 #ament_export_definitions(${MicroDDS_DEFINITIONS})
 add_subdirectory(src/idlgen/micro)
 include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-include_directories(/home/andreas.pasternak/rti/source/unix/include)
-link_directories(/home/andreas.pasternak/rti/source/unix/build/cmake/build/lib)
+
+include_directories(${RTI_SRC_INSTALL_DIR}/source/source/unix/include)
+link_directories(${RTI_SRC_INSTALL_DIR}/source/source/unix/lib/build)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"

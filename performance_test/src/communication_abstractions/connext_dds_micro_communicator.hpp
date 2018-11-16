@@ -126,7 +126,7 @@ public:
    * \param data The data to publish.
    * \param time The time to fill into the data field.
    */
-  void publish(DataType data, const std::chrono::nanoseconds time)
+  void publish(DataType & data, const std::chrono::nanoseconds time)
   {
     if (m_datawriter == nullptr) {
       DDSPublisher * publisher;

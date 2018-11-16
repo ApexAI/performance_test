@@ -16,13 +16,14 @@
 
 #include <iomanip>
 #include <string>
+#include <iostream>
 
 namespace performance_test
 {
 
 std::ostream & operator<<(std::ostream & stream, const timeval & e)
 {
-  return stream << double(e.tv_sec) + double(e.tv_usec) * 1000000.0;
+  return stream << double(e.tv_sec) + double(e.tv_usec) / 1000000.0;
 }
 
 AnalysisResult::AnalysisResult(
@@ -50,7 +51,6 @@ AnalysisResult::AnalysisResult(
   if (ret != 0) {
     throw std::runtime_error("Could not get system resource usage.");
   }
-
   if (m_num_samples_received != m_latency.n()) {
     // TODO(andreas.pasternak): Commented out flaky assertion. Need to check if it actually a bug.
     /*throw std::runtime_error("Statistics result sample size does not match: "

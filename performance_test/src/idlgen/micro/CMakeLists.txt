@@ -14,11 +14,15 @@
 
 set(SOURCE_EXTENSION cxx)
 
-include_directories(/home/andreas.pasternak/rti/source/unix/include)
-link_directories(/home/andreas.pasternak/rti/source/unix/build/cmake/build/lib)
+if(NOT DEFINED RTI_SRC_INSTALL_DIR)
+    message(ERROR " :Set the path to source dir of installed RTI micro")
+    return()
+endif()
 
+include_directories(${RTI_SRC_INSTALL_DIR}/source/source/unix/include)
+link_directories(${RTI_SRC_INSTALL_DIR}/source/source/unix/lib/build)
+set(RTIDDSGEN ${RTI_SRC_INSTALL_DIR}/rtiddsgen/rtiddsgen/scripts/rtiddsgen)
 
-set(RTIDDSGEN /home/andreas.pasternak/rti/rtiddsgen/scripts/rtiddsgen)
 set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
 
 set(IDL_SOURCE_C

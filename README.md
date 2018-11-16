@@ -32,7 +32,8 @@ mkdir -p perf_test_ws/src
 cd perf_test_ws/src
 git clone https://github.com/ApexAI/performance_test.git
 cd ..
-ament build --parallel --build-tests --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --cmake-args -DRTI_SRC_INSTALL_DIR=<Path to the RTI source dir> -DCMAKE_BUILD_TYPE=Release
+Eg: colcon build --cmake-args -DRTI_SRC_INSTALL_DIR="/home/salus/anup/cust_perf_test/rti" -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
 ros2 run performance_test perf_test --help
 ```
