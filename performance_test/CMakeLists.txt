@@ -62,7 +62,7 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
 # This is a workaround for broken include paths on some systems.
-include_directories(${FastRTPS_INCLUDE_DIR}/fastrtps/include ${fastcdr_INCLUDE_DIR})
+include_directories(${FastRTPS_INCLUDE_DIR} ${FastRTPS_INCLUDE_DIR}/fastrtps/include ${fastcdr_INCLUDE_DIR})
 include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR} ${osrf_testing_tools_cpp_INCLUDE_DIR})
 
 #find_package(micro_dds_cmake_module)
