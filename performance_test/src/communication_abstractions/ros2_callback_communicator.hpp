@@ -116,7 +116,7 @@ public:
       }
       // End of workaround.
 
-      m_publisher = m_node->create_publisher<DataType>(Topic::topic_name(), qos);
+      m_publisher = m_node->create_publisher<DataType>(Topic::topic_name()+m_ec.pub_topic_postfix(), qos);
     }
     lock();
     data.time = time.count();
@@ -131,7 +131,7 @@ public:
   {
     if (!m_subscription) {
       const auto qos = ROS2QOSAdapter(m_ec.qos()).get();
-      m_subscription = m_node->create_subscription<DataType>(Topic::topic_name(),
+      m_subscription = m_node->create_subscription<DataType>(Topic::topic_name()+m_ec.sub_topic_postfix(),
           std::bind(&ROS2CallbackCommunicator::callback, this, std::placeholders::_1), qos);
     }
     lock();
@@ -160,9 +160,17 @@ private:
       throw std::runtime_error(
               "Data consistency violated. Received sample with not strictly older timestamp");
     }
-    m_prev_timestamp = data->time;
-    update_lost_samples_counter(data->id);
-    add_latency_to_statistics(data->time);
+
+    if(m_ec.roundtrip_mode() == ExperimentConfiguration::RoundTripMode::RELAY) {
+      unlock();
+      publish(*data, std::chrono::nanoseconds(data->time ));
+      lock();
+    }
+    else {
+      m_prev_timestamp = data->time;
+      update_lost_samples_counter(data->id);
+      add_latency_to_statistics(data->time);
+    }
     increment_received();
   }
 

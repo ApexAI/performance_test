@@ -66,6 +66,17 @@ python src/performance_test/performance_test/helper_scripts/run_experiment.py
 
 You need to edit the python script to call the performance test tool with the desired parameters.
 
+# Relay mode
+
+Testing latency between multiple machines is difficult as it is hard precisely synchronize clocks between them.
+To overcome this issue performance test supports relay mode which allows for a round-trip style of communication.
+
+On the main machine: `ros2 run performance_test -c ROS2 -t Array1k --roundtrip_mode Main`
+On the relay machine: `ros2 run performance_test -c ROS2 -t Array1k --roundtrip_mode Relay`
+
+Note that on the main machine the round trip latency is reported and will be roughly double the latency compared to
+the latency reported in non-relay mode.
+
 # Memory analysis
 
 You can use OSRF memory tools to find memory allocations in your application. To enable it

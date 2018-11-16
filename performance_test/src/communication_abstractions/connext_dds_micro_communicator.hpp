@@ -242,6 +242,11 @@ public:
         }
       }
       unlock();
+
+      if(m_ec.roundtrip_mode() == ExperimentConfiguration::RoundTripMode::RELAY) {
+        throw std::runtime_error("Round trip mode is not implemented for Connext DDS Micro!");
+      }
+
       m_typed_datareader->return_loan(m_data_seq,
         m_sample_info_seq);
     }
