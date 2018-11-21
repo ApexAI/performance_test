@@ -17,7 +17,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-'''Performance test plotter'''
+"""Performance test plotter."""
 
 import io
 import os
