@@ -90,6 +90,22 @@ you need to do the following steps, assuming you already did compile performance
 
 Note that enabling this feature will cause a huge performance impact.
 
+# Custom environment data
+
+You can set the `APEX_PERFORMANCE_TEST` environment variable before running performance test
+to add custom data to the output CSV file.
+This information will then also be visible in the files outputted by the plotter script.
+
+Example:
+```
+export APEX_PERFORMANCE_TEST="
+My Version: 1.0.4
+My Image Version: 5.2
+My OS Version: Ubuntu 16.04
+"
+ros2 run performance_test -c ROS2 -t Array1k
+```
+
 # Troubleshooting
 
 1. When running performance test it prints

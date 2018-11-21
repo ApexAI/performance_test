@@ -243,7 +243,7 @@ public:
       }
       unlock();
 
-      if(m_ec.roundtrip_mode() == ExperimentConfiguration::RoundTripMode::RELAY) {
+      if (m_ec.roundtrip_mode() == ExperimentConfiguration::RoundTripMode::RELAY) {
         throw std::runtime_error("Round trip mode is not implemented for Connext DDS Micro!");
       }
 
