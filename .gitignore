@@ -1,2 +1,8 @@
+# CLion
 cmake-build-debug
 .idea
+
+# colcon
+build
+log
+install
