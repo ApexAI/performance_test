@@ -136,11 +136,6 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 
     if (vm["communication"].as<std::string>() == "ROS2") {
       m_com_mean = CommunicationMean::ROS2;
-
-#ifndef PERFORMANCE_TEST_USE_ROS2
-      throw std::invalid_argument(
-              "You must compile with ROS2 support to enable ROS2 as communication mean.");
-#endif
     } else if (vm["communication"].as<std::string>() == "FastRTPS") {
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
       m_com_mean = CommunicationMean::FASTRTPS;
