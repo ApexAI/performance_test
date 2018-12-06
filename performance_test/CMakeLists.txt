@@ -97,8 +97,8 @@ add_definitions(-DCONNEXT_DDS_MICRO_ENABLED)
 add_subdirectory(src/idlgen/micro)
 include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
 
-include_directories(${RTI_SRC_INSTALL_DIR}/source/source/unix/include)
-link_directories(${RTI_SRC_INSTALL_DIR}/source/source/unix/lib/build)
+include_directories(${RTI_SRC_INSTALL_DIR}/source/unix/include)
+link_directories(${RTI_SRC_INSTALL_DIR}/source/unix/lib/build)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"

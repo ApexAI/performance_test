@@ -26,14 +26,30 @@ pip install pandas
 
 # How to build and run
 
+## RTI Connext Micro
+Obtain the following two files and unzip them in e.g. `$HOME/code/rti`:
+1. RTI_Connext_MicroSecure-2.5.0-source.zip
+2. RTI_Connext_MicroSecure_Host-2.5.0.zip
+
+```sh
+cd $HOME/code/rti/rti_connext_micro_secure.2.5.0/source/unix
+mkdir build
+cd build
+cmake .. -DRTIME_TRUST_INCLUDE_BUILTIN=false #workaround special version of openSSL library that RTI Connext Micro expects
+make
+```
+
+## Performance Test Tool
+
 ```
 source ros2_install_path/setup.bash
 mkdir -p perf_test_ws/src
 cd perf_test_ws/src
 git clone https://github.com/ApexAI/performance_test.git
-cd ..
-colcon build --cmake-args -DRTI_SRC_INSTALL_DIR=<Path to the RTI source dir> -DCMAKE_BUILD_TYPE=Release
-Eg: colcon build --cmake-args -DRTI_SRC_INSTALL_DIR="/home/salus/anup/cust_perf_test/rti" -DCMAKE_BUILD_TYPE=Release
+cd performance_test
+git checkout cust_z
+cd ../..
+colcon build --cmake-args -DRTI_SRC_INSTALL_DIR="$HOME/code/rti/rti_connext_micro_secure.2.5.0"
 source install/setup.bash
 ros2 run performance_test perf_test --help
 ```
@@ -53,7 +69,7 @@ cd experiment
 
 then run the test.
 ```
-ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
+ros2 run performance_test perf_test -r 50 -c ConnextDDSMicro -t PointCloud4m -l log -s 1 --max_runtime 300
 ```
 
 The generated log-files can then be plotted into a PDF file using:

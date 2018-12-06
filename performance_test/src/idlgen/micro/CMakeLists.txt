@@ -19,9 +19,9 @@ if(NOT DEFINED RTI_SRC_INSTALL_DIR)
     return()
 endif()
 
-include_directories(${RTI_SRC_INSTALL_DIR}/source/source/unix/include)
-link_directories(${RTI_SRC_INSTALL_DIR}/source/source/unix/lib/build)
-set(RTIDDSGEN ${RTI_SRC_INSTALL_DIR}/rtiddsgen/rtiddsgen/scripts/rtiddsgen)
+include_directories(${RTI_SRC_INSTALL_DIR}/source/unix/include)
+link_directories(${RTI_SRC_INSTALL_DIR}/source/unix/lib/build)
+set(RTIDDSGEN ${RTI_SRC_INSTALL_DIR}/rtiddsgen/scripts/rtiddsgen)
 
 set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
 
