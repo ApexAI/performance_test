@@ -65,22 +65,19 @@ endif()
 include_directories(${FastRTPS_INCLUDE_DIR} ${FastRTPS_INCLUDE_DIR}/fastrtps/include ${fastcdr_INCLUDE_DIR})
 include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR} ${osrf_testing_tools_cpp_INCLUDE_DIR})
 
-#find_package(micro_dds_cmake_module)
-#if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
-#    find_package(MicroDDS MODULE)
-#    if(MicroDDS_FOUND)
-#        set(PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED TRUE)
-#
-#        add_definitions(-DPERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED)
-#        add_subdirectory(src/idlgen/micro)
-#
-#        include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-#        ament_export_definitions(${MicroDDS_DEFINITIONS})
-#
-#        LIST(APPEND OPTIONAL_AMENT_DEPENDENCES "MicroDDS")
-#        LIST(APPEND OPTIONAL_LIBRARIES rti_micro_idl)
-#    endif()
-#endif()
+find_package(micro_dds_cmake_module)
+if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
+    find_package(MicroDDS MODULE)
+    if(MicroDDS_FOUND)
+        set(PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED TRUE)
+
+        add_definitions(-DPERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED)
+        add_subdirectory(src/idlgen/micro)
+
+        include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
+        ament_export_definitions(${MicroDDS_DEFINITIONS})
+    endif()
+endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
