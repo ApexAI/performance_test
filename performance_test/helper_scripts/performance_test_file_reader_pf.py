@@ -2,7 +2,8 @@
 
 # Copyright 2017 Apex.AI, Inc.
 
-# flake8: noqa This file is for plotting data. Its dependencies are not necessarily on the CI.
+# flake8: noqa This file is for plotting data about page faults and context switches.
+# Its dependencies are not necessarily on the CI.
 import os
 import sys
 import numpy as np
@@ -27,22 +28,34 @@ def parse_file(file, single_file=None):
             dataframe = dataframe.iloc[20:] #dropping the first few rows to not mess up the graphs.
             # ru_maxrss is in KB: http://man7.org/linux/man-pages/man2/getrusage.2.html. Converting to Mb
             dataframe["maxrss (Mb)"] = dataframe["ru_maxrss"] / 1e3
-            dataframe.drop(list(dataframe.filter(regex='ru_')), axis=1, inplace=True)
-            dataframe["latency_variance (ms) * 100"] = 100.0 * dataframe["latency_variance (ms)"]
+
             dataframe[["T_experiment",
-                       "latency_min (ms)",
-                       "latency_max (ms)",
-                       "latency_mean (ms)",
-                       "latency_variance (ms) * 100",
+                       "ru_minflt",
+                       "ru_majflt",
+                       "ru_nivcsw",
                         "maxrss (Mb)"]] \
                 .plot(x='T_experiment', secondary_y=["maxrss (Mb)"])
+            df_last = dataframe.tail(1)
+            cpu_per = ((df_last["ru_utime"] + df_last["ru_stime"]) / (NCPUS * df_last["T_experiment"])) * 100.0
 
+            dataframe["CPU util (%)"] = cpu_per
             plt.figtext(0.0, 1.0, ''.join(head), fontsize=8, horizontalalignment='left')
-            plt.figtext(0.65, 0.9, dataframe.mean().round(4), fontsize=8,
+
+            # Reduced dataframe containing few resource usages
+            res_df = pd.DataFrame()
+            res_df["CPU util (%)"] = cpu_per
+            res_df["CPU user time(ru_utime)"] = df_last["ru_utime"]
+            res_df["CPU system time (ru_stime)"] = df_last["ru_stime"]
+            res_df["Invol context switch (ru_nivcsw)"] = df_last["ru_nivcsw"]
+            res_df["Minor fault (ru_minflt)"] = df_last["ru_minflt"]
+            res_df["Major fault (ru_majflt)"] = df_last["ru_majflt"]
+            res_df["Max res size (maxrss (Kb))"] = df_last["ru_maxrss"]
+
+            plt.figtext(0.75, 0.9, res_df.mean().round(4), fontsize=8,
                         horizontalalignment='left')
 
             if single_file is None:
-                plt.savefig(file + ".pdf",
+                plt.savefig(file + "_pf.pdf",
                             bbox_inches=matplotlib.transforms.Bbox(np.array(((0, 0), (8, 8)))))
             else:
                 single_file.savefig(bbox_inches=matplotlib.transforms.Bbox(np.array(((0, 0), (8, 8)))))
@@ -65,6 +78,7 @@ else:
 
 logfiles = []
 N = 17  # Number of line to skip before CSV data starts.
+NCPUS = 6 #Number of cpu's in the system
 
 # If the given directory actually a file.
 os.path.isfile(directory)

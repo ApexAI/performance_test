@@ -23,7 +23,6 @@
 #include <exception>
 #include <string>
 
-#include "../utilities/rt_enabler.hpp"
 #include "topics.hpp"
 
 namespace performance_test
@@ -202,7 +201,8 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     }
     if (vm.count("use_drive_px_rt")) {
       // Magic numbers for the drive px.
-      proc_rt_init(62, 5);
+      pre_proc_rt_init(62, 5);
+      m_is_drivepx_rt = true;
     }
     m_use_single_participant = false;
     if (vm.count("use_single_participant")) {
@@ -255,7 +255,6 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
       }
     }
     m_is_setup = true;
-
     // Logfile needs to be opened at the end, as the experiment configuration influences the
     // filename.
     if (vm.count("logfile")) {
@@ -347,6 +346,12 @@ bool ExperimentConfiguration::no_micro_intra() const
   return m_no_micro_intra;
 }
 
+bool ExperimentConfiguration::is_drivepx_rt() const
+{
+  check_setup();
+  return m_is_drivepx_rt;
+}
+
 bool ExperimentConfiguration::is_with_security() const
 {
   check_setup();
@@ -390,7 +395,9 @@ boost::uuids::uuid ExperimentConfiguration::id() const
 
 void ExperimentConfiguration::log(const std::string & msg) const
 {
-  std::cout << msg << std::endl;
+  if (false == m_is_drivepx_rt) {
+    std::cout << msg << std::endl;
+  }
   if (m_os.is_open()) {
     m_os << msg << std::endl;
   }
