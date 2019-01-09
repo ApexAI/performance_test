@@ -29,23 +29,25 @@ class Type(Enum):
 
 
 class Instance:
-    """perf_test process encapsulation"""
+    """perf_test process encapsulation."""
+
     def __init__(self, operation_type):
-        """Constructor
+        """
+        Constructor.
 
         :param operation_type: Type of the operation
         """
+        topics = ['Array1k', 'Array4k', 'Array16k', 'Array32k', 'Array60k', 'Array1m', 'Array2m',
+                  'Struct16', 'Struct256', 'Struct4k', 'Struct32k', 'PointCloud512k',
+                  'PointCloud1m', 'PointCloud2m', 'PointCloud4m', 'Range', 'NavSatFix',
+                  'RadarDetection', 'RadarTrack']
 
-        topics = ["Array1k", "Array4k", "Array16k", "Array32k", "Array60k", "Array1m", "Array2m",
-                  "Struct16", "Struct256", "Struct4k", "Struct32k", "PointCloud512k", "PointCloud1m", "PointCloud2m",
-                  "PointCloud4m", "Range", "NavSatFix", "RadarDetection", "RadarTrack"]
+        rates = ['50', '1000']
 
-        rates = ["50", "1000"]
+        num_subs = ['1', '3', '10']
 
-        num_subs = ["1", "3", "10"]
-
-        reliability = ["", "--reliable"]
-        durability = ["", "--transient"]
+        reliability = ['', '--reliable']
+        durability = ['', '--transient']
 
         self.product = list(itertools.product(topics, rates, num_subs, reliability, durability))
         self.process = None
@@ -53,13 +55,14 @@ class Instance:
         self.type = operation_type
 
     def run(self, index):
-        """Runs the embedded perf_test process
+        """
+        Run the embedded perf_test process.
 
         :param index: The test configuration to run.
         """
-        print("*******************")
+        print('*******************')
         print(self.cmd(index))
-        print("*******************")
+        print('*******************')
 
         self.process = subprocess.Popen(self.cmd(index), shell=True)
 
@@ -67,41 +70,42 @@ class Instance:
         # We sleeping here to make sure the process is started before changing its priority.
         # time.sleep(2)
         # Enabling (pseudo-)realtime
-        # subprocess.Popen('chrt -p 99 $(ps -o pid -C "perf_test" --no-headers)', shell=True)
+        # subprocess.Popen('chrt -p 99 $(ps -o pid -C 'perf_test' --no-headers)', shell=True)
 
     def cmd(self, index):
-        """Returns the command line necessary to execute the performance test.
+        """
+        Return the command line necessary to execute the performance test.
 
         :param index: The test configuration the returned command line should contain.
         :return: The command line argument to execute the performance test.
         """
-        command = "ros2 run  performance_test perf_test"
+        command = 'ros2 run  performance_test perf_test'
 
         c = list(self.product[index])
 
         if self.type == Type.PUBLISHER:
-            c[2] = "0"
-            pubs_args = " -p1 "
+            c[2] = '0'
+            pubs_args = ' -p1 '
         elif self.type == Type.SUBSCRIBER:
-            pubs_args = " -p0 "
+            pubs_args = ' -p0 '
         elif self.type == Type.BOTH:
-            pubs_args = " -p1 "
+            pubs_args = ' -p1 '
         else:
-            raise ValueError("Unsupported type")
+            raise ValueError('Unsupported type')
 
-        dir_name = "rate_"+c[1]+"/subs_"+c[2]
+        dir_name = 'rate_' + c[1] + '/subs_' + c[2]
 
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
-        fixed_args = " --communication ROS2 "
+        fixed_args = ' --communication ROS2 '
         dyn_args = \
-            "-l '" + dir_name + "/log' " + "--topic " + \
-            c[0] + " --rate " + c[1] + " -s " + c[2] + " " + c[3] + " " + c[4]
+            '-l \'' + dir_name + '/log\' ' + '--topic ' + \
+            c[0] + ' --rate ' + c[1] + ' -s ' + c[2] + ' ' + c[3] + ' ' + c[4]
 
-        return command + " " + fixed_args + dyn_args + pubs_args
+        return command + ' ' + fixed_args + dyn_args + pubs_args
 
     def kill(self):
-        """Kills the associated performance test process"""
+        """Kill the associated performance test process."""
         if self.process is not None:
             self.process.kill()
 
@@ -128,7 +132,7 @@ full_list = pub_list + sub_list + both_list
 def signal_handler(sig, frame):
     """Signal handler to handle Ctrl-C."""
     print('You pressed Ctrl+C! Terminating experiment')
-    subprocess.Popen("killall perf_test", shell=True)
+    subprocess.Popen('killall perf_test', shell=True)
     sys.exit(0)
 
 
@@ -138,10 +142,10 @@ def timer_handler(sig=None, frame=None):
     global full_list
 
     [e.kill() for e in full_list]
-    subprocess.Popen("killall -9 perf_test", shell=True)
+    subprocess.Popen('killall -9 perf_test', shell=True)
     current_index = current_index + 1
     if current_index >= full_list[0].num_runs():
-        print("Done with experiments.")
+        print('Done with experiments.')
         exit(0)
     else:
         [e.run(current_index) for e in full_list]
@@ -155,4 +159,4 @@ timer_handler()
 print('Press Ctrl+C to abort experiment')
 while True:
     signal.pause()
-    print("Next experiment.")
+    print('Next experiment.')
