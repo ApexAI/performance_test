@@ -23,6 +23,7 @@
 
 #include "qos_abstraction.hpp"
 #include "communication_mean.hpp"
+#include "../utilities/rt_enabler.hpp"
 
 namespace performance_test
 {
@@ -110,6 +111,9 @@ public:
   bool no_micro_intra() const;
   /// \returns Returns if security is enabled for ROS2. This will throw if the configured mean
   ///  of communication is not ROS2
+  /// \returns Returns if Drivepx RT is set or not. This will throw if the experiment configuration
+  /// is not set up.
+  bool is_drivepx_rt() const;
   bool is_with_security() const;
   /// \returns Returns the roundtrip mode.
   RoundTripMode roundtrip_mode() const;
@@ -142,6 +146,7 @@ private:
     m_use_single_participant(false),
     m_no_waitset(false),
     m_no_micro_intra(false),
+    m_is_drivepx_rt(false),
     m_roundtrip_mode(RoundTripMode::NONE)
   {}
 
@@ -174,6 +179,7 @@ private:
   bool m_use_single_participant;
   bool m_no_waitset;
   bool m_no_micro_intra;
+  bool m_is_drivepx_rt;
   bool m_with_security;
 
   RoundTripMode m_roundtrip_mode;

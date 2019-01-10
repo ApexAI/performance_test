@@ -34,7 +34,7 @@ namespace performance_test
 /// An estimate of physical memory the process might use
 /// NOTE: This is just a rough estimate for the lidar_detector process
 ///
-static const uint64_t PROCESS_MAX_DYN_MEM = (900U * 1024U * 1024U);  // 900MB
+static const uint64_t PROCESS_MAX_DYN_MEM = (3U * 1024U * 1024U * 1024U);  // 3GB
 
 /// \brief Real time related info for the process
 typedef struct proc_rt_info_s
@@ -59,20 +59,17 @@ inline bool proc_is_rt()
 }
 
 ///
-/// Mem and cpu affinity related initialization to increase determinism and
+/// Mem related post initialization to increase determinism and
 /// thereby reduce latency for the entire process
 /// NOTE: This is is still very raw and under development
 ///
-/// \brief Perform some RT related process initialization
-/// \param[in] cpu_bit_mask_in Default cpu affinity of all the threads in the process
-/// \param[in] prio default prio of all the threads in the process
+/// \brief Perform some RT related memory process initialization
 /// \return 0 on success, throw an exception on error
-inline int32_t proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
+inline void post_proc_rt_init()
 {
   int32_t res = 0;
 
   void * buf = nullptr;
-  uint32_t cpu_bit_mask = cpu_bit_mask_in;
   const int64_t pg_sz = sysconf(_SC_PAGESIZE);
 
 
@@ -81,6 +78,66 @@ inline int32_t proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
       strerror(errno) << std::endl;
     throw std::runtime_error("proc rt init getting system page size faile");
   }
+  // FIX IT: proc_rt_info.is_rt is false even after pre_proc_rt_init()
+  //
+  // Lock the current memory in RAM.
+  // Based on various QoS settings, certain middleware implementaions, allocates excessive
+  // virtual memory dynamically. Locking this excessive virtual memory into physical memory will
+  // cause running out of physical memory. Therefore, MCL_FUTURE option is disabled.
+  //
+  res = mlockall(MCL_CURRENT);
+  if (res < 0) {
+    std::cerr << "proc rt init mem locking failed" << strerror(errno) << std::endl;
+    throw std::runtime_error("proc rt init mem locking failed");
+  }
+  //
+  // Disable all the heap trimming operation using the following option.
+  // This avoid releasing of free mem back to the system
+  //
+  res = mallopt(M_TRIM_THRESHOLD, -1);
+  if (res <= 0) {
+    std::cerr << "proc rt init trim threshold failed" << strerror(errno) << std::endl;
+    throw std::runtime_error("proc rt init trim threshold failed");
+  }
+  //
+  // Disable mmap(). Because, memory allocated by mmap is outside the heap region
+  // and when the memory is freed, it does not go back to the free list to be later
+  // used by allocations. Also mmap() is an expensive task. Based on M_MAP_THRESOLD,
+  // the kernel will either use mmap() or sbrk() to get the requested memory.
+  // More info look at "man mallopt"
+  //
+  res = mallopt(M_MMAP_MAX, 0);
+  if (res <= 0) {
+    std::cerr << "proc rt mmap disabling failed" << strerror(errno) << std::endl;
+    throw std::runtime_error("proc rt mmap disabling failed");
+  }
+  //
+  // Since all the memory is not statically allocated yet, Allocate and free
+  // the memory so all pages gets mapped and locked in the process addr space
+  //
+  res = posix_memalign(&buf, static_cast<size_t>(pg_sz), PROCESS_MAX_DYN_MEM);
+  if (res != 0) {
+    std::cerr << "proc rt init mem aligning failed" << strerror(errno) << std::endl;
+    throw std::runtime_error("proc rt init mem aligning failed");
+  }
+  memset(buf, 0, PROCESS_MAX_DYN_MEM);
+  free(buf);
+}
+
+///
+/// CPU affinity related pre initialization to increase determinism and
+/// thereby reduce latency for the entire process
+/// NOTE: This is is still very raw and under development
+///
+/// \brief Perform some RT related process initialization
+/// \param[in] cpu_bit_mask_in Default cpu affinity of all the threads in the process
+/// \param[in] prio default prio of all the threads in the process
+/// \return 0 on success, throw an exception on error
+inline void pre_proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
+{
+  int32_t res = 0;
+
+  uint32_t cpu_bit_mask = cpu_bit_mask_in;
 
   //
   // Set the is_rt flag if any of the proc RT params are set
@@ -95,50 +152,6 @@ inline int32_t proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
   }
 
   if (proc_rt_info.is_rt) {
-    //
-    // Lock the current memory in RAM.
-    // Based on various QoS settings, certain middleware implementaions, allocates excessive
-    // virtual memory dynamically. Locking this excessive virtual memory into physical memory will
-    // cause running out of physical memory. Therefore, MCL_FUTURE option is disabled.
-    //
-    res = mlockall(MCL_CURRENT);
-    if (res < 0) {
-      std::cerr << "proc rt init mem locking failed" << strerror(errno) << std::endl;
-      throw std::runtime_error("proc rt init mem locking failed");
-    }
-    //
-    // Disable all the heap trimming operation using the following option.
-    // This avoid releasing of free mem back to the system
-    //
-    res = mallopt(M_TRIM_THRESHOLD, -1);
-    if (res <= 0) {
-      std::cerr << "proc rt init trim threshold failed" << strerror(errno) << std::endl;
-      throw std::runtime_error("proc rt init trim threshold failed");
-    }
-    //
-    // Disable mmap(). Because, memory allocated by mmap is outside the heap region
-    // and when the memory is freed, it does not go back to the free list to be later
-    // used by allocations. Also mmap() is an expensive task. Based on M_MAP_THRESOLD,
-    // the kernel will either use mmap() or sbrk() to get the requested memory.
-    // More info look at "man mallopt"
-    //
-    res = mallopt(M_MMAP_MAX, 0);
-    if (res <= 0) {
-      std::cerr << "proc rt mmap disabling failed" << strerror(errno) << std::endl;
-      throw std::runtime_error("proc rt mmap disabling failed");
-    }
-    //
-    // Since all the memory is not statically allocated yet, Allocate and free
-    // the memory so all pages gets mapped and locked in the process addr space
-    //
-    res = posix_memalign(&buf, static_cast<size_t>(pg_sz), PROCESS_MAX_DYN_MEM);
-    if (res != 0) {
-      std::cerr << "proc rt init mem aligning failed" << strerror(errno) << std::endl;
-      throw std::runtime_error("proc rt init mem aligning failed");
-    }
-    memset(buf, 0, PROCESS_MAX_DYN_MEM);
-    free(buf);
-
     //
     // Set prio for all the tasks of the process
     //
@@ -163,8 +176,6 @@ inline int32_t proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
       while (cpu_bit_mask > 0U) {
         if ((cpu_bit_mask & 0x1U) > 0) {
           CPU_SET(cpu_cnt, &set);
-          std::cout << "Setting CPU affinity of thread " << syscall(SYS_gettid) << \
-            " to cpu " << cpu_cnt << "\n";
         }
         cpu_bit_mask = (cpu_bit_mask >> 1U);
         cpu_cnt++;
@@ -175,10 +186,7 @@ inline int32_t proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
         throw std::runtime_error("proc rt init affinity setting failed");
       }
     }
-    std::cout << "RT proc init was successfull: " << "\n";
   }
-
-  return res;
 }
 
 }  // namespace performance_test
