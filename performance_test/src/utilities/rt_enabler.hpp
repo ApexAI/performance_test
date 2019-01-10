@@ -78,50 +78,50 @@ inline void post_proc_rt_init()
       strerror(errno) << std::endl;
     throw std::runtime_error("proc rt init getting system page size faile");
   }
-    // FIX IT: proc_rt_info.is_rt is false even after pre_proc_rt_init()
-    //
-    // Lock the current memory in RAM.
-    // Based on various QoS settings, certain middleware implementaions, allocates excessive
-    // virtual memory dynamically. Locking this excessive virtual memory into physical memory will
-    // cause running out of physical memory. Therefore, MCL_FUTURE option is disabled.
-    //
-    res = mlockall(MCL_CURRENT);
-    if (res < 0) {
-      std::cerr << "proc rt init mem locking failed" << strerror(errno) << std::endl;
-      throw std::runtime_error("proc rt init mem locking failed");
-    }
-    //
-    // Disable all the heap trimming operation using the following option.
-    // This avoid releasing of free mem back to the system
-    //
-    res = mallopt(M_TRIM_THRESHOLD, -1);
-    if (res <= 0) {
-      std::cerr << "proc rt init trim threshold failed" << strerror(errno) << std::endl;
-      throw std::runtime_error("proc rt init trim threshold failed");
-    }
-    //
-    // Disable mmap(). Because, memory allocated by mmap is outside the heap region
-    // and when the memory is freed, it does not go back to the free list to be later
-    // used by allocations. Also mmap() is an expensive task. Based on M_MAP_THRESOLD,
-    // the kernel will either use mmap() or sbrk() to get the requested memory.
-    // More info look at "man mallopt"
-    //
-    res = mallopt(M_MMAP_MAX, 0);
-    if (res <= 0) {
-      std::cerr << "proc rt mmap disabling failed" << strerror(errno) << std::endl;
-      throw std::runtime_error("proc rt mmap disabling failed");
-    }
-    //
-    // Since all the memory is not statically allocated yet, Allocate and free
-    // the memory so all pages gets mapped and locked in the process addr space
-    //
-    res = posix_memalign(&buf, static_cast<size_t>(pg_sz), PROCESS_MAX_DYN_MEM);
-    if (res != 0) {
-      std::cerr << "proc rt init mem aligning failed" << strerror(errno) << std::endl;
-      throw std::runtime_error("proc rt init mem aligning failed");
-    }
-    memset(buf, 0, PROCESS_MAX_DYN_MEM);
-    free(buf);
+  // FIX IT: proc_rt_info.is_rt is false even after pre_proc_rt_init()
+  //
+  // Lock the current memory in RAM.
+  // Based on various QoS settings, certain middleware implementaions, allocates excessive
+  // virtual memory dynamically. Locking this excessive virtual memory into physical memory will
+  // cause running out of physical memory. Therefore, MCL_FUTURE option is disabled.
+  //
+  res = mlockall(MCL_CURRENT);
+  if (res < 0) {
+    std::cerr << "proc rt init mem locking failed" << strerror(errno) << std::endl;
+    throw std::runtime_error("proc rt init mem locking failed");
+  }
+  //
+  // Disable all the heap trimming operation using the following option.
+  // This avoid releasing of free mem back to the system
+  //
+  res = mallopt(M_TRIM_THRESHOLD, -1);
+  if (res <= 0) {
+    std::cerr << "proc rt init trim threshold failed" << strerror(errno) << std::endl;
+    throw std::runtime_error("proc rt init trim threshold failed");
+  }
+  //
+  // Disable mmap(). Because, memory allocated by mmap is outside the heap region
+  // and when the memory is freed, it does not go back to the free list to be later
+  // used by allocations. Also mmap() is an expensive task. Based on M_MAP_THRESOLD,
+  // the kernel will either use mmap() or sbrk() to get the requested memory.
+  // More info look at "man mallopt"
+  //
+  res = mallopt(M_MMAP_MAX, 0);
+  if (res <= 0) {
+    std::cerr << "proc rt mmap disabling failed" << strerror(errno) << std::endl;
+    throw std::runtime_error("proc rt mmap disabling failed");
+  }
+  //
+  // Since all the memory is not statically allocated yet, Allocate and free
+  // the memory so all pages gets mapped and locked in the process addr space
+  //
+  res = posix_memalign(&buf, static_cast<size_t>(pg_sz), PROCESS_MAX_DYN_MEM);
+  if (res != 0) {
+    std::cerr << "proc rt init mem aligning failed" << strerror(errno) << std::endl;
+    throw std::runtime_error("proc rt init mem aligning failed");
+  }
+  memset(buf, 0, PROCESS_MAX_DYN_MEM);
+  free(buf);
 }
 
 ///
