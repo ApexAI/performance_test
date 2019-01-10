@@ -30,7 +30,8 @@ namespace performance_test
 {
 
 AnalyzeRunner::AnalyzeRunner()
-: m_ec(ExperimentConfiguration::get())
+: m_ec(ExperimentConfiguration::get()),
+  m_is_first_entry(true)
 {
   std::stringstream os;
   os << m_ec;
@@ -69,6 +70,12 @@ void AnalyzeRunner::run() const
 
     std::for_each(m_pub_runners.begin(), m_pub_runners.end(), [](auto & a) {a->sync_reset();});
     std::for_each(m_sub_runners.begin(), m_sub_runners.end(), [](auto & a) {a->sync_reset();});
+
+    /// Id drivepx_rt is set and this is the first loop, set the post RT init settings
+    if (m_is_first_entry && m_ec.is_drivepx_rt()) {
+      post_proc_rt_init();
+      m_is_first_entry = false;
+    }
 
     auto now = std::chrono::steady_clock::now();
     auto loop_diff_start = now - loop_start;

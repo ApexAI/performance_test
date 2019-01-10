@@ -64,6 +64,7 @@ private:
 
   std::vector<std::shared_ptr<DataRunnerBase>> m_pub_runners;
   std::vector<std::shared_ptr<DataRunnerBase>> m_sub_runners;
+  mutable bool m_is_first_entry;
 };
 
 }  // namespace performance_test
