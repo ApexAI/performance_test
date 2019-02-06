@@ -76,7 +76,7 @@ else:
     sys.exit(0)
 
 logfiles = []
-N = 15  # Number of line to skip before CSV data starts.
+N = 17  # Number of line to skip before CSV data starts.
 
 # If the given directory actually a file.
 os.path.isfile(directory)

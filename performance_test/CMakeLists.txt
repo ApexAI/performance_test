@@ -65,7 +65,7 @@ endif()
 include_directories(${FastRTPS_INCLUDE_DIR} ${FastRTPS_INCLUDE_DIR}/fastrtps/include ${fastcdr_INCLUDE_DIR})
 include_directories(include ${FAST_RTPS_IDL_INCLUDE_DIR} ${osrf_testing_tools_cpp_INCLUDE_DIR})
 
-find_package(micro_dds_cmake_module)
+find_package(micro_dds_cmake_module QUIET)
 if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
     find_package(MicroDDS MODULE)
     if(MicroDDS_FOUND)
