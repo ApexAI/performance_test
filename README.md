@@ -1,7 +1,6 @@
 # Introduction
 
-**WARNING: This version does not support ROS 2 Ardent anymore! Use the following commit if you are still using ROS 2
-Ardent: ee89af590f432c6bfd972358ce3c7f3f4292a4c2**
+**Version Support:** ROS2 Crystal, Fast-RTPS 1.7.0
 
 This test allows you to test performance and latency of various communication means
 like ROS 2, FastRTPS and Connext DDS Micro.
@@ -111,4 +110,4 @@ ros2 run performance_test -c ROS2 -t Array1k
 1. When running performance test it prints
 `ERROR: You must compile with FastRTPS support to enable FastRTPS as communication mean.`
 
-You need to build with `--cmake-args -DPERFORMANCE_TEST_USE_FASTRTPS` to switch from ROS 2 to FastRTPS.
+You need to build with `--cmake-args -DPERFORMANCE_TEST_FASTRTPS_ENABLED=ON` to switch from ROS 2 to FastRTPS.
