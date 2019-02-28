@@ -12,3 +12,4 @@ if [ $? != 0 ]; then
 fi
 
 exec $java_exec -jar "$dir/fastrtpsgen.jar" "$@"
+

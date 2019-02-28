@@ -52,6 +52,7 @@ eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
   eprosima::fastrtps::Participant * result = nullptr;
 
   eprosima::fastrtps::ParticipantAttributes PParam;
+
   PParam.rtps.sendSocketBufferSize = 1048576;
   PParam.rtps.listenSocketBufferSize = 4194304;
   PParam.rtps.builtin.use_SIMPLE_RTPSParticipantDiscoveryProtocol = true;
