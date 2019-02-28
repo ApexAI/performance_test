@@ -223,7 +223,7 @@ public:
         DDS_ANY_INSTANCE_STATE);
     if (ret == DDS_RETCODE_OK) {
       lock();
-      for (decltype(m_data_seq.length())j = 0; j < m_data_seq.length(); ++j) {
+      for (decltype(m_data_seq.length()) j = 0; j < m_data_seq.length(); ++j) {
         const auto & data = m_data_seq[j];
         if (m_sample_info_seq[j].valid_data) {
           if (m_prev_timestamp >= data.time_) {
