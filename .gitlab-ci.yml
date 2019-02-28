@@ -4,18 +4,18 @@ stages:
   - deploy
 
 before_script:
-  - source /opt/ros/bouncy/setup.bash
+  - source /opt/ros/crystal/setup.bash
   - apt-get update
   - '
     apt-get install -y
-        ros-bouncy-osrf-testing-tools-cpp
+        ros-crystal-osrf-testing-tools-cpp
         default-jre
     '
   - pip3 install -U colcon-common-extensions pytest
 
 build:
   stage: build
-  image: osrf/ros2:bouncy-desktop
+  image: osrf/ros:crystal-desktop
   script:
     - mkdir -p /opt/performance_test
     - '
@@ -39,7 +39,7 @@ build:
 
 test:
   stage: test
-  image: osrf/ros2:bouncy-desktop
+  image: osrf/ros:crystal-desktop
   dependencies:
     - build
   script:
