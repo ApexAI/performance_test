@@ -178,7 +178,8 @@ def create_layout(header, dataframe):
                 create_kv(header, 'Not using Connext DDS Micro INTRA', boolish=True),
             ]},
             {'name': 'average results', 'items': [
-                *[create_kv(means, key) for key in means.keys() if not key.startswith('ru_')],
+                *[create_kv(means, key) for key in means.keys()
+                  if key != 'T_experiment' and not key.startswith('ru_')],
             ]},
             {'name': 'environment', 'items': [
                 *[create_kv(header, key) for key in set(header.keys()) - header_fields],
