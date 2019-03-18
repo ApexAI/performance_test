@@ -151,9 +151,9 @@ def create_layout(header, dataframe):
                 'xlabel': 'time',
                 'ylabel': 'usage',
                 'traces': [
-                    {'name': 'min', 'x': xaxis, 'y': y21},
-                    {'name': 'max', 'x': xaxis, 'y': y22},
-                    {'name': 'nivcsw', 'x': xaxis, 'y': y23},
+                    {'name': 'ru_minflt', 'x': xaxis, 'y': y21},
+                    {'name': 'ru_majflt', 'x': xaxis, 'y': y22},
+                    {'name': 'ru_nivcsw', 'x': xaxis, 'y': y23},
                 ],
                 'xrange': [min(xaxis) - 5, max(xaxis) + 5],
                 'yrange': [min([*y21, *y22, *y23]) - 2500, max([*y21, *y22, *y23]) + 2500],
@@ -177,7 +177,7 @@ def create_layout(header, dataframe):
                 create_kv(header, 'Not using waitset', boolish=True),
                 create_kv(header, 'Not using Connext DDS Micro INTRA', boolish=True),
             ]},
-            {'name': 'results', 'items': [
+            {'name': 'average results', 'items': [
                 *[create_kv(means, key) for key in means.keys() if not key.startswith('ru_')],
             ]},
             {'name': 'environment', 'items': [
