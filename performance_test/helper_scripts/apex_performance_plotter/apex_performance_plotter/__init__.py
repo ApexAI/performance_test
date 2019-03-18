@@ -27,11 +27,16 @@ import sys
 import tempfile
 
 import click
-import pandas
+
 import jinja2
+
+import pandas
 
 
 __version__ = '0.1.0'
+
+
+GETRUSAGE = '\\href{http://man7.org/linux/man-pages/man2/getrusage.2.html}{man getrusage}'
 
 
 def sanitize(val):
@@ -142,7 +147,7 @@ def create_layout(header, dataframe):
                 },
             },
             {
-                'caption': 'Resource usage',
+                'caption': 'Resource usage ({})'.format(GETRUSAGE),
                 'xlabel': 'time',
                 'ylabel': 'usage',
                 'traces': [
