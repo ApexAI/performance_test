@@ -49,6 +49,9 @@ def load_logfile(filename):
             for item in itertools.takewhile(lambda x: not x.startswith('---'), source)
         }
         dataframe = pandas.read_csv(source, sep="[ \t]*,[ \t]*", engine='python')
+        unnamed = [col for col in dataframe.keys() if col.startswith('Unnamed: ')]
+        if unnamed:
+            dataframe.drop(unnamed, axis=1, inplace=True)
     return header, dataframe
 
 
