@@ -21,6 +21,7 @@
 
 import itertools
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -103,6 +104,9 @@ def create_layout(header, dataframe):
         'Not using Connext DDS Micro INTRA',
     }
 
+    header.update(dict('QOS {}'.format(x).split(': ')
+                       for x in re.findall(r'(?:(.+?: \S+)\s?)', header['QOS'])))
+
     xaxis = dataframe.T_experiment.tolist()
     y11 = dataframe['latency_min (ms)'].tolist()
     y12 = dataframe['latency_max (ms)'].tolist()
@@ -171,11 +175,14 @@ def create_layout(header, dataframe):
                 create_kv(header, 'Number of subscribers'),
                 create_kv(header, 'Maximum runtime (sec)'),
                 create_kv(header, 'DDS domain id'),
-                # create_kv(header, 'QOS'),
                 create_kv(header, 'Use ros SHM', boolish=True),
                 create_kv(header, 'Use single participant', boolish=True),
                 create_kv(header, 'Not using waitset', boolish=True),
                 create_kv(header, 'Not using Connext DDS Micro INTRA', boolish=True),
+                create_kv(header, 'QOS Reliability'),
+                create_kv(header, 'QOS Durability'),
+                create_kv(header, 'QOS History kind'),
+                create_kv(header, 'QOS History depth'),
             ]},
             {'name': 'average results', 'items': [
                 *[create_kv(means, key) for key in means.keys()
