@@ -28,6 +28,7 @@ find_package(ament_cmake REQUIRED)
 
 # FastRTPS
 option(PERFORMANCE_TEST_FASTRTPS_ENABLED "Enable FastRTPS" ON)
+option(PERFORMANCE_TEST_OPENDDS_ENABLED "Enable OpenDDS" ON)
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
   find_package(fastrtps_cmake_module QUIET REQUIRED)
@@ -59,6 +60,8 @@ endif()
 
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
+find_package(FastRTPS QUIET REQUIRED)
+add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
 find_package(builtin_interfaces REQUIRED)
 
 find_package(rcutils REQUIRED)
@@ -81,6 +84,10 @@ ament_export_dependencies(rosidl_default_runtime)
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
   add_subdirectory(src/idlgen/fast_rtps)
+endif()
+
+if(PERFORMANCE_TEST_OPENDDS_ENABLED)
+    add_subdirectory(src/idlgen/opendds)
 endif()
 
 # This is a workaround for broken include paths on some systems.
@@ -128,6 +135,21 @@ set(${PROJECT_NAME}_SOURCES
 set(${PROJECT_NAME}_HEADERS
     src/experiment_configuration/experiment_configuration.hpp
     src/experiment_execution/analysis_result.hpp)
+
+
+find_package(opendds_cmake_module QUIET)
+if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
+    find_package(OpenDDS MODULE)
+    if(OpenDDS_FOUND)
+        set(PERFORMANCE_TEST_OPENDDS_ENABLED)
+
+        add_definitions(-DPERFORMANCE_TEST_OPENDDS_ENABLED)
+        add_subdirectory(src/idlgen/opendds)
+
+        #include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
+        #ament_export_definitions(${MicroDDS_DEFINITIONS})
+    endif()
+endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
