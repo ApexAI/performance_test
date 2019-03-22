@@ -14,10 +14,10 @@
 
 set(SOURCE_EXTENSION cpp)
 
-set(ENV{LD_LIBRARY_PATH} $ENV{LD_LIBRARY_PATH}:/home/salus/OpenDDS-3.13.1/ACE_wrappers/lib:/home/salus/OpenDDS-3.13.1/lib)
-set(ENV{ACE_ROOT} /home/salus/OpenDDS-3.13.1/ACE_wrappers)
-set(ENV{MPC_ROOT} /home/salus/OpenDDS-3.13.1/ACE_wrappers/MPC)
-set(ENV{TAO_ROOT} /home/salus/OpenDDS-3.13.1/ACE_wrappers/TAO)
+set(DDS_ROOT /home/salus/OpenDDS-3.13.1)
+set(ACE_ROOT /home/salus/OpenDDS-3.13.1/ACE_wrappers)
+set(MPC_ROOT /home/salus/OpenDDS-3.13.1/ACE_wrappers/MPC)
+set(TAO_ROOT /home/salus/OpenDDS-3.13.1/ACE_wrappers/TAO)
 
 set(TAO_IDL DDS_ROOT=/home/salus/OpenDDS-3.13.1 ACE_ROOT=/home/salus/OpenDDS-3.13.1/ACE_wrappers TAO_ROOT=/home/salus/OpenDDS-3.13.1/ACE_wrappers/TAO MPC_ROOT=/home/salus/OpenDDS-3.13.1/ACE_wrappers/MPC LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):/home/salus/OpenDDS-3.13.1/ACE_wrappers/lib:/home/salus/OpenDDS-3.13.1/lib $ENV{HOME}/OpenDDS-3.13.1/ACE_wrappers/bin/tao_idl)
 set(OPENDDS_IDL DDS_ROOT=/home/salus/OpenDDS-3.13.1 ACE_ROOT=/home/salus/OpenDDS-3.13.1/ACE_wrappers TAO_ROOT=/home/salus/OpenDDS-3.13.1/ACE_wrappers/TAO MPC_ROOT=/home/salus/OpenDDS-3.13.1/ACE_wrappers/MPC LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):/home/salus/OpenDDS-3.13.1/ACE_wrappers/lib:/home/salus/OpenDDS-3.13.1/lib $ENV{HOME}/OpenDDS-3.13.1/bin/opendds_idl)
@@ -71,33 +71,47 @@ foreach(idl ${IDL_SOURCE_C})
   set(TAO_IDL_GEN_H ${IDL_GEN_ROOT}/${basename}C.h
           ${IDL_GEN_ROOT}/${basename}S.h)
 
+  set (TAO_IDL_GEN_CPP_SECOND_STAGE ${IDL_GEN_ROOT}/${basename}TypeSupportC.${SOURCE_EXTENSION}
+                                    ${IDL_GEN_ROOT}/${basename}TypeSupportS.${SOURCE_EXTENSION}
+                                    ${IDL_GEN_ROOT}/${basename}TypeSupportC.inl)
+
+  set(TAO_IDL_GEN_H_SECOND_STAGE ${IDL_GEN_ROOT}/${basename}TypeSupportC.h
+                                 ${IDL_GEN_ROOT}/${basename}TypeSupportS.h)
+
   set(OPENDDS_IDL_GEN_CPP ${IDL_GEN_ROOT}/${basename}TypeSupportImpl.${SOURCE_EXTENSION}
           ${IDL_GEN_ROOT}/${basename}TypeSupport.idl)
 
   set(OPENDDS_IDL_GEN_H ${IDL_GEN_ROOT}/${basename}TypeSupportImpl.h)
 
-  message("Running tao_idl Command: Output files " ${TAO_IDL_GEN_CPP})
-  message("Location IDL: " ${CMAKE_CURRENT_SOURCE_DIR}/${idl})
   add_custom_command(OUTPUT ${TAO_IDL_GEN_CPP} ${TAO_IDL_GEN_H}
           COMMAND ${TAO_IDL} -o ${IDL_GEN_ROOT}/. ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
           DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
           COMMENT "Regeneration type support plugin from ${idl}")
 
-  message("Running opendds_idl Command: Output files: " ${OPENDDS_IDL_GEN_CPP})
   add_custom_command(OUTPUT ${OPENDDS_IDL_GEN_CPP} ${OPENDDS_IDL_GEN_H}
           COMMAND ${OPENDDS_IDL} -o ${IDL_GEN_ROOT}/. ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
           DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
           COMMENT "Regeneration type support plugin from ${idl}")
 
+  add_custom_command(OUTPUT ${TAO_IDL_GEN_CPP_SECOND_STAGE} ${TAO_IDL_GEN_H_SECOND_STAGE}
+          COMMAND ${TAO_IDL} -o ${IDL_GEN_ROOT}/. -I${CMAKE_CURRENT_SOURCE_DIR}/.. -I${TAO_ROOT} -I${DDS_ROOT} ${IDL_GEN_ROOT}/${basename}TypeSupport.idl
+          DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
+          COMMENT "Regeneration type support plugin from ${idl}")
+
   set_source_files_properties(${TAO_IDL_GEN_CPP} ${TAO_IDL_GEN_H} PROPERTIES GENERATED 1)
   set_source_files_properties(${OPENDDS_IDL_GEN_CPP} ${OPENDDS_IDL_GEN_H} PROPERTIES GENERATED 1)
-  list(APPEND IDL_GEN_H_LIST ${TAO_IDL_GEN_H} ${TAO_IDL_GEN_CPP})
-  list(APPEND IDL_GEN_C_LIST ${TAO_IDL_GEN_CPP} ${OPENDDS_IDL_GEN_CPP})
+  set_source_files_properties(${TAO_IDL_GEN_CPP_SECOND_STAGE} ${TAO_IDL_GEN_H_SECOND_STAGE} PROPERTIES GENERATED 1)
+  list(APPEND IDL_GEN_H_LIST ${TAO_IDL_GEN_H} ${OPENDDS_IDL_GEN_H} ${TAO_IDL_GEN_H_SECOND_STAGE})
+  list(APPEND IDL_GEN_C_LIST ${TAO_IDL_GEN_CPP} ${OPENDDS_IDL_GEN_CPP} ${TAO_IDL_GEN_CPP_SECOND_STAGE})
 
 endforeach()
 
-MESSAGE(ERROR  ${IDL_GEN_H_LIST} ${IDL_GEN_C_LIST})
 add_library(opendds_idl
         ${IDL_GEN_H_LIST} ${IDL_GEN_C_LIST})
 set_compile_options(opendds_idl)
+message ("IDL_GEN_ROOT = : " ${IDL_GEN_ROOT})
 set(OPENDDS_IDL_INCLUDE_DIR ${IDL_GEN_ROOT}/.. PARENT_SCOPE)
+set(PARENT_DDS_ROOT ${DDS_ROOT} PARENT_SCOPE)
+set(PARENT_ACE_ROOT ${ACE_ROOT} PARENT_SCOPE)
+set(PARENT_MPC_ROOT ${MPC_ROOT} PARENT_SCOPE)
+set(PARENT_TAO_ROOT ${TAO_ROOT} PARENT_SCOPE)

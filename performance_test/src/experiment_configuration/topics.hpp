@@ -133,6 +133,11 @@
   #include <cyclonedds/RadarTrack_.h>
 #endif
 
+// OpenDDS Types
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+#include <opendds/Array1k_TypeSupportImpl.h>
+#endif
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -162,6 +167,7 @@ public:
   }
 #endif
 
+
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Array1k_;
   static const dds_topic_descriptor_t * CycloneDDSDesc()
@@ -169,7 +175,16 @@ public:
     return &performance_test_msgs_msg_dds__Array1k__desc;
   }
 #endif
-
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+using OpenDDSTopicType = performance_test_msgs::msg::dds_::Array1k_;
+  using OpenDDSType = typename OpenDDSTopicType::type;
+/*
+  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  {
+    return performance_test_msgs_msg_dds__Array1k_TypePlugin_get();
+  }
+*/
+#endif
   static std::string topic_name()
   {
     return std::string("Array1k");

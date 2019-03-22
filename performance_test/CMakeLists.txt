@@ -30,12 +30,17 @@ find_package(ament_cmake REQUIRED)
 option(PERFORMANCE_TEST_FASTRTPS_ENABLED "Enable FastRTPS" ON)
 option(PERFORMANCE_TEST_OPENDDS_ENABLED "Enable OpenDDS" ON)
 
-if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
-  find_package(fastrtps_cmake_module QUIET REQUIRED)
-  find_package(FastRTPS QUIET REQUIRED)
-  add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
+if(PERFORMANCE_TEST_OPENDDS_ENABLED)
+    add_definitions(-DPERFORMANCE_TEST_OPENDDS_ENABLED)
 endif()
 
+if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
+    find_package(fastrtps_cmake_module QUIET REQUIRED)
+    find_package(FastRTPS QUIET REQUIRED)
+    add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
+endif()
+
+<<<<<<< HEAD
 # Use ODB support to create SQL database
 option(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
@@ -57,11 +62,11 @@ if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
     set(DB_TYPE pgsql)
   endif()
 endif()
+=======
+>>>>>>> IDL generation for OpenDDS.
 
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
-find_package(FastRTPS QUIET REQUIRED)
-add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
 find_package(builtin_interfaces REQUIRED)
 
 find_package(rcutils REQUIRED)
@@ -88,6 +93,7 @@ endif()
 
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
     add_subdirectory(src/idlgen/opendds)
+    include_directories(${OPENDDS_IDL_INCLUDE_DIR} ${PARENT_DDS_ROOT} ${PARENT_ACE_ROOT} ${PARENT_MPC_ROOT} ${PARENT_TAO_ROOT})
 endif()
 
 # This is a workaround for broken include paths on some systems.
@@ -108,6 +114,7 @@ if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
     endif()
 endif()
 
+<<<<<<< HEAD
 # CycloneDDS
 option(PERFORMANCE_TEST_FORCE_CYCLONEDDS "Require Cyclone DDS to be available, fail otherwise" OFF)
 
@@ -150,6 +157,21 @@ if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
         #ament_export_definitions(${MicroDDS_DEFINITIONS})
     endif()
 endif()
+=======
+#find_package(opendds_cmake_module QUIET REQUIRED)
+#if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
+#    find_package(OpenDDS MODULE REQUIRED)
+#    if(OpenDDS_FOUND)
+#        set(PERFORMANCE_TEST_OPENDDS_ENABLED)
+#
+#        add_definitions(-DPERFORMANCE_TEST_OPENDDS_ENABLED)
+#        add_subdirectory(src/idlgen/opendds)
+#
+#        #include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
+#        #ament_export_definitions(${MicroDDS_DEFINITIONS})
+#    endif()
+#endif()
+>>>>>>> IDL generation for OpenDDS.
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
@@ -235,6 +257,7 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     )
 endif()
 
+<<<<<<< HEAD
 if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
     set(sources ${sources}
         src/communication_abstractions/cyclonedds_communicator.hpp
@@ -246,6 +269,12 @@ if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
         ${ODB_INCLUDE_DIRS})
+=======
+if (PERFORMANCE_TEST_OPENDDS_ENABLED)
+    set(sources ${sources}
+            src/communication_abstractions/opendds_communicator.hpp
+            )
+>>>>>>> IDL generation for OpenDDS.
 endif()
 
 set(EXE_NAME perf_test)
@@ -301,10 +330,15 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
       fastcdr)
 endif()
 
+<<<<<<< HEAD
 if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
   target_link_libraries(${EXE_NAME}
       cyclonedds_idl
       CycloneDDS::ddsc)
+=======
+if (PERFORMANCE_TEST_OPENDDS_ENABLED)
+    target_link_libraries(${EXE_NAME} opendds_idl)
+>>>>>>> IDL generation for OpenDDS.
 endif()
 
 if(BUILD_TESTING)
