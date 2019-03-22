@@ -105,6 +105,11 @@
   #include <micro/RadarTrack_Support.h>
 #endif
 
+// OpenDDS Types
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+  #include <opendds/Array1k_TypeSupportImpl.h>
+#endif
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -132,6 +137,17 @@ public:
   {
     return performance_test_msgs_msg_dds__Array1k_TypePlugin_get();
   }
+#endif
+
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+  using OpenDDSTopicType = performance_test_msgs::msg::dds_::Array1k_;
+  using OpenDDSType = typename OpenDDSTopicType::type;
+/*
+  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
+  {
+    return performance_test_msgs_msg_dds__Array1k_TypePlugin_get();
+  }
+*/
 #endif
 
   static std::string topic_name()

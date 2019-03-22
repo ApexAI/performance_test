@@ -30,16 +30,19 @@ find_package(ament_cmake REQUIRED)
 option(PERFORMANCE_TEST_FASTRTPS_ENABLED "Enable FastRTPS" ON)
 option(PERFORMANCE_TEST_OPENDDS_ENABLED "Enable OpenDDS" ON)
 
-if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
-  find_package(fastrtps_cmake_module QUIET REQUIRED)
-  find_package(FastRTPS QUIET REQUIRED)
-  add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
+if(PERFORMANCE_TEST_OPENDDS_ENABLED)
+    add_definitions(-DPERFORMANCE_TEST_OPENDDS_ENABLED)
 endif()
+
+if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
+    find_package(fastrtps_cmake_module QUIET REQUIRED)
+    find_package(FastRTPS QUIET REQUIRED)
+    add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
+endif()
+
 
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
-find_package(FastRTPS QUIET REQUIRED)
-add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
 find_package(builtin_interfaces REQUIRED)
 
 find_package(rcutils REQUIRED)
@@ -66,6 +69,7 @@ endif()
 
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
     add_subdirectory(src/idlgen/opendds)
+    include_directories(${OPENDDS_IDL_INCLUDE_DIR} ${PARENT_DDS_ROOT} ${PARENT_ACE_ROOT} ${PARENT_MPC_ROOT} ${PARENT_TAO_ROOT})
 endif()
 
 # This is a workaround for broken include paths on some systems.
@@ -86,19 +90,19 @@ if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
     endif()
 endif()
 
-find_package(opendds_cmake_module QUIET)
-if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
-    find_package(OpenDDS MODULE)
-    if(OpenDDS_FOUND)
-        set(PERFORMANCE_TEST_OPENDDS_ENABLED)
-
-        add_definitions(-DPERFORMANCE_TEST_OPENDDS_ENABLED)
-        add_subdirectory(src/idlgen/opendds)
-
-        #include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-        #ament_export_definitions(${MicroDDS_DEFINITIONS})
-    endif()
-endif()
+#find_package(opendds_cmake_module QUIET REQUIRED)
+#if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
+#    find_package(OpenDDS MODULE REQUIRED)
+#    if(OpenDDS_FOUND)
+#        set(PERFORMANCE_TEST_OPENDDS_ENABLED)
+#
+#        add_definitions(-DPERFORMANCE_TEST_OPENDDS_ENABLED)
+#        add_subdirectory(src/idlgen/opendds)
+#
+#        #include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
+#        #ament_export_definitions(${MicroDDS_DEFINITIONS})
+#    endif()
+#endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
@@ -167,6 +171,12 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     )
 endif()
 
+if (PERFORMANCE_TEST_OPENDDS_ENABLED)
+    set(sources ${sources}
+            src/communication_abstractions/opendds_communicator.hpp
+            )
+endif()
+
 set(EXE_NAME perf_test)
 add_executable(${EXE_NAME} ${sources})
 set_compile_options(${EXE_NAME})
@@ -185,6 +195,10 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
       ${FastRTPS_LIBRARIES}
       fast_rtps_idl
       fastcdr)
+endif()
+
+if (PERFORMANCE_TEST_OPENDDS_ENABLED)
+    target_link_libraries(${EXE_NAME} opendds_idl)
 endif()
 
 if(BUILD_TESTING)
