@@ -100,6 +100,7 @@ protected:
     std::free(some_memory);
   }
 
+#ifdef PERFORMANCE_TEST_MEMORYTOOLS_ENABLED
   void assert_memory_tools_is_working()
   {
     bool saw_malloc = false;
@@ -118,6 +119,8 @@ protected:
               "properly set it up.");
     }
   }
+#endif
+
 };
 
 }  // namespace performance_test
