@@ -28,10 +28,10 @@
   #include <rti_me_cpp.hxx>
 #endif
 
-<<<<<<< HEAD
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   #include <dds/dds.h>
-=======
+#endif
+
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
   #include <dds/DCPS/Marked_Default_Qos.h>
   #include <dds/DdsDcpsTopicC.h>
@@ -42,7 +42,6 @@
   #include <dds/DCPS/transport/framework/TransportRegistry.h>
   #include <dds/DCPS/transport/rtps_udp/RtpsUdpInst_rch.h>
   #include <dds/DCPS/transport/rtps_udp/RtpsUdpInst.h>
->>>>>>> initial opendds port, more to come later
 #endif
 
 #include <cstdlib>
@@ -99,13 +98,11 @@ public:
   void connext_dds_micro_subscriber(DDSSubscriber * & subscriber, DDS_DataReaderQos & dr_qos) const;
 #endif
 
-<<<<<<< HEAD
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   /// Returns Cyclone DDS participant.
   dds_entity_t cyclonedds_participant() const;
 #endif
 
-=======
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
   /// Returns OpenDDS participant.
   DDS::DomainParticipant_ptr opendds_participant() const;
@@ -125,8 +122,6 @@ public:
   void opendds_subscriber(DDS::Subscriber_ptr & subscriber, DDS::DataReaderQos & dr_qos) const;
 #endif
 
-
->>>>>>> initial opendds port, more to come later
 private:
   ResourceManager()
   : m_ec(ExperimentConfiguration::get()),
@@ -137,15 +132,15 @@ private:
 #ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
     , m_connext_dds_micro_participant(nullptr)
 #endif
-<<<<<<< HEAD
+
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
     , m_cyclonedds_participant(0)
-=======
-#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
-    ,m_opendds_participant(nullptr)
->>>>>>> initial opendds port, more to come later
 #endif
   {}
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+    ,m_opendds_participant(nullptr)
+#endif
+
 
   const ExperimentConfiguration & m_ec;
 

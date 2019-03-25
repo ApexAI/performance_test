@@ -260,6 +260,7 @@ endif()
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
     set(sources ${sources}
         src/communication_abstractions/cyclonedds_communicator.hpp
@@ -276,6 +277,9 @@ if (PERFORMANCE_TEST_OPENDDS_ENABLED)
 =======
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
 >>>>>>> initial opendds port, more to come later
+=======
+if(PERFORMANCE_TEST_OPENDDS_ENABLED)
+>>>>>>> openDDS integration by I
     set(sources ${sources}
             src/communication_abstractions/opendds_communicator.hpp
             )
@@ -343,9 +347,12 @@ if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
 =======
 if (PERFORMANCE_TEST_OPENDDS_ENABLED)
 <<<<<<< HEAD
+<<<<<<< HEAD
     target_link_libraries(${EXE_NAME} opendds_idl)
 >>>>>>> IDL generation for OpenDDS.
 =======
+=======
+>>>>>>> openDDS integration by I
     set(DDS_DYN_LIBS ${PARENT_ACE_ROOT}/lib/libACE.so 
 		     ${PARENT_ACE_ROOT}/lib/libTAO.so
                      ${PARENT_DDS_ROOT}/dds/libOpenDDS_Dcps.so
@@ -361,7 +368,10 @@ if (PERFORMANCE_TEST_OPENDDS_ENABLED)
 
     target_link_libraries(${EXE_NAME} opendds_idl ${DDS_DYN_LIBS})
 
+<<<<<<< HEAD
 >>>>>>> initial opendds port, more to come later
+=======
+>>>>>>> openDDS integration by I
 endif()
 
 if(BUILD_TESTING)
