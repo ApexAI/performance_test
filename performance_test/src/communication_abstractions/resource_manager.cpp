@@ -239,4 +239,72 @@ void ResourceManager::connext_dds_micro_subscriber(
   }
 }
 #endif
+
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+DDS::DomainParticipant_ptr
+ResourceManager::opendds_participant() const
+{
+  std::lock_guard<std::mutex> lock(m_global_mutex);
+  
+  if (!CORBA::is_nil(m_opendds_participant)) {
+     TheServiceParticipant->set_default_discovery(::OpenDDS::DCPS::Discovery::DEFAULT_RTPS);
+     const std::string config_name = "PerfTestConfig";
+     OpenDDS::DCPS::TransportConfig_rch config = TheTransportRegistry->create_config(config_name);
+     OpenDDS::DCPS::TransportInst_rch trans_inst = TheTransportRegistry->create_inst(config_name, "rtps_udp");
+     OpenDDS::DCPS::RtpsUdpInst_rch udp_rtps_inst = OpenDDS::DCPS::dynamic_rchandle_cast<OpenDDS::DCPS::RtpsUdpInst>(trans_inst);
+     
+     udp_rtps_inst->local_address("127.0.0.1:");
+     udp_rtps_inst->multicast_interface_ = "lo";
+
+     config->instances_.push_back(trans_inst);
+     TheTransportRegistry->global_config(config);
+
+     DDS::DomainParticipantFactory_var participant_factory = TheServiceParticipant->TheParticipantFactory;
+
+     ::DDS::DomainParticipantFactoryQos factory_qos;
+     participant_factory->get_qos (factory_qos);
+     factory_qos.entity_factory.autoenable_created_entities=false;
+     participant_factory->set_qos(factory_qos);
+
+     //OpenDDS domain participant qos is realy weird, just octest sequences
+     //for now let's create domain participant with default qos
+     m_opendds_participant = participant_factory->create_participant(m_ec.dds_domain_id(),PARTICIPANT_QOS_DEFAULT,0,OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+  }
+  return m_opendds_participant;
+}
+
+void
+ResourceManager::opendds_publisher(DDS::Publisher_ptr & publisher, DDS::DataWriterQos & dw_qos) const
+{
+  DDS::DomainParticipant_ptr participant = opendds_participant();
+  std::lock_guard<std::mutex> lock(m_global_mutex);
+
+  publisher = participant->create_publisher(PUBLISHER_QOS_DEFAULT,0,OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+  if (CORBA::is_nil(publisher))
+     throw std::runtime_error("Failed to create publisher");
+
+  DDS::ReturnCode_t ret;
+  ret = publisher->get_default_datawriter_qos(dw_qos);
+  if (ret != DDS::RETCODE_OK)
+    throw std::runtime_error("Failed to get default datawriter qos");
+}
+
+void
+ResourceManager::opendds_subscriber(DDS::Subscriber_ptr & subscriber, DDS::DataReaderQos & dr_qos) const
+{
+  DDS::DomainParticipant_ptr participant = opendds_participant();
+  std::lock_guard<std::mutex> lock(m_global_mutex);
+
+  subscriber = participant->create_subscriber(SUBSCRIBER_QOS_DEFAULT,0,OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+  if (CORBA::is_nil(subscriber))
+    throw std::runtime_error("Failed to create subscriber");
+
+  DDS::ReturnCode_t ret;
+  ret = subscriber->get_default_datareader_qos(dr_qos);
+  if (ret != DDS::RETCODE_OK)
+    throw std::runtime_error("Failed to get default datareader qos");
+}
+#endif
 }  // namespace performance_test

@@ -107,6 +107,7 @@
 
 // OpenDDS Types
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+  #include <dds/DdsDcpsTopicC.h>
   #include <opendds/Array1k_TypeSupportImpl.h>
 #endif
 
@@ -141,13 +142,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
   using OpenDDSTopicType = performance_test_msgs::msg::dds_::Array1k_;
-  using OpenDDSType = typename OpenDDSTopicType::type;
-/*
-  static NDDS_Type_Plugin * ConnextDDSMicroTypePlugin()
-  {
-    return performance_test_msgs_msg_dds__Array1k_TypePlugin_get();
+
+  static DDS::TypeSupport_ptr get_type_support() {
+	return new performance_test_msgs::msg::dds_::Array1k_TypeSupportImpl();
   }
-*/
 #endif
 
   static std::string topic_name()
