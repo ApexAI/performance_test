@@ -27,7 +27,7 @@ find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(ament_cmake REQUIRED)
 
 # FastRTPS
-option(PERFORMANCE_TEST_FASTRTPS_ENABLED "Enable FastRTPS" ON)
+option(PERFORMANCE_TEST_FASTRTPS_ENABLED "Enable FastRTPS" OFF)
 option(PERFORMANCE_TEST_OPENDDS_ENABLED "Enable OpenDDS" ON)
 
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
@@ -69,6 +69,7 @@ endif()
 
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
     add_subdirectory(src/idlgen/opendds)
+    message("PARENT ACE_ROOT = " ${PARENT_ACE_ROOT})
     include_directories(${OPENDDS_IDL_INCLUDE_DIR} ${PARENT_DDS_ROOT} ${PARENT_ACE_ROOT} ${PARENT_MPC_ROOT} ${PARENT_TAO_ROOT})
 endif()
 
@@ -171,7 +172,7 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     )
 endif()
 
-if (PERFORMANCE_TEST_OPENDDS_ENABLED)
+if(PERFORMANCE_TEST_OPENDDS_ENABLED)
     set(sources ${sources}
             src/communication_abstractions/opendds_communicator.hpp
             )
@@ -198,7 +199,21 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
 if (PERFORMANCE_TEST_OPENDDS_ENABLED)
-    target_link_libraries(${EXE_NAME} opendds_idl)
+    set(DDS_DYN_LIBS ${PARENT_ACE_ROOT}/lib/libACE.so 
+		     ${PARENT_ACE_ROOT}/lib/libTAO.so
+                     ${PARENT_DDS_ROOT}/dds/libOpenDDS_Dcps.so
+                     ${PARENT_DDS_ROOT}/dds/DCPS/RTPS/libOpenDDS_Rtps.so
+                     ${PARENT_DDS_ROOT}/dds/DCPS/transport/rtps_udp/libOpenDDS_Rtps_Udp.so
+                     ${PARENT_ACE_ROOT}/lib/libTAO_PortableServer.so
+                     ${PARENT_ACE_ROOT}/lib/libTAO_PortableServer.so
+                     ${PARENT_ACE_ROOT}/lib/libTAO_PI.so
+                     ${PARENT_ACE_ROOT}/lib/libTAO_CodecFactory.so
+                     ${PARENT_ACE_ROOT}/lib/libTAO_AnyTypeCode.so
+                     ${PARENT_ACE_ROOT}/lib/libTAO_BiDirGIOP.so
+                     )
+
+    target_link_libraries(${EXE_NAME} opendds_idl ${DDS_DYN_LIBS})
+
 endif()
 
 if(BUILD_TESTING)
