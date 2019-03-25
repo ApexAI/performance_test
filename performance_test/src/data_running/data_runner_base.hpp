@@ -103,6 +103,7 @@ protected:
 #ifdef PERFORMANCE_TEST_MEMORYTOOLS_ENABLED
   void assert_memory_tools_is_working()
   {
+#ifdef PERFORMANCE_TEST_MEMORYTOOLS_ENABLED
     bool saw_malloc = false;
     auto on_malloc_cb = [&saw_malloc]() {
         saw_malloc = true;
@@ -118,6 +119,10 @@ protected:
               "Memory checking does not work properly. Please consult the documentation on how to "
               "properly set it up.");
     }
+#else
+      throw std::runtime_error(
+              "OSRF memory tools is not installed. Memory check must be disabled.");
+#endif
   }
 #endif
 };

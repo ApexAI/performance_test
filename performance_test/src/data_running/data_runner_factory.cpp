@@ -32,6 +32,10 @@
 #ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   #include "../communication_abstractions/connext_dds_micro_communicator.hpp"
 #endif
+ 
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+  #include "../communication_abstractions/opendds_communicator.hpp"
+#endif
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   #include "../communication_abstractions/cyclonedds_communicator.hpp"
