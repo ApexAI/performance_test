@@ -194,9 +194,12 @@ using OpenDDSTopicType = performance_test_msgs::msg::dds_::Array1k_;
 =======
 >>>>>>> openDDS integration by I
   using OpenDDSTopicType = performance_test_msgs::msg::dds_::Array1k_;
+  using OpenDDSDataWriterType = performance_test_msgs::msg::dds_::Array1k_DataWriter;
+  using OpenDDSDataReaderType = performance_test_msgs::msg::dds_::Array1k_DataReader;
+  using OpenDDSDataTypeSeq = performance_test_msgs::msg::dds_::Array1k_Seq;
 
   static DDS::TypeSupport_ptr get_type_support() {
-	return new performance_test_msgs::msg::dds_::Array1k_TypeSupportImpl();
+	  return new performance_test_msgs::msg::dds_::Array1k_TypeSupportImpl();
   }
 #endif
   static std::string topic_name()
@@ -770,11 +773,15 @@ public:
 };
 ///  \endcond
 
+#ifndef PERFORMANCE_TEST_OPENDDS_ENABLED
 using TopicTypeList = boost::mpl::list<Array1k, Array4k, Array16k, Array32k, Array60k, Array1m,
     Array2m,
     Struct16, Struct256, Struct4k, Struct32k, PointCloud512k, PointCloud1m, PointCloud2m,
     PointCloud4m,
     Range, NavSatFix, RadarDetection, RadarTrack>;
+#else
+using TopicTypeList = boost::mpl::list<Array1k>;
+#endif
 
 /// Returns a vector of supported topic names.
 inline std::vector<std::string> supported_topic_names()
