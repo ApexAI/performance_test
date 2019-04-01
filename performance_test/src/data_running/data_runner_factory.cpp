@@ -62,6 +62,10 @@ std::shared_ptr<DataRunnerBase> DataRunnerFactory::get(
         } else if (com_mean == CommunicationMean::CONNEXTDDSMICRO) {
           ptr = std::make_shared<DataRunner<RTIMicroDDSCommunicator<T>>>(run_type);
 #endif
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+        } else if (com_mean == CommunicationMean::OPENDDS) {
+          ptr = std::make_shared<DataRunner<OpenDDSCommunicator<T>>>(run_type);
+#endif
         }
       }
     });
