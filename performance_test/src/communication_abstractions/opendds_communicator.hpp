@@ -21,6 +21,8 @@
 #include "communicator.hpp"
 #include "resource_manager.hpp"
 
+using namespace std;
+
 namespace performance_test
 {
 
@@ -133,11 +135,11 @@ public:
   /// The data type to use.
   using DataType = typename Topic::OpenDDSTopicType;
   /// The type of the data writer.
-  using DataWriterType = typename DataType::DataWriter;
+  using DataWriterType = typename Topic::OpenDDSDataWriterType;
   /// The type of the data reader.
-  using DataReaderType = typename DataType::DataReader;
+  using DataReaderType = typename Topic::OpenDDSDataReaderType;
   /// The type of a sequence of data.
-  using DataTypeSeq = typename DataType::Seq;
+  using DataTypeSeq = typename Topic::OpenDDSDataTypeSeq;
 
   /// Constructor which takes a reference \param lock to the lock to use.
   explicit OpenDDSCommunicator(SpinLock & lock)
@@ -178,7 +180,7 @@ public:
         throw std::runtime_error("Could not create datawriter");
       }
 
-      m_typed_datawriter = DataWriterType::narrow(m_datawriter);
+      m_typed_datawriter = DataWriterType::_narrow(m_datawriter);
       if (CORBA::is_nil(m_typed_datawriter)) {
         throw std::runtime_error("failed datawriter narrow");
       }
@@ -238,7 +240,7 @@ public:
       m_condition->set_enabled_statuses(DDS::DATA_AVAILABLE_STATUS);
       m_waitset.attach_condition(m_condition);
 
-      m_typed_datareader = DataReaderType::narrow(m_datareader);
+      m_typed_datareader = DataReaderType::_narrow(m_datareader);
       if (m_typed_datareader == nullptr) {
         throw std::runtime_error("m_typed_datareader == nullptr");
       }
@@ -300,7 +302,7 @@ private:
   {
     if (CORBA::is_nil(m_topic)) {
 
-      DDS::ReturnCode_t retcode = Topic::get_type_support()->register_type(m_participant,Topic::topic_name());
+      DDS::ReturnCode_t retcode = Topic::get_type_support()->register_type(m_participant,Topic::topic_name().c_str());
       if (retcode != DDS::RETCODE_OK) {
         throw std::runtime_error("failed to register type");
       }
