@@ -14,7 +14,7 @@
 
 set(SOURCE_EXTENSION cpp)
 
-set(DDS_ROOT /home/iouri/OpenDDS-3.13.1)
+set(DDS_ROOT $ENV{HOME}/OpenDDS-3.13.1)
 set(ACE_ROOT ${DDS_ROOT}/ACE_wrappers)
 set(MPC_ROOT ${DDS_ROOT}/ACE_wrappers/MPC)
 set(TAO_ROOT ${DDS_ROOT}/ACE_wrappers/TAO)
