@@ -21,17 +21,23 @@
 
 import itertools
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 
 import click
-import pandas
+
 import jinja2
+
+import pandas
 
 
 __version__ = '0.1.0'
+
+
+GETRUSAGE = '\\href{http://man7.org/linux/man-pages/man2/getrusage.2.html}{man getrusage}'
 
 
 def sanitize(val):
@@ -49,6 +55,9 @@ def load_logfile(filename):
             for item in itertools.takewhile(lambda x: not x.startswith('---'), source)
         }
         dataframe = pandas.read_csv(source, sep="[ \t]*,[ \t]*", engine='python')
+        unnamed = [col for col in dataframe.keys() if col.startswith('Unnamed: ')]
+        if unnamed:
+            dataframe.drop(unnamed, axis=1, inplace=True)
     return header, dataframe
 
 
@@ -95,6 +104,9 @@ def create_layout(header, dataframe):
         'Not using Connext DDS Micro INTRA',
     }
 
+    header.update(dict('QOS {}'.format(x).split(': ')
+                       for x in re.findall(r'(?:(.+?: \S+)\s?)', header['QOS'])))
+
     xaxis = dataframe.T_experiment.tolist()
     y11 = dataframe['latency_min (ms)'].tolist()
     y12 = dataframe['latency_max (ms)'].tolist()
@@ -139,13 +151,13 @@ def create_layout(header, dataframe):
                 },
             },
             {
-                'caption': 'Resource usage',
+                'caption': 'Resource usage ({})'.format(GETRUSAGE),
                 'xlabel': 'time',
                 'ylabel': 'usage',
                 'traces': [
-                    {'name': 'min', 'x': xaxis, 'y': y21},
-                    {'name': 'max', 'x': xaxis, 'y': y22},
-                    {'name': 'nivcsw', 'x': xaxis, 'y': y23},
+                    {'name': 'ru_minflt', 'x': xaxis, 'y': y21},
+                    {'name': 'ru_majflt', 'x': xaxis, 'y': y22},
+                    {'name': 'ru_nivcsw', 'x': xaxis, 'y': y23},
                 ],
                 'xrange': [min(xaxis) - 5, max(xaxis) + 5],
                 'yrange': [min([*y21, *y22, *y23]) - 2500, max([*y21, *y22, *y23]) + 2500],
@@ -163,14 +175,18 @@ def create_layout(header, dataframe):
                 create_kv(header, 'Number of subscribers'),
                 create_kv(header, 'Maximum runtime (sec)'),
                 create_kv(header, 'DDS domain id'),
-                # create_kv(header, 'QOS'),
                 create_kv(header, 'Use ros SHM', boolish=True),
                 create_kv(header, 'Use single participant', boolish=True),
                 create_kv(header, 'Not using waitset', boolish=True),
                 create_kv(header, 'Not using Connext DDS Micro INTRA', boolish=True),
+                create_kv(header, 'QOS Reliability'),
+                create_kv(header, 'QOS Durability'),
+                create_kv(header, 'QOS History kind'),
+                create_kv(header, 'QOS History depth'),
             ]},
-            {'name': 'results', 'items': [
-                *[create_kv(means, key) for key in means.keys() if not key.startswith('ru_')],
+            {'name': 'average results', 'items': [
+                *[create_kv(means, key) for key in means.keys()
+                  if key != 'T_experiment' and not key.startswith('ru_')],
             ]},
             {'name': 'environment', 'items': [
                 *[create_kv(header, key) for key in set(header.keys()) - header_fields],
