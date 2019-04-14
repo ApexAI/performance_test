@@ -273,7 +273,7 @@ ResourceManager::opendds_participant() const
 {
   std::lock_guard<std::mutex> lock(m_global_mutex);
   
-  if (!CORBA::is_nil(m_opendds_participant)) {
+  if (CORBA::is_nil(m_opendds_participant)) {
      TheServiceParticipant->set_default_discovery(::OpenDDS::DCPS::Discovery::DEFAULT_RTPS);
      const std::string config_name = "PerfTestConfig";
      OpenDDS::DCPS::TransportConfig_rch config = TheTransportRegistry->create_config(config_name);
