@@ -144,11 +144,12 @@ public:
   /// Constructor which takes a reference \param lock to the lock to use.
   explicit OpenDDSCommunicator(SpinLock & lock)
   : Communicator(lock),
-    m_participant(ResourceManager::get().opendds_participant()),
     m_datawriter(nullptr),
     m_datareader(nullptr),
     m_typed_datareader(nullptr)
   {
+
+    m_participant = ResourceManager::get().opendds_participant();
     register_topic();
   }
 
