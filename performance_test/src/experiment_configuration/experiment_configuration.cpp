@@ -149,6 +149,13 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
       throw std::invalid_argument(
               "You must compile with ConnextDDSMicro support to enable it as communication mean.");
 #endif
+    } else if (vm["communication"].as<std::string>() == "OpenDDS") {
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+      m_com_mean = CommunicationMean::OPENDDS;
+#else
+      throw std::invalid_argument(
+              "You must compile with OpenDDS support to enable it as communication mean");
+#endif
     }
 
     if (vm.count("dds_domain_id")) {
