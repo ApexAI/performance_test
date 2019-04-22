@@ -89,8 +89,9 @@ public:
     if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_LAST) {
       return static_cast<int32_t>(m_qos.history_depth);
     } else if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_ALL) {
-      // Keep all, keeps all. No depth required, but setting to dummy value.
-      return 1;
+      // Keep all, keeps all. No depth required, but returning it in order to use it
+      // as a resource_limits value.
+      return static_cast<int32_t>(m_qos.history_depth);
     } else {
       throw std::runtime_error("Unsupported QOS!");
     }
@@ -161,8 +162,8 @@ public:
       wparam.topic.topicName = Topic::topic_name();
       wparam.topic.historyQos.kind = qos.history_kind();
       wparam.topic.historyQos.depth = qos.history_depth();
-      wparam.topic.resourceLimitsQos.max_samples = 100;
-      wparam.topic.resourceLimitsQos.allocated_samples = 100;
+      wparam.topic.resourceLimitsQos.max_samples = qos.history_depth();
+      wparam.topic.resourceLimitsQos.allocated_samples = qos.history_depth();
       wparam.times.heartbeatPeriod.seconds = 2;
       wparam.times.heartbeatPeriod.fraction = 200 * 1000 * 1000;
       wparam.qos.m_reliability.kind = qos.reliability();
@@ -197,8 +198,8 @@ public:
       rparam.topic.topicName = Topic::topic_name();
       rparam.topic.historyQos.kind = qos.history_kind();
       rparam.topic.historyQos.depth = qos.history_depth();
-      rparam.topic.resourceLimitsQos.max_samples = 100;
-      rparam.topic.resourceLimitsQos.allocated_samples = 100;
+      rparam.topic.resourceLimitsQos.max_samples = qos.history_depth();
+      rparam.topic.resourceLimitsQos.allocated_samples = qos.history_depth();
       rparam.qos.m_reliability.kind = qos.reliability();
       rparam.qos.m_durability.kind = qos.durability();
       m_subscriber = eprosima::fastrtps::Domain::createSubscriber(m_participant, rparam);
