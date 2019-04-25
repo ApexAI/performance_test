@@ -95,6 +95,11 @@ public:
       throw std::runtime_error("Unsupported QOS!");
     }
   }
+  /// Returns the number of samples to be allocated on the history
+  int32_t resource_limits_samples() const
+  {
+    return static_cast<int32_t>(m_qos.history_depth);
+  }
   /// Returns the publish mode policy from the stored abstract QOS setting.
   inline eprosima::fastrtps::PublishModeQosPolicyKind publish_mode() const
   {
@@ -161,8 +166,8 @@ public:
       wparam.topic.topicName = Topic::topic_name();
       wparam.topic.historyQos.kind = qos.history_kind();
       wparam.topic.historyQos.depth = qos.history_depth();
-      wparam.topic.resourceLimitsQos.max_samples = 100;
-      wparam.topic.resourceLimitsQos.allocated_samples = 100;
+      wparam.topic.resourceLimitsQos.max_samples = qos.resource_limits_samples();
+      wparam.topic.resourceLimitsQos.allocated_samples = qos.resource_limits_samples();
       wparam.times.heartbeatPeriod.seconds = 2;
       wparam.times.heartbeatPeriod.fraction = 200 * 1000 * 1000;
       wparam.qos.m_reliability.kind = qos.reliability();
@@ -197,8 +202,8 @@ public:
       rparam.topic.topicName = Topic::topic_name();
       rparam.topic.historyQos.kind = qos.history_kind();
       rparam.topic.historyQos.depth = qos.history_depth();
-      rparam.topic.resourceLimitsQos.max_samples = 100;
-      rparam.topic.resourceLimitsQos.allocated_samples = 100;
+      rparam.topic.resourceLimitsQos.max_samples = qos.resource_limits_samples();
+      rparam.topic.resourceLimitsQos.allocated_samples = qos.resource_limits_samples();
       rparam.qos.m_reliability.kind = qos.reliability();
       rparam.qos.m_durability.kind = qos.durability();
       m_subscriber = eprosima::fastrtps::Domain::createSubscriber(m_participant, rparam);
