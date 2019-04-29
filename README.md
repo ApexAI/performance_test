@@ -111,3 +111,8 @@ ros2 run performance_test -c ROS2 -t Array1k
 `ERROR: You must compile with FastRTPS support to enable FastRTPS as communication mean.`
 
 You need to build with `--cmake-args -DPERFORMANCE_TEST_FASTRTPS_ENABLED=ON` to switch from ROS 2 to FastRTPS.
+
+# Known Limitations
+
+* FastRTPS waitset does not support a timeout which can lead to the receiving not aborting. In that case the performance test must be manually killed.
+
