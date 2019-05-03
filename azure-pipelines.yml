@@ -36,3 +36,4 @@ steps:
         --base-path performance_test && \
       colcon test-result --verbose
     displayName: Test performance_test
+
