@@ -1,3 +1,6 @@
+# Build Status
+[![Build Status](https://dev.azure.com/ApexAI/performance_test/_apis/build/status/ApexAI.performance_test?branchName=master)](https://dev.azure.com/ApexAI/performance_test/_build/latest?definitionId=2&branchName=master)
+
 # Introduction
 
 **Version Support:** ROS2 Crystal, Fast-RTPS 1.7.0
