@@ -120,7 +120,6 @@ protected:
     }
   }
 #endif
-
 };
 
 }  // namespace performance_test
