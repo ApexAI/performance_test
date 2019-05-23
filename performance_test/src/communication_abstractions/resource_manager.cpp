@@ -286,6 +286,7 @@ ResourceManager::opendds_participant() const
      config->instances_.push_back(trans_inst);
      TheTransportRegistry->global_config(config);
 
+     ACE::init();
      DDS::DomainParticipantFactory_var participant_factory = TheServiceParticipant->TheParticipantFactory;
 
      ::DDS::DomainParticipantFactoryQos factory_qos;
