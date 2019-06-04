@@ -93,8 +93,11 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "Maximum number of subscriber threads.")("use_ros_shm",
     "Use Ros SHM support.")("check_memory",
     "Prints backtrace of all memory operations performed by the middleware. "
-    "This will slow down the application!")("use_drive_px_rt",
-    "Enable RT. Only the Drive PX has the right configuration to support this.")(
+    "This will slow down the application!")("use_rt_prio", po::value<int32_t>()->default_value(0),
+    "Set RT priority. Only certain platforms (i.e. Drive PX) have the right configuration to support this.")(
+    "use_rt_cpus", po::value<uint32_t>()->default_value(0),
+    "Set RT cpu affinity mask. Only certain platforms (i.e. Drive PX) have the right configuration to support this.")(
+    "use_drive_px_rt", "alias for --use_rt_prio 5 --use_rt_cpus 62")(
     "use_single_participant",
     "Uses only one participant per process. By default every thread has its own.")("no_waitset",
     "Disables the wait set for new data. The subscriber takes as fast as possible.")(
@@ -199,9 +202,15 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
       }
       m_use_ros_shm = true;
     }
+    int32_t prio = vm["use_rt_prio"].as<int32_t>();
+    uint32_t cpus = vm["use_rt_cpus"].as<uint32_t>();
     if (vm.count("use_drive_px_rt")) {
       // Set Drive-px CPU mask "62" cpu 0-5 and real time priority of 5
-      pre_proc_rt_init(62, 5);
+      prio = 5;
+      cpus = 62;
+    }
+    if (prio != 0 || cpus != 0) {
+      pre_proc_rt_init(cpus, prio);
       m_is_drivepx_rt = true;
     }
     m_use_single_participant = false;
