@@ -94,9 +94,11 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "Use Ros SHM support.")("check_memory",
     "Prints backtrace of all memory operations performed by the middleware. "
     "This will slow down the application!")("use_rt_prio", po::value<int32_t>()->default_value(0),
-    "Set RT priority. Only certain platforms (i.e. Drive PX) have the right configuration to support this.")(
+    "Set RT priority. "
+    "Only certain platforms (i.e. Drive PX) have the right configuration to support this.")(
     "use_rt_cpus", po::value<uint32_t>()->default_value(0),
-    "Set RT cpu affinity mask. Only certain platforms (i.e. Drive PX) have the right configuration to support this.")(
+    "Set RT cpu affinity mask. "
+    "Only certain platforms (i.e. Drive PX) have the right configuration to support this.")(
     "use_drive_px_rt", "alias for --use_rt_prio 5 --use_rt_cpus 62")(
     "use_single_participant",
     "Uses only one participant per process. By default every thread has its own.")("no_waitset",
