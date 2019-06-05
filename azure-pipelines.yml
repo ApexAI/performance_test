@@ -7,7 +7,7 @@ trigger:
     - README.md
 
 container:
-  image: osrf/ros:crystal-desktop
+  image: ros:dashing
   options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
 
 steps:
@@ -15,14 +15,14 @@ steps:
       /tmp/docker exec -t -u 0 ci-container \
       sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
     displayName: Set up sudo
-  - script: sudo apt-get update && sudo apt-get install -y ros-crystal-osrf-testing-tools-cpp default-jre
+  - script: sudo apt-get update && sudo apt-get install -y ros-dashing-osrf-testing-tools-cpp default-jre
     displayName: Install APT dependencies
   - script: sudo apt-get install -y python3-colcon-common-extensions
     displayName: Install colcon
   - script: rosdep update && rosdep install -y --from performance_test --ignore-src
     displayName: Install ROS dependencies
   - script: |
-      source /opt/ros/crystal/setup.bash && \
+      source /opt/ros/dashing/setup.bash
       colcon build \
         --merge-install \
         --cmake-args \
@@ -30,9 +30,9 @@ steps:
         --base-path performance_test
     displayName: Build performance_test
   - script: |
-      source /opt/ros/crystal/setup.bash && \
+      source /opt/ros/dashing/setup.bash
       colcon test \
         --merge-install \
-        --base-path performance_test && \
+        --base-path performance_test
       colcon test-result --verbose
     displayName: Test performance_test
