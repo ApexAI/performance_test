@@ -7,7 +7,7 @@ trigger:
     - README.md
 
 container:
-  image: ros:dashing
+  image: osrf/ros:crystal-desktop
   options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
 
 steps:
