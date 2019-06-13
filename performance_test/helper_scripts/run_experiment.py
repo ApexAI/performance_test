@@ -12,17 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Script to run a batch of performance experiments."""
+from enum import Enum
+import itertools
 import os
 import signal
 import subprocess
 import sys
-import itertools
-from enum import Enum
 
 experiment_length = 120  # In seconds
 
 
 class Type(Enum):
+    """Define the enumeration for the experiment types."""
+
     PUBLISHER = 0
     SUBSCRIBER = 1
     BOTH = 2
@@ -37,19 +40,24 @@ class Instance:
 
         :param operation_type: Type of the operation
         """
-        topics = ['Array1k', 'Array4k', 'Array16k', 'Array32k', 'Array60k', 'Array1m', 'Array2m',
-                  'Struct16', 'Struct256', 'Struct4k', 'Struct32k', 'PointCloud512k',
-                  'PointCloud1m', 'PointCloud2m', 'PointCloud4m', 'Range', 'NavSatFix',
-                  'RadarDetection', 'RadarTrack']
+        topics = [
+            'Array1k', 'Array4k', 'Array16k', 'Array32k', 'Array60k',
+            'Array1m', 'Array2m', 'Struct16', 'Struct256', 'Struct4k',
+            'Struct32k', 'PointCloud512k', 'PointCloud1m', 'PointCloud2m',
+            'PointCloud4m', 'Range', 'NavSatFix', 'RadarDetection',
+            'RadarTrack'
+        ]
 
-        rates = ['50', '1000']
+        rates = ['20', '50', '1000']
 
         num_subs = ['1', '3', '10']
 
         reliability = ['', '--reliable']
         durability = ['', '--transient']
 
-        self.product = list(itertools.product(topics, rates, num_subs, reliability, durability))
+        self.product = list(itertools.product(
+            topics, rates, num_subs, reliability, durability)
+        )
         self.process = None
 
         self.type = operation_type
@@ -66,17 +74,22 @@ class Instance:
 
         self.process = subprocess.Popen(self.cmd(index), shell=True)
 
-        # Comment out the following lines to run the experiments with soft realtime priority.
-        # We sleeping here to make sure the process is started before changing its priority.
+        # Comment out the following lines to run the experiments
+        # with soft realtime priority.
+        # We sleeping here to make sure the process is started before
+        # changing its priority.
         # time.sleep(2)
         # Enabling (pseudo-)realtime
-        # subprocess.Popen('chrt -p 99 $(ps -o pid -C 'perf_test' --no-headers)', shell=True)
+        # subprocess.Popen(
+        #     'chrt -p 99 $(ps -o pid -C 'perf_test' --no-headers)', shell=True
+        # )
 
     def cmd(self, index):
         """
         Return the command line necessary to execute the performance test.
 
-        :param index: The test configuration the returned command line should contain.
+        :param index: The test configuration the returned command line should
+            contain.
         :return: The command line argument to execute the performance test.
         """
         command = 'ros2 run  performance_test perf_test'
@@ -98,9 +111,9 @@ class Instance:
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         fixed_args = ' --communication ROS2 '
-        dyn_args = \
-            '-l \'' + dir_name + '/log\' ' + '--topic ' + \
-            c[0] + ' --rate ' + c[1] + ' -s ' + c[2] + ' ' + c[3] + ' ' + c[4]
+        dyn_args = "-l '{}/log' --topic {} --rate {} -s {} {} {}".format(
+            dir_name, c[0], c[1], c[2], c[3], c[4]
+        )
 
         return command + ' ' + fixed_args + dyn_args + pubs_args
 
@@ -114,6 +127,7 @@ class Instance:
         return len(self.product)
 
     def __del__(self):
+        """Kill the associated performance test process."""
         self.kill()
 
 
