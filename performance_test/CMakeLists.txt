@@ -169,6 +169,10 @@ endif()
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
     ament_lint_auto_find_test_dependencies()
+
+    find_package(launch_testing_ament_cmake REQUIRED)
+    add_launch_test(test/66_qos_liveliness_test.py)
+
     set(APEX_PERFORMANCE_TEST_GTEST apex_performance_test_gtest)
 
     find_package(ament_cmake_gtest REQUIRED)
@@ -180,6 +184,7 @@ if(BUILD_TESTING)
     target_link_libraries(${APEX_PERFORMANCE_TEST_GTEST})
 
     set_compile_options(${APEX_PERFORMANCE_TEST_GTEST})
+
 endif()
 
 
