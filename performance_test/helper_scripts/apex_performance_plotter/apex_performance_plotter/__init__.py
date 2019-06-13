@@ -54,7 +54,7 @@ def load_logfile(filename):
             item.split(':')[0].strip(): item.split(':', maxsplit=1)[1].strip()
             for item in itertools.takewhile(lambda x: not x.startswith('---'), source)
         }
-        dataframe = pandas.read_csv(source, sep="[ \t]*,[ \t]*", engine='python')
+        dataframe = pandas.read_csv(source, sep='[ \t]*,[ \t]*', engine='python')
         unnamed = [col for col in dataframe.keys() if col.startswith('Unnamed: ')]
         if unnamed:
             dataframe.drop(unnamed, axis=1, inplace=True)
@@ -113,7 +113,7 @@ def create_layout(header, dataframe):
     y13 = dataframe['latency_mean (ms)'].tolist()
     y14 = (dataframe['latency_variance (ms)'] * 100).tolist()
 
-    yr11 = (dataframe["ru_maxrss"] / 1e3).tolist()
+    yr11 = (dataframe['ru_maxrss'] / 1e3).tolist()
 
     y21 = dataframe['ru_minflt'].tolist()
     y22 = dataframe['ru_majflt'].tolist()
