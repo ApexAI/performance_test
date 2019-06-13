@@ -13,11 +13,14 @@
 # limitations under the License.
 
 import os
+import unittest
 
 import ament_index_python
 
 import launch
 import launch.actions
+
+import launch_testing
 
 TEST_PROC_PATH = os.path.join(
     ament_index_python.get_package_prefix('performance_test'),
@@ -49,3 +52,13 @@ def generate_test_description(ready_fn):
         # Start tests right away - no need to wait for anything
         launch.actions.OpaqueFunction(function=lambda context: ready_fn()),
     ])
+
+
+@launch_testing.post_shutdown_test()
+class TestProcessOutput(unittest.TestCase):
+
+    def test_main_relay(self):
+        print("Process output")
+        complete_output = [pout.from_stdout for pout in self.proc_output]
+        self.assertEquals(complete_output, "foo")
+        launch_testing.asserts.assertExitCodes(self.proc_info)
