@@ -13,7 +13,7 @@ container:
 steps:
   - script: |
       /tmp/docker exec -t -u 0 ci-container \
-      sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+      sh -c 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo'
     displayName: Set up sudo
   - script: sudo apt-get update && sudo apt-get install -y ros-dashing-osrf-testing-tools-cpp default-jre
     displayName: Install APT dependencies
