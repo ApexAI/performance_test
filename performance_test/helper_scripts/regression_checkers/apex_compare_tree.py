@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """Script to compare result trees of apex experiments."""
+import argparse
 import sys
 
 import ApexComparison
@@ -22,20 +23,58 @@ if __name__ == '__main__':
     # Get logger configured logger
     logger = ApexComparison.get_logger()
     # Get arguments
-    arguments = ApexComparison.parse_arguments(
-        logger=logger, arguments=sys.argv
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    if not arguments:
-        ApexComparison.print_help_tree(logger, sys.argv[0])
-        exit(1)
+    parser.add_argument(
+        'reference_directory',
+        type=ApexComparison.directory_type,
+        help='Reference directory for comparison'
+    )
+    parser.add_argument(
+        'target_directory',
+        type=ApexComparison.directory_type,
+        help='Target directory for comparison'
+    )
+    parser.add_argument(
+        '-l',
+        '--latency_threshold',
+        type=ApexComparison.percentage_float,
+        help='A tolerance percentage over the reference latency',
+        required=False,
+        default=5
+    )
+    parser.add_argument(
+        '-r', '--rss_threshold',
+        type=ApexComparison.percentage_float,
+        help='A tolerance percentage over the reference RSS',
+        required=False,
+        default=5
+    )
+    parser.add_argument(
+        '-j',
+        '--jitter_threshold',
+        type=ApexComparison.percentage_float,
+        help='A tolerance percentage over the reference jitter',
+        required=False,
+        default=5
+    )
+    parser.add_argument(
+        '-p',
+        '--print_results',
+        type=ApexComparison.bool_type,
+        help='Enable result printing and logging',
+        required=False,
+        default=True
+    )
+    args = parser.parse_args()
 
-    script_name = arguments['script_name']
-    ref_dir = arguments['ref_dir']
-    target_dir = arguments['target_dir']
-    latency_threshold = arguments['latency_threshold']
-    rss_threshold = arguments['rss_threshold']
-    jitter_threshold = arguments['jitter_threshold']
-    print_results = arguments['print_results']
+    ref_dir = args.reference_directory
+    target_dir = args.target_directory
+    latency_threshold = args.latency_threshold
+    rss_threshold = args.rss_threshold
+    jitter_threshold = args.jitter_threshold
+    print_results = args.print_results
 
     # Log files column names
     columns_ids = ApexComparison.get_column_ids()
@@ -66,7 +105,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # Begin comparisons
-    exit_value = 0
+    exit_value = 0  # An exit value of 0 means signifies
     for i in range(0, len(ref_files_list)):
         try:
             ref_file = ref_files_list[i]
@@ -84,12 +123,11 @@ if __name__ == '__main__':
                 jitter_threshold=jitter_threshold,
                 print_enable=print_results
             )
-            ret = comparision.compare()
-            if ret > 0:
-                exit_value = ret
+            if comparision.compare() is False:
+                exit_value = 1  # An exit value of 1 signifies failure
         except Exception as e:
             logger.warning('Exception occurred: {}'.format(e))
-            exit_value = 1
+            exit_value = 1  # An exit value of 1 signifies failure
 
     logger.info('Script exit value: {}'.format(exit_value))
     sys.exit(exit_value)

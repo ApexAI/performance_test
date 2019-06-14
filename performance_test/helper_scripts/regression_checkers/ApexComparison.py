@@ -13,18 +13,23 @@
 # limitations under the License.
 
 """Provives tools to compare 2 apex performance log files."""
+import argparse
 import csv
 from datetime import datetime
 import itertools
 import logging
 from os import listdir
-from os.path import isfile
+from os.path import isdir, isfile
 from os.path import join
 import time
 
 
 class ApexComparision():
     """Class to perform a comparison between 2 test log files."""
+
+    WORSE = 'WORSE'
+    SIMILAR = 'SIMILAR'
+    BETTER = 'BETTER'
 
     def __init__(self, logger, ref_file, target_file, columns_ids,
                  columns_of_interest, latency_threshold=5, rss_threshold=0,
@@ -56,9 +61,6 @@ class ApexComparision():
         self.rss_threshold = rss_threshold
         self.jitter_threshold = jitter_threshold
         self.print_enable = print_enable
-        self.WORSE = 'WORSE'
-        self.SIMILAR = 'SIMILAR'
-        self.BETTER = 'BETTER'
 
     def _read_file_results(self, file):
         """
@@ -117,15 +119,15 @@ class ApexComparision():
         """Get the maximum rss of a set of results."""
         return max(results[self.columns_of_interest[1]])
 
-    def _analyse(self):
+    def _analyze(self):
         """
-        Analyse the results.
+        Analyze the results.
 
         :return: The result of the analysis:
-            0 if comparison yields better results than the reference
-            1 otherwise.
+            True if comparison yields better results than the reference
+            False otherwise.
         """
-        return_value = 0
+        return_value = True
 
         self.lat_analysis = self.WORSE
         self.lat_diff = self.target_latency_min - self.ref_latency_min
@@ -135,7 +137,7 @@ class ApexComparision():
         elif self.lat_perc <= self.latency_threshold:
             self.lat_analysis = self.SIMILAR
         else:
-            return_value = 1
+            return_value = False
 
         self.rss_analysis = self.WORSE
         self.rss_diff = self.target_max_rss - self.ref_max_rss
@@ -145,7 +147,7 @@ class ApexComparision():
         elif self.rss_perc <= self.rss_threshold:
             self.rss_analysis = self.SIMILAR
         else:
-            return_value = 1
+            return_value = False
 
         self.ref_jitternalysis = self.WORSE
         self.jitter_diff = self.max_target_jitter - self.max_ref_jitter
@@ -155,11 +157,11 @@ class ApexComparision():
         elif self.jitter_perc <= self.jitter_threshold:
             self.ref_jitternalysis = self.SIMILAR
         else:
-            return_value = 1
+            return_value = False
 
         return return_value
 
-    def _print_results(self):
+    def _print_results(self, comparison_passed):
         """Print and logs the results."""
         # Show results
         self.logger.info('RESULTS')
@@ -194,7 +196,7 @@ class ApexComparision():
         )
         self.logger.info('---------------------------------------------------')
         self.logger.info('FINAL RESULT')
-        if self.return_value == 0:
+        if comparison_passed is True:
             self.logger.info('Comparison passed =)')
         else:
             self.logger.warning('Comparison failed =(')
@@ -225,8 +227,8 @@ class ApexComparision():
         Compare the files.
 
         :return: The result of the analysis.
-            0 if comparison yields better results than the reference
-            1 otherwise
+            True if comparison yields better results than the reference
+            False otherwise
         """
         self._print_start()
 
@@ -251,75 +253,81 @@ class ApexComparision():
         self.max_ref_jitter = max(self.ref_jitter)
         self.max_target_jitter = max(self.target_jitter)
 
-        self.return_value = self._analyse()
+        return_value = self._analyze()
         if (self.print_enable):
-            self._print_results()
+            self._print_results(return_value)
 
-        return self.return_value
+        return return_value
 
 
-def bool_cast(string):
+def bool_type(string):
     """
-    Cast a string to a boolean.
+    Check whether a string represents a boolean.
 
-    :param string (str): The string to cast. Supported values are:
-            - yes, y, true, y, 1, no, n, false, f, 0. Both lower and upper case
+    :param string (str): Supported values are (Both lower and upper case):
+            - yes, y, true, y, 1, no, n, false, f, 0.
     :return: The boolean representation of the string.
-    :raise: ValueError if the argument is not a string or
-        if it is not supported.
+    :raise: argparse.ArgumentTypeError if the argument is not supported.
     """
-    # Check whether input is a string
-    if not isinstance(string, str):
-        raise ValueError
     # Convert to lower case
     string = string.lower()
     true_tuple = ('yes', 'y', 'true', 't', '1')
     false_tuple = ('no', 'n', 'false', 'f', '0')
 
     if string not in true_tuple and string not in false_tuple:
-        raise ValueError
+        raise argparse.ArgumentTypeError(
+            '"{}" not supported. Supported are: {} and {}'.format(
+                string, true_tuple, false_tuple
+            )
+        )
     else:
         return string in true_tuple
 
 
-def print_help_tree(logger, script_name):
+def percentage_float(x):
     """
-    Print and logs script help.
+    Chech whether the float is a percentage.
 
-    :param logger (logging.logger): The logger to use.
-    :param script_name (str): The name of the script to show.
+    :param x: The value to check
+    :return: The float reprentation of the argument.
+    :raise: argparse.ArgumentTypeError if the argument is not in [0, 100].
     """
-    logger.debug(
-        'USAGE: python3 {} <ref_dir> <target_dir> [OPTIONS]'.format(
-            script_name
+    x = float(x)
+    if x < 0 or x > 100:
+        raise argparse.ArgumentTypeError('{} not in range [0, 100]'.format(x))
+    return x
+
+
+def directory_type(directory):
+    """
+    Check whether the argument is a directory.
+
+    :param directory: The directory path.
+    :return: The directory path without ending /.
+    :raise: argparse.ArgumentTypeError if the argument is not a directory.
+    """
+    if directory.endswith('/'):
+        directory = directory[:-1]
+    if not isdir(directory):
+        raise argparse.ArgumentTypeError(
+            'Cannot find directory "{}"'.format(directory)
         )
-    )
-    logger.debug('  Allowed options:')
-    logger.debug('    --latency_threshold arg (=5)')
-    logger.debug('    --rss_threshold arg (=0)')
-    logger.debug('    --jitter_threshold arg (=5)')
-    logger.debug('    --print_results arg (=True)')
-    logger.debug('')
+    return directory
 
 
-def print_help(logger, script_name):
+def file_type(f):
     """
-    Print and logs script help.
+    Check whether the argument is a file.
 
-    :param logger (logging.logger): The logger to use.
-    :param script_name (str): The name of the script to show.
+    :param f: The file path.
+    :return: The file path.
+    :raise: argparse.ArgumentTypeError if the argument is not a file.
     """
-    logger.debug(
-        'USAGE: python3 {} <ref_file> <target_file> [OPTIONS]'.format(
-            script_name
+    if not isfile(f):
+        raise argparse.ArgumentTypeError(
+            'Cannot find file "{}"'.format(f)
         )
-    )
-    logger.debug('  Allowed options:')
-    logger.debug('    --latency_threshold arg (=5)')
-    logger.debug('    --rss_threshold arg (=0)')
-    logger.debug('    --jitter_threshold arg (=5)')
-    logger.debug('    --print_results arg (=True)')
-    logger.debug('')
+    return f
 
 
 def get_logger():
@@ -347,144 +355,6 @@ def get_logger():
     logger.addHandler(c_handler)
     logger.addHandler(f_handler)
     return logger
-
-
-def parse_arguments(logger, arguments):
-    """
-    Parse the script arguments for Apex Comparisons.
-
-    :param logger (logging.logger): The logger to use.
-    :param arguments (list): The script arguments.
-
-    :return:
-        A dictionary containing the script arguments.
-        None if there are wrong arguments.
-
-    """
-    # Supported ptional arguments
-    valid_args = [
-        '--latency_threshold',
-        '--rss_threshold',
-        '--jitter_threshold',
-        '--print_results'
-    ]
-
-    # Initialize optional arguments to default values
-    latency_threshold = 5
-    rss_threshold = 0
-    jitter_threshold = 5
-    print_results = True
-
-    # Get arguments
-    script_name = arguments[0]
-
-    number_of_arguments = len(arguments)
-    # Wrong number of arguments
-    if number_of_arguments < 3 or number_of_arguments > 11:
-        logger.error('Wrong number of arguments')
-        return None
-    # Parse arguments
-    else:
-        # Get directories
-        ref_dir = arguments[1]
-        if ref_dir.endswith('/'):
-            ref_dir = ref_dir[:-1]  # Remove last frontslash
-
-        target_dir = arguments[2]
-        if target_dir.endswith('/'):
-            target_dir = target_dir[:-1]  # Remove last frontslash
-
-        # Loop optional arguments
-        i = 3
-        while i < number_of_arguments:
-            argument = arguments[i]
-            # Check if argument is valid
-            if argument in valid_args:
-                # Check that there is a next argument
-                if number_of_arguments <= i + 1:
-                    logger.error('Cannot find value for "{}"'.format(argument))
-                    return None
-                # Check if value is latency_threshold
-                elif argument == valid_args[0]:
-                    # Cast to int
-                    try:
-                        latency_threshold = int(arguments[i + 1])
-                    except ValueError:
-                        logger.error('Incorrect argument in {}'.format(
-                            valid_args[0])
-                        )
-                        return None
-                    # Check if value is a percentage
-                    if latency_threshold >= 0 and latency_threshold <= 100:
-                        i += 1
-                    else:
-                        logger.error('Incorrect argument in {}'.format(
-                            valid_args[0])
-                        )
-                        return None
-                # Check if value is rss_threshold
-                elif argument == valid_args[1]:
-                    # Cast to int
-                    try:
-                        rss_threshold = int(arguments[i + 1])
-                    except ValueError:
-                        logger.inerrorfo('Incorrect argument in {}'.format(
-                            valid_args[1])
-                        )
-                        return None
-                    # Check if value is a percentage
-                    if rss_threshold >= 0 and rss_threshold <= 100:
-                        i += 1
-                    else:
-                        logger.error('Incorrect argument in {}'.format(
-                            valid_args[1])
-                        )
-                        return None
-                # Check if value is jitter_threshold
-                elif argument == valid_args[2]:
-                    try:
-                        jitter_threshold = int(arguments[i + 1])
-                    except ValueError:
-                        logger.error('Incorrect argument in {}'.format(
-                            valid_args[2])
-                        )
-                        return None
-                    # Check if value is a percentage
-                    if jitter_threshold >= 0 and jitter_threshold <= 100:
-                        i += 1
-                    else:
-                        logger.error('Incorrect argument in {}'.format(
-                            valid_args[2])
-                        )
-                        return None
-                # Check if value is print_results
-                elif argument == valid_args[3]:
-                    # Check if value is boolean
-                    try:
-                        print_results = bool_cast(arguments[i + 1])
-                        i += 1
-                    except ValueError:
-                        logger.error('Incorrect argument in {}'.format(
-                            valid_args[3])
-                        )
-                        return None
-            else:
-                return None
-
-            # Increase loop counter
-            i += 1
-
-    ret = {
-        'script_name': script_name,
-        'ref_dir': ref_dir,
-        'target_dir': target_dir,
-        'latency_threshold': latency_threshold,
-        'rss_threshold': rss_threshold,
-        'jitter_threshold': jitter_threshold,
-        'print_results': print_results,
-    }
-
-    return ret
 
 
 def get_column_ids():
@@ -542,8 +412,9 @@ def get_file_names(directory, sub_dirs):
     for sub_dir in sub_dirs:
         dir_name = '{}/{}'.format(directory, sub_dir)
 
-        files_l = [f for f in listdir(dir_name) if isfile(join(dir_name, f))]
-        files_l.sort()
+        files_l = sorted(
+            f for f in listdir(dir_name) if isfile(join(dir_name, f))
+        )
         files[sub_dir] = files_l
 
     files_list = []
