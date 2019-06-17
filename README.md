@@ -78,6 +78,10 @@ perfplot log_Array1k_19-09-2019_12-13-49
 
 This will generate a file called `log_Array1k_19-09-2019_12-13-49.pdf`.
 
+# Save results to a SQL database
+
+See [Add SQL support readme](add_sql_support_readme.md) for instructions and implementation details.
+
 # Batch run experiments (for advanced users)
 
 Multiple experiments can be run using the following command:

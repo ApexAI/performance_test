@@ -107,6 +107,18 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "with_security", "Enables the security with ROS2")("roundtrip_mode",
     po::value<std::string>()->default_value("None"),
     "Selects the round trip mode (None, Main, Relay).")
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  ("db_name", po::value<std::string>()->default_value("db_name"),
+  "Name of the SQL database.")
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+  ("db_user", po::value<std::string>()->default_value("user"),
+  "User name to login to the SQL database.")("db_password",
+    po::value<std::string>()->default_value("password"),
+    "Password to login to the SQL database.")("db_host",
+    po::value<std::string>()->default_value("127.0.0.1"), "IP address of SQL server.")("db_port",
+    po::value<unsigned int>()->default_value(3306), "Port for SQL protocol.")
+#endif
+#endif
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
@@ -272,6 +284,25 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
         throw std::invalid_argument("Invalid roundtrip mode: " + mode);
       }
     }
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+    if (vm.count("db_name")) {
+      m_db_name = vm["db_name"].as<std::string>();
+    }
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+    if (vm.count("db_user")) {
+      m_db_user = vm["db_user"].as<std::string>();
+    }
+    if (vm.count("db_password")) {
+      m_db_password = vm["db_password"].as<std::string>();
+    }
+    if (vm.count("db_host")) {
+      m_db_host = vm["db_host"].as<std::string>();
+    }
+    if (vm.count("db_port")) {
+      m_db_port = vm["db_port"].as<unsigned int>();
+    }
+#endif
+#endif
     m_is_setup = true;
     // Logfile needs to be opened at the end, as the experiment configuration influences the
     // filename.
@@ -317,6 +348,31 @@ std::string ExperimentConfiguration::topic_name() const
   check_setup();
   return m_topic_name;
 }
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+std::string ExperimentConfiguration::db_name() const
+{
+  check_setup();
+  return m_db_name;
+}
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+std::string ExperimentConfiguration::db_user() const
+{
+  return m_db_user;
+}
+std::string ExperimentConfiguration::db_password() const
+{
+  return m_db_password;
+}
+std::string ExperimentConfiguration::db_host() const
+{
+  return m_db_host;
+}
+unsigned int ExperimentConfiguration::db_port() const
+{
+  return m_db_port;
+}
+#endif
+#endif
 uint64_t ExperimentConfiguration::max_runtime() const
 {
   check_setup();

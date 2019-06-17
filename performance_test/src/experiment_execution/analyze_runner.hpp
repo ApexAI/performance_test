@@ -23,6 +23,9 @@
 #include "../data_running/data_runner_factory.hpp"
 #include "../experiment_configuration/experiment_configuration.hpp"
 
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  #include <odb/database.hxx>
+#endif
 
 namespace performance_test
 {
@@ -49,9 +52,10 @@ private:
    * \param loop_diff_start
    * \param experiment_diff_start
    */
+
   void analyze(
-    const std::chrono::duration<double> loop_diff_start,
-    const std::chrono::duration<double> experiment_diff_start) const;
+    const std::chrono::nanoseconds loop_diff_start,
+    const std::chrono::nanoseconds experiment_diff_start) const;
 
   /**
    * \brief Checks if the experiment is finished.
@@ -65,6 +69,10 @@ private:
   std::vector<std::shared_ptr<DataRunnerBase>> m_pub_runners;
   std::vector<std::shared_ptr<DataRunnerBase>> m_sub_runners;
   mutable bool m_is_first_entry;
+
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  std::unique_ptr<odb::core::database> m_db;
+#endif
 };
 
 }  // namespace performance_test

@@ -11,11 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 #include <boost/algorithm/string.hpp>
-
 #include <algorithm>
 #include <cstdlib>
+#include <cstddef>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -25,6 +24,25 @@
 
 #include "analysis_result.hpp"
 
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  #include <odb/database.hxx>
+  #include <memory>
+  #ifdef PERFORMANCE_TEST_ODB_SQLITE
+    #include <odb/sqlite/database.hxx>
+  #endif
+  #ifdef PERFORMANCE_TEST_ODB_MYSQL
+    #include <odb/mysql/database.hxx>
+  #endif
+  #ifdef PERFORMANCE_TEST_ODB_PGSQL
+    #include <odb/pgsql/database.hxx>
+  #endif
+  #include <odb/transaction.hxx>
+  #include <odb/schema-catalog.hxx>
+
+  #include "experiment_configuration_odb.hpp"
+  #include "analysis_result_odb.hpp"
+#endif
+
 
 namespace performance_test
 {
@@ -32,6 +50,9 @@ namespace performance_test
 AnalyzeRunner::AnalyzeRunner()
 : m_ec(ExperimentConfiguration::get()),
   m_is_first_entry(true)
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  , m_db()
+#endif
 {
   std::stringstream os;
   os << m_ec;
@@ -54,6 +75,28 @@ AnalyzeRunner::AnalyzeRunner()
     m_sub_runners.push_back(DataRunnerFactory::get(m_ec.topic_name(), m_ec.com_mean(),
       RunType::SUBSCRIBER));
   }
+
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_SQLITE
+  m_db = std::unique_ptr<odb::core::database>(new odb::sqlite::database(
+        m_ec.db_name(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
+#elif PERFORMANCE_TEST_ODB_MYSQL
+  m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(
+        m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
+#elif PERFORMANCE_TEST_ODB_PGSQL
+  m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(
+        m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
+#endif
+  {
+    odb::core::transaction t(m_db->begin());
+    try {
+      m_db->query<ExperimentConfiguration>(false);
+    } catch (const odb::exception & e) {
+      odb::core::schema_catalog::create_schema(*m_db);
+    }
+    t.commit();
+  }
+#endif
 }
 
 void AnalyzeRunner::run() const
@@ -62,6 +105,10 @@ void AnalyzeRunner::run() const
   m_ec.log(AnalysisResult::csv_header(true));
 
   const auto experiment_start = std::chrono::steady_clock::now();
+
+  #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  odb::core::transaction t(m_db->begin());
+  #endif
 
   while (!check_exit(experiment_start)) {
     const auto loop_start = std::chrono::steady_clock::now();
@@ -82,11 +129,16 @@ void AnalyzeRunner::run() const
     auto experiment_diff_start = now - experiment_start;
     analyze(loop_diff_start, experiment_diff_start);
   }
+
+  #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  m_db->persist(m_ec);
+  t.commit();
+  #endif
 }
 
 void AnalyzeRunner::analyze(
-  const std::chrono::duration<double> loop_diff_start,
-  const std::chrono::duration<double> experiment_diff_start) const
+  const std::chrono::nanoseconds loop_diff_start,
+  const std::chrono::nanoseconds experiment_diff_start) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -120,7 +172,7 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
-  AnalysisResult result(
+  auto result = std::make_shared<AnalysisResult>(
     experiment_diff_start,
     loop_diff_start,
     sum_received_samples,
@@ -132,7 +184,14 @@ void AnalyzeRunner::analyze(
     StatisticsTracker(ltr_sub_vec)
   );
 
-  m_ec.log(result.to_csv_string(true));
+  m_ec.log(result->to_csv_string(true));
+
+  #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  result->set_configuration(&m_ec);
+  m_ec.get_results().push_back(result);
+
+  m_db->persist(result);
+  #endif
 }
 
 bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_start) const
