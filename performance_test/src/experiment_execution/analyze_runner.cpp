@@ -25,6 +25,10 @@
 
 #include "analysis_result.hpp"
 
+#include <memory>
+#include <odb/database.hxx>
+#include <odb/sqlite/database.hxx>
+#include <odb/transaction.hxx>
 
 namespace performance_test
 {
@@ -133,6 +137,45 @@ void AnalyzeRunner::analyze(
   );
 
   m_ec.log(result.to_csv_string(true));
+  get_database();
+}
+
+int AnalyzeRunner::get_database() const
+{
+
+
+  //create data base with no arguments passed
+  std::auto_ptr<odb::core::database> db (
+
+      new odb::sqlite::database (nullptr));
+
+  //put here couple of things into the database
+  //like this:   m_ec.number_of_publishers();
+  /*try
+  {
+
+
+    // Create a few persistent person objects.
+    //
+    {
+
+
+      //odb::core::transaction t (db->begin ());
+
+      // Make objects persistent and save their ids for later use.
+      //
+      //db->persist (john);
+
+      //t.commit ();
+    }
+
+  }
+
+  catch (const odb::exception& e)
+  {
+    cerr << e.what () << endl;
+    return 1;
+  }*/
 }
 
 bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_start) const
@@ -157,5 +200,7 @@ bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_
     return false;
   }
 }
+
+
 
 }  // namespace performance_test
