@@ -46,12 +46,14 @@ public:
 private:
   /**
    * \brief Analyezes and logs the state of the experiment.
-   * \param loop_diff_start
+   * \param loop_diff_start// std::auto_ptr
    * \param experiment_diff_start
    */
   void analyze(
     const std::chrono::duration<double> loop_diff_start,
     const std::chrono::duration<double> experiment_diff_start) const;
+
+  int get_database() const;
 
   /**
    * \brief Checks if the experiment is finished.
