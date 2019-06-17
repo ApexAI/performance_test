@@ -24,6 +24,7 @@
 #include "qos_abstraction.hpp"
 #include "communication_mean.hpp"
 #include "../utilities/rt_enabler.hpp"
+#include <odb/core.hxx>
 
 namespace performance_test
 {
@@ -34,7 +35,7 @@ namespace performance_test
  * This experiment configuration could be created from various sources. At the moment, only
  * configuration by command line arguments are supported.
  */
-
+#pragma db object
 class ExperimentConfiguration
 {
 public:
@@ -150,6 +151,8 @@ private:
     m_roundtrip_mode(RoundTripMode::NONE)
   {}
 
+  friend class odb::access;
+
   /// Throws #std::runtime_error if the experiment is not set up.
   void check_setup() const;
 
@@ -157,6 +160,7 @@ private:
   /// throw if the experiment configuration is not set up.
   void open_file();
 
+  #pragma db member(ExperimentConfiguration::m_id) id
   boost::uuids::uuid m_id;
   bool m_is_setup;
 
