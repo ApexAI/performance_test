@@ -29,6 +29,7 @@
 #include <odb/database.hxx>
 #include <odb/sqlite/database.hxx>
 #include <odb/transaction.hxx>
+#include "../experiment_configuration/experiment_configuration.hpp"
 
 namespace performance_test
 {
@@ -140,42 +141,24 @@ void AnalyzeRunner::analyze(
   get_database();
 }
 
-int AnalyzeRunner::get_database() const
-{
-
-
+int AnalyzeRunner::get_database() const {
   //create data base with no arguments passed
-  std::auto_ptr<odb::core::database> db (
 
-      new odb::sqlite::database (nullptr));
-
-  //put here couple of things into the database
-  //like this:   m_ec.number_of_publishers();
-  /*try
-  {
-
-
-    // Create a few persistent person objects.
-    //
+  try {
+    std::auto_ptr<odb::core::database> db(
+        new odb::sqlite::database(nullptr));
     {
+      odb::core::transaction t (db->begin());
 
-
-      //odb::core::transaction t (db->begin ());
-
-      // Make objects persistent and save their ids for later use.
-      //
-      //db->persist (john);
-
-      //t.commit ();
+      //db->persist(m_ec);
+      //t.commit();
     }
-
   }
 
-  catch (const odb::exception& e)
-  {
-    cerr << e.what () << endl;
+  catch (const odb::exception &e) {
+    std::cerr << e.what() << std::endl;
     return 1;
-  }*/
+  }
 }
 
 bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_start) const
