@@ -21,28 +21,15 @@ from xml.dom.minidom import parseString
 from dicttoxml import dicttoxml
 
 
-def item_names(parent_name):
-    """
-    Get the tag of an item based on its parent.
-
-    :param parent_name: The name of the parent.
-    :return: The item tag.
-    """
-    if parent_name == 'interfaceWhiteList':
-        return 'address'
-    elif parent_name == 'transport_descriptors':
-        return 'transport_descriptors'
-
-
 if __name__ == '__main__':
-    # Get arguments
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
         '-w',
         '--whitelist',
-        help='List of whitelist interfaces separated by comma with no spaces',
+        nargs='*',
+        help='List of whitelist interfaces separated by spaces',
         required=True,
     )
     parser.add_argument(
@@ -52,7 +39,7 @@ if __name__ == '__main__':
         required=True,
     )
     args = parser.parse_args()
-    interface_whitelist = args.whitelist.split(',')
+    interface_whitelist = args.whitelist
     xml_file = args.file
 
     profiles = {
@@ -77,23 +64,18 @@ if __name__ == '__main__':
     xml = parseString(
         dicttoxml(
             profiles,
-            item_func=item_names,
+            item_func=(
+                lambda parent_name: 'address'
+                if parent_name == 'interfaceWhiteList'
+                else parent_name
+            ),
             custom_root='profiles',
             attr_type=False,
         ).decode()
-    ).toprettyxml(indent='    ')
-    parsed_xml = xml.split('\n', 1)[1]
-    lines = parsed_xml.split('\n')
+    )
 
+    part_el = xml.documentElement.getElementsByTagName('participant').item(0)
+    part_el.setAttribute('profile_name', 'apex_profile')
+    part_el.setAttribute('is_default_profile', 'true')
     with open(xml_file, 'w') as f:
-        for line in lines:
-            if line == '':
-                continue
-            line = line.replace(
-                '<participant',
-                (
-                    '<participant profile_name="apex_profile"' +
-                    ' is_default_profile="true"'
-                )
-            )
-            f.write('{}\n'.format(line))
+        f.write(xml.toprettyxml(indent=' '*2).split('\n', 1)[1])
