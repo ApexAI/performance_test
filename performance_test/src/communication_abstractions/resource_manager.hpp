@@ -20,6 +20,7 @@
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   #include <fastrtps/participant/Participant.h>
   #include <fastrtps/attributes/ParticipantAttributes.h>
+  #include <fastrtps/xmlparser/XMLProfileManager.h>
   #include <fastrtps/Domain.h>
 #endif
 
