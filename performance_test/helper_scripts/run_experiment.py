@@ -48,7 +48,7 @@ class Instance:
             'RadarTrack'
         ]
 
-        rates = ['50', '1000']
+        rates = ['20', '50', '1000']
 
         num_subs = ['1', '3', '10']
 
