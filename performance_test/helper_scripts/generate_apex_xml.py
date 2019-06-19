@@ -171,4 +171,4 @@ if __name__ == '__main__':
     with open(xml_file, 'w') as f:
         # Convert to string with 2-space identation,
         # not taking the first line of the XML.
-        f.write(doc.toprettyxml(indent=' '*2).split('\n', 1)[1])
+        f.write(doc.toprettyxml(indent=' '*2))
