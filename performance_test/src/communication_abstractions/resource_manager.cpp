@@ -41,7 +41,11 @@ std::shared_ptr<rclcpp::Node> ResourceManager::ros2_node() const
   } else {
     rand_str = std::to_string(std::rand());
   }
-  return rclcpp::Node::make_shared("performance_test" + rand_str, "", m_ec.use_ros_shm());
+
+  auto options = rclcpp::NodeOptions()
+    .use_intra_process_comms(m_ec.use_ros_shm());
+
+  return rclcpp::Node::make_shared("performance_test" + rand_str, options);
 }
 
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
@@ -61,7 +65,7 @@ eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
   PParam.rtps.builtin.m_simpleEDP.use_PublicationReaderANDSubscriptionWriter = true;
   PParam.rtps.builtin.m_simpleEDP.use_PublicationWriterANDSubscriptionReader = true;
   PParam.rtps.builtin.domainId = m_ec.dds_domain_id();
-  PParam.rtps.builtin.leaseDuration = eprosima::fastrtps::rtps::c_TimeInfinite;
+  PParam.rtps.builtin.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
   PParam.rtps.setName("performance_test_fastRTPS");
 
   if (!m_ec.use_single_participant()) {
