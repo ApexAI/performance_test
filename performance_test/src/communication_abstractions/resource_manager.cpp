@@ -54,9 +54,10 @@ eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
   std::lock_guard<std::mutex> lock(m_global_mutex);
 
   eprosima::fastrtps::Participant * result = nullptr;
-
   eprosima::fastrtps::ParticipantAttributes PParam;
 
+  eprosima::fastrtps::xmlparser::XMLProfileManager::loadDefaultXMLFile();
+  eprosima::fastrtps::xmlparser::XMLProfileManager::getDefaultParticipantAttributes(PParam);
   PParam.rtps.sendSocketBufferSize = 1048576;
   PParam.rtps.listenSocketBufferSize = 4194304;
   PParam.rtps.builtin.use_SIMPLE_RTPSParticipantDiscoveryProtocol = true;
