@@ -18,12 +18,11 @@ A detailed description can be found here: [Design Article](performance_test/desi
 
 ROS 2: https://github.com/ros2/ros2/wiki/Installation
 
-Additional dependencies are Boost and Java
+Additional dependencies are Java and others declared in the `package.xml` file 
 ```
-sudo apt-get install libboost-all-dev default-jre
+sudo apt-get install default-jre
+rosdep install -y --from performance_test --ignore-src
 ```
-
-
 
 ## Generating graphical plots
 
