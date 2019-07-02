@@ -18,6 +18,13 @@ A detailed description can be found here: [Design Article](performance_test/desi
 
 ROS 2: https://github.com/ros2/ros2/wiki/Installation
 
+Additional dependencies are Boost and Java
+```
+sudo apt-get install libboost-all-dev default-jre
+```
+
+
+
 ## Generating graphical plots
 
 The script which generates the graphical plots needs matplotlib and pandas:
