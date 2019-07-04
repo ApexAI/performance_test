@@ -3,7 +3,7 @@
 
 # Introduction
 
-**Version Support:** ROS2 Crystal, Fast-RTPS 1.7.0
+**Version Support:** ROS2 Dashing, Fast-RTPS 1.8.0
 
 This test allows you to test performance and latency of various communication means
 like ROS 2, FastRTPS and Connext DDS Micro.
