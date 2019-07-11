@@ -96,16 +96,17 @@ endif()
 
 # add ODB CMake code start: here
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-find_package(ODB REQUIRED COMPONENTS qt OPTIONAL_COMPONENTS sqlite pgsql)
+find_package(ODB REQUIRED COMPONENTS qt sqlite OPTIONAL_COMPONENTS pgsql mysql)
 include(${ODB_USE_FILE})
 
-set(${EXE_NAME}_SOURCES
+set(${PROJECT_NAME}_SOURCES
     src/experiment_execution/analyze_runner.cpp)
 
-set(${EXE_NAME}_ODB_HEADERS
+set(${PROJECT_NAME}_ODB_HEADERS
     src/experiment_configuration/experiment_configuration.hpp)
 
-odb_compile(${EXE_NAME}_SOURCES FILES ${${EXE_NAME}_ODB_HEADERS} DB sqlite GENERATE_QUERY GENERATE_SESSION)
+odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite
+    GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA ${Odb_test})
 
 # add ODB CMake code finish: here
 
@@ -183,9 +184,7 @@ if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
 endif()
 
 set(EXE_NAME perf_test)
-add_executable(${EXE_NAME} ${sources}
-    ${${PROJECT_NAME}_SOURCES}
-    ${${PROJECT_NAME}_ODB_HEADERS})
+add_executable(${EXE_NAME} ${sources})
 
 set_compile_options(${EXE_NAME})
 
@@ -198,6 +197,15 @@ target_link_libraries(${EXE_NAME}
     ${Boost_LIBRARIES}
     ${OPTIONAL_LIBRARIES}
     ${ODB_LIBRARIES})
+
+target_include_directories(${EXE_NAME}
+    PRIVATE
+        ${ODB_INCLUDE_DIRS}
+        ${ODB_COMPILE_OUTPUT_DIR})
+
+target_compile_definitions(${EXE_NAME}
+    PRIVATE
+        DATABASE_SQLITE)
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
   target_link_libraries(${EXE_NAME}
@@ -222,12 +230,7 @@ if(BUILD_TESTING)
         test/src/test_performance_test.cpp
         test/src/test_statistics_tracker.hpp)
 
-    target_include_directories(${APEX_PERFORMANCE_TEST_GTEST} PRIVATE "test/include"
-        ${ODB_INCLUDE_DIRS}
-        ${ODB_COMPILE_OUTPUT_DIR})
-    target_compile_definitions(${APEX_PERFORMANCE_TEST_GTEST}
-        PRIVATE
-        DATABASE_SQLITE)
+    target_include_directories(${APEX_PERFORMANCE_TEST_GTEST} PRIVATE "test/include")
     target_link_libraries(${APEX_PERFORMANCE_TEST_GTEST})
 
     set_compile_options(${APEX_PERFORMANCE_TEST_GTEST})
