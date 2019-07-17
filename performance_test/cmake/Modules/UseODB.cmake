@@ -6,6 +6,7 @@ set(ODB_COMPILE_INLINE_SUFFIX "_inline.hpp")
 set(ODB_COMPILE_SOURCE_SUFFIX ".cpp")
 set(ODB_COMPILE_FILE_SUFFIX "_odb")
 set(USE_CPP_11 TRUE)
+set(ODB_BOOST_PROFILE TRUE)
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 set(ODB_COMPILE_DEBUG TRUE)
 
@@ -47,6 +48,10 @@ function(odb_compile outvar)
 
 	if(USE_CPP_11)
 		list(APPEND ODB_ARGS --std c++11)
+	endif()
+
+	if(ODB_BOOST_PROFILE)
+		list(APPEND ODB_ARGS --profile boost)
 	endif()
 
 	if(PARAM_GENERATE_QUERY)
@@ -169,7 +174,7 @@ function(odb_compile outvar)
 		add_custom_command(OUTPUT ${outputs}
 			COMMAND ${ODB_EXECUTABLE} ${ODB_ARGS} "${input}"
 				DEPENDS "${input}"
-			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 			VERBATIM)
 		add_custom_target(some_target ALL DEPENDS ${outputs})
 

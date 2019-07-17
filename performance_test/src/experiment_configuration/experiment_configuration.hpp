@@ -160,7 +160,9 @@ private:
   /// throw if the experiment configuration is not set up.
   void open_file();
 
-  #pragma db member(ExperimentConfiguration::m_id) id
+  #pragma db id auto
+  unsigned long id_;
+  // #pragma db member(ExperimentConfiguration::m_id) id
   boost::uuids::uuid m_id;
   bool m_is_setup;
 
