@@ -35,7 +35,26 @@ namespace performance_test
  * This experiment configuration could be created from various sources. At the moment, only
  * configuration by command line arguments are supported.
  */
+
+/*
 #pragma db object
+class ODB_class
+{
+public:
+  ODB_class(const std::string& first);
+  const std::string& first () const;
+private:
+
+  ODB_class(){}
+  friend class odb::access;
+
+  #pragma db id auto
+  unsigned long id_;
+
+  std::string first_;
+};*/
+
+#pragma db object no_id
 class ExperimentConfiguration
 {
 public:
@@ -160,19 +179,21 @@ private:
   /// throw if the experiment configuration is not set up.
   void open_file();
 
-  #pragma db id auto
-  unsigned long id_;
-  // #pragma db member(ExperimentConfiguration::m_id) id
   boost::uuids::uuid m_id;
   bool m_is_setup;
 
   std::string m_logfile;
   std::string m_final_logfile_name;
+
+  #pragma db transient
   mutable std::ofstream m_os;
 
   CommunicationMean m_com_mean;
   uint32_t m_dds_domain_id;
+
+  #pragma db transient
   QOSAbstraction m_qos;
+
   uint32_t m_rate;
   std::string m_topic_name;
 
