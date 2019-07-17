@@ -36,23 +36,6 @@ namespace performance_test
  * configuration by command line arguments are supported.
  */
 
-/*
-#pragma db object
-class ODB_class
-{
-public:
-  ODB_class(const std::string& first);
-  const std::string& first () const;
-private:
-
-  ODB_class(){}
-  friend class odb::access;
-
-  #pragma db id auto
-  unsigned long id_;
-
-  std::string first_;
-};*/
 
 #pragma db object no_id
 class ExperimentConfiguration
