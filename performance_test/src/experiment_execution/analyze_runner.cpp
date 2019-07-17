@@ -146,7 +146,9 @@ int AnalyzeRunner::get_database() const {
 
   try {
     std::auto_ptr<odb::core::database> db(
-        new odb::sqlite::database(nullptr));
+        new odb::sqlite::database("test_user"         // database login name
+                                  "test_password"     // database password
+                                  "test_database"));  // database name
     {
       odb::core::transaction t (db->begin());
 
