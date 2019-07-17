@@ -176,7 +176,7 @@ function(odb_compile outvar)
 				DEPENDS "${input}"
 			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 			VERBATIM)
-		add_custom_target(some_target ALL DEPENDS ${outputs})
+		add_custom_target(odb_target ALL DEPENDS ${outputs})
 
 	endforeach()
 

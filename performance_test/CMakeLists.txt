@@ -105,8 +105,10 @@ set(${PROJECT_NAME}_SOURCES
 set(${PROJECT_NAME}_ODB_HEADERS
     src/experiment_configuration/experiment_configuration.hpp)
 
+set(SCHEMA_NAME test_database)
+
 odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite
-    GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA ${Odb_test})
+    GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA SCHEMA_NAME ${SCHEMA_NAME})
 
 # add ODB CMake code finish: here
 
