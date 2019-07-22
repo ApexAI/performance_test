@@ -44,6 +44,7 @@ public:
   inline rmw_qos_profile_t get() const
   {
     rmw_qos_profile_t ros_qos;
+    memset (&ros_qos, 0, sizeof (ros_qos));
 
     if (m_qos.reliability == QOSAbstraction::Reliability::BEST_EFFORT) {
       ros_qos.reliability = rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
