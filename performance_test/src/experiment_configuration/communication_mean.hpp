@@ -30,6 +30,9 @@ enum class CommunicationMean
 #ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   , CONNEXTDDSMICRO
 #endif
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+  , CYCLONEDDS
+#endif
 };
 
 /// Outstream operator for CommunicationMean.
@@ -44,6 +47,10 @@ inline std::ostream & operator<<(std::ostream & stream, const CommunicationMean 
 #ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   } else if (cm == CommunicationMean::CONNEXTDDSMICRO) {
     return stream << "CONNEXTDDSMICRO";
+#endif
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+  } else if (cm == CommunicationMean::CYCLONEDDS) {
+    return stream << "CYCLONEDDS";
 #endif
   } else {
     throw std::invalid_argument("Enum value not supported!");

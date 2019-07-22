@@ -74,7 +74,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "Optionally specify a logfile.")("rate,r", po::value<uint32_t>()->default_value(1000),
     "The rate data should be published. Defaults to 1000 Hz. 0 means publish as fast as possible.")(
     "communication,c", po::value<std::string>()->required(),
-    "Communication plugin to use (ROS2, FastRTPS, ConnextDDSMicro)")("topic,t",
+    "Communication plugin to use (ROS2, FastRTPS, ConnextDDSMicro, CycloneDDS)")("topic,t",
     po::value<std::string>()->required(),
     "Topic to use. Use --topic_list to get a list.")("topic_list",
     "Prints list of available topics and exits.")("dds_domain_id",
@@ -153,6 +153,13 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 #else
       throw std::invalid_argument(
               "You must compile with ConnextDDSMicro support to enable it as communication mean.");
+#endif
+    } else if (vm["communication"].as<std::string>() == "CycloneDDS") {
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+      m_com_mean = CommunicationMean::CYCLONEDDS;
+#else
+      throw std::invalid_argument(
+              "You must compile with CycloneDDS support to enable it as communication mean.");
 #endif
     }
 
