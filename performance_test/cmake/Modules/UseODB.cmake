@@ -1,14 +1,11 @@
 
-set(ODB_COMPILE_DEBUG FALSE)
+set(ODB_COMPILE_DEBUG TRUE)
 set(ODB_COMPILE_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/odb_gen")
 set(ODB_COMPILE_HEADER_SUFFIX ".hpp")
 set(ODB_COMPILE_INLINE_SUFFIX "_inline.hpp")
 set(ODB_COMPILE_SOURCE_SUFFIX ".cpp")
 set(ODB_COMPILE_FILE_SUFFIX "_odb")
-set(USE_CPP_11 TRUE)
-set(ODB_BOOST_PROFILE TRUE)
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
-set(ODB_COMPILE_DEBUG TRUE)
 
 function(odb_compile outvar)
 
@@ -64,6 +61,10 @@ function(odb_compile outvar)
 
 	if(PARAM_GENERATE_SCHEMA)
 		list(APPEND ODB_ARGS --generate-schema)
+	endif()
+
+	if(USE_SQL_SCHEMA_FORMAT)
+		list(APPEND ODB_ARGS --schema-format sql)
 	endif()
 
 	if(PARAM_GENERATE_PREPARED)
@@ -162,6 +163,7 @@ function(odb_compile outvar)
 				set(output "${ODB_COMPILE_OUTPUT_DIR}/${fname}${sfx}${ODB_COMPILE_SOURCE_SUFFIX}")
 				list(APPEND ${outvar} "${output}")
 				list(APPEND outputs "${output}")
+				message(STATUS "${outputs}")
 			endif()
 		endforeach()
 
@@ -176,7 +178,6 @@ function(odb_compile outvar)
 				DEPENDS "${input}"
 			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 			VERBATIM)
-		add_custom_target(odb_target ALL DEPENDS ${outputs})
 
 	endforeach()
 

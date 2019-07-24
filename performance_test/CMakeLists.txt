@@ -95,8 +95,9 @@ if(CycloneDDS_FOUND)
 endif()
 
 # add ODB CMake code start: here
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-find_package(ODB REQUIRED COMPONENTS qt sqlite OPTIONAL_COMPONENTS pgsql mysql)
+find_package(ODB REQUIRED COMPONENTS qt sqlite)
 include(${ODB_USE_FILE})
 
 set(${PROJECT_NAME}_SOURCES
@@ -104,13 +105,6 @@ set(${PROJECT_NAME}_SOURCES
 
 set(${PROJECT_NAME}_ODB_HEADERS
     src/experiment_configuration/experiment_configuration.hpp)
-
-set(SCHEMA_NAME test_database)
-
-odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite
-    GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA SCHEMA_NAME ${SCHEMA_NAME})
-
-# add ODB CMake code finish: here
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
@@ -147,36 +141,37 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
+
+odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11)
+
 set(sources
-    src/main.cpp
-    src/communication_abstractions/communicator.hpp
+    src/data_running/data_runner_factory.cpp
+    src/experiment_execution/analysis_result.cpp
+    src/experiment_configuration/qos_abstraction.cpp
     src/communication_abstractions/communicator.cpp
     src/communication_abstractions/resource_manager.cpp
+    src/experiment_configuration/experiment_configuration.cpp
+    src/main.cpp
+    src/experiment_configuration/topics.hpp
     src/communication_abstractions/resource_manager.hpp
     src/communication_abstractions/ros2_callback_communicator.hpp
-    src/experiment_configuration/topics.hpp
-    src/data_running/data_runner.hpp
-    src/data_running/data_runner_base.hpp
-    src/data_running/data_runner_factory.cpp
-    src/data_running/data_runner_factory.hpp
-    src/experiment_execution/analyze_runner.cpp
-    src/experiment_execution/analyze_runner.hpp
-    src/experiment_execution/analysis_result.cpp
-    src/experiment_execution/analysis_result.hpp
     src/experiment_configuration/communication_mean.hpp
-    src/experiment_configuration/qos_abstraction.cpp
+    src/data_running/data_runner_base.hpp
+    src/data_running/data_runner_factory.hpp
+    src/experiment_execution/analysis_result.hpp
     src/experiment_configuration/qos_abstraction.hpp
-    src/experiment_configuration/experiment_configuration.cpp
-    src/experiment_configuration/experiment_configuration.hpp
     src/utilities/rt_enabler.hpp
     src/utilities/spin_lock.hpp
     src/utilities/statistics_tracker.hpp
+    src/communication_abstractions/communicator.hpp
+    src/data_running/data_runner.hpp
+    src/experiment_execution/analyze_runner.hpp
 )
+
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     set(sources ${sources}
-        src/communication_abstractions/fast_rtps_communicator.hpp
-    )
+        src/communication_abstractions/fast_rtps_communicator.hpp)
 endif()
 
 if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
@@ -185,8 +180,12 @@ if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
     )
 endif()
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration)
+
+
 set(EXE_NAME perf_test)
-add_executable(${EXE_NAME} ${sources})
+add_executable(${EXE_NAME} ${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAME}_ODB_HEADERS})
 
 set_compile_options(${EXE_NAME})
 
