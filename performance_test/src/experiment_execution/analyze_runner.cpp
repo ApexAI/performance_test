@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+#include <cstddef>
 #include <boost/algorithm/string.hpp>
 
 #include <algorithm>
@@ -29,7 +29,9 @@
 #include <odb/database.hxx>
 #include <odb/sqlite/database.hxx>
 #include <odb/transaction.hxx>
+#include <odb/schema-catalog.hxx>
 #include "../experiment_configuration/experiment_configuration.hpp"
+//#include "experiment_configuration_odb.hpp"
 
 namespace performance_test
 {
@@ -144,17 +146,28 @@ void AnalyzeRunner::analyze(
 int AnalyzeRunner::get_database() const {
   //create data base with no arguments passed
 
+  char *argv[] = {(char*)"./perf_test",
+                  (char*)"--database",
+                  (char*)"test_database"};
+  int argc = 3;
   try {
-    std::auto_ptr<odb::core::database> db(
-        new odb::sqlite::database("test_user"         // database login name
-                                  "test_password"     // database password
-                                  "test_database"));  // database name
+    std::auto_ptr<odb::core::database> db
+    (new odb::sqlite::database(argc, argv, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
     {
-      odb::core::transaction t (db->begin());
+      odb::core::connection_ptr c (db->connection ());
 
+      c->execute ("PRAGMA foreign_keys=OFF");
+
+      odb::core::transaction t (c->begin ());
+      odb::core::schema_catalog::create_schema (*db);
+      t.commit ();
+
+      c->execute ("PRAGMA foreign_keys=ON");
+      //odb::core::transaction t (db->begin());
       //db->persist(m_ec);
       //t.commit();
     }
+
   }
 
   catch (const odb::exception &e) {
