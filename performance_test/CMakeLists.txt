@@ -79,6 +79,21 @@ if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
     endif()
 endif()
 
+# CycloneDDS
+option(PERFORMANCE_TEST_FORCE_CYCLONEDDS "Require Cyclone DDS to be available, fail otherwise" OFF)
+
+if(PERFORMANCE_TEST_FORCE_CYCLONEDDS)
+  find_package(CycloneDDS REQUIRED)
+else()
+  find_package(CycloneDDS QUIET)
+endif()
+if(CycloneDDS_FOUND)
+  set(PERFORMANCE_TEST_CYCLONEDDS_ENABLED TRUE)
+  add_definitions(-DPERFORMANCE_TEST_CYCLONEDDS_ENABLED)
+  add_subdirectory(src/idlgen/cyclonedds)
+  include_directories(${CYCLONEDDS_IDL_INCLUDE_DIR})
+endif()
+
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
     "src/msg/Array4k.msg"
@@ -146,6 +161,12 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     )
 endif()
 
+if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
+    set(sources ${sources}
+        src/communication_abstractions/cyclonedds_communicator.hpp
+    )
+endif()
+
 set(EXE_NAME perf_test)
 add_executable(${EXE_NAME} ${sources})
 set_compile_options(${EXE_NAME})
@@ -164,6 +185,12 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
       ${FastRTPS_LIBRARIES}
       fast_rtps_idl
       fastcdr)
+endif()
+
+if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
+  target_link_libraries(${EXE_NAME}
+      cyclonedds_idl
+      CycloneDDS::ddsc)
 endif()
 
 if(BUILD_TESTING)
