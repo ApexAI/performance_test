@@ -164,7 +164,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Array1k_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Array1k__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Array1k__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -193,7 +196,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Array4k_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Array4k__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Array4k__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -222,7 +228,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Array16k_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Array16k__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Array16k__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -251,7 +260,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Array32k_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Array32k__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Array32k__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -280,7 +292,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Array60k_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Array60k__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Array60k__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -309,7 +324,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Array1m_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Array1m__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Array1m__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -338,7 +356,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Array2m_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Array2m__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Array2m__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -366,7 +387,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Struct16_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Struct16__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Struct16__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -394,7 +418,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Struct256_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Struct256__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Struct256__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -422,7 +449,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Struct4k_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Struct4k__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Struct4k__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -450,7 +480,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Struct32k_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Struct32k__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Struct32k__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -478,7 +511,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__PointCloud512k_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__PointCloud512k__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__PointCloud512k__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -506,7 +542,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__PointCloud1m_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__PointCloud1m__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__PointCloud1m__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -534,7 +573,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__PointCloud2m_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__PointCloud2m__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__PointCloud2m__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -562,7 +604,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__PointCloud4m_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__PointCloud4m__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__PointCloud4m__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -590,7 +635,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__Range_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__Range__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__Range__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -618,7 +666,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__NavSatFix_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__NavSatFix__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__NavSatFix__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -646,7 +697,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__RadarDetection_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__RadarDetection__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__RadarDetection__desc;
+  }
 #endif
 
   static std::string topic_name()
@@ -674,7 +728,10 @@ public:
 
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
   using CycloneDDSType = performance_test_msgs_msg_dds__RadarTrack_;
-  static const dds_topic_descriptor_t *CycloneDDSDesc() { return &performance_test_msgs_msg_dds__RadarTrack__desc; }
+  static const dds_topic_descriptor_t * CycloneDDSDesc()
+  {
+    return &performance_test_msgs_msg_dds__RadarTrack__desc;
+  }
 #endif
 
   static std::string topic_name()
