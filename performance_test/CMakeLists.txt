@@ -80,7 +80,13 @@ if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
 endif()
 
 # CycloneDDS
-find_package(CycloneDDS QUIET)
+option(PERFORMANCE_TEST_FORCE_CYCLONEDDS "Require Cyclone DDS to be available, fail otherwise" OFF)
+
+if(PERFORMANCE_TEST_FORCE_CYCLONEDDS)
+  find_package(CycloneDDS REQUIRED)
+else()
+  find_package(CycloneDDS QUIET)
+endif()
 if(CycloneDDS_FOUND)
   set(PERFORMANCE_TEST_CYCLONEDDS_ENABLED TRUE)
   add_definitions(-DPERFORMANCE_TEST_CYCLONEDDS_ENABLED)
