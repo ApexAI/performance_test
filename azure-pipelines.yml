@@ -42,6 +42,7 @@ steps:
         --merge-install \
         --cmake-args \
           -DCMAKE_BUILD_TYPE=Release \
+          -DPERFORMANCE_TEST_FORCE_CYCLONEDDS=BOOL:ON \
         --base-path performance_test
     displayName: Build performance_test
   - script: |
