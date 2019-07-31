@@ -28,6 +28,7 @@
 #include <odb/database.hxx>
 #include <odb/transaction.hxx>
 #include "experiment_configuration_odb.hpp"
+#include "analysis_result_odb.hpp"
 
 namespace performance_test
 {
