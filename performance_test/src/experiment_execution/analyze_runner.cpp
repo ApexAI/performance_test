@@ -25,12 +25,8 @@
 
 #include "analysis_result.hpp"
 
-#include <memory>
 #include <odb/database.hxx>
-#include <odb/sqlite/database.hxx>
 #include <odb/transaction.hxx>
-#include <odb/schema-catalog.hxx>
-#include "../experiment_configuration/experiment_configuration.hpp"
 #include "experiment_configuration_odb.hpp"
 
 namespace performance_test
@@ -63,7 +59,7 @@ AnalyzeRunner::AnalyzeRunner()
   }
 }
 
-void AnalyzeRunner::run() const
+void AnalyzeRunner::run(std::auto_ptr<odb::core::database> db) const
 {
   m_ec.log("---EXPERIMENT-START---");
   m_ec.log(AnalysisResult::csv_header(true));
@@ -87,13 +83,14 @@ void AnalyzeRunner::run() const
     auto now = std::chrono::steady_clock::now();
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
-    analyze(loop_diff_start, experiment_diff_start);
+    analyze(loop_diff_start, experiment_diff_start, db);
   }
 }
 
 void AnalyzeRunner::analyze(
   const std::chrono::duration<double> loop_diff_start,
-  const std::chrono::duration<double> experiment_diff_start) const
+  const std::chrono::duration<double> experiment_diff_start,
+  std::auto_ptr<odb::core::database> db) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -140,44 +137,17 @@ void AnalyzeRunner::analyze(
   );
 
   m_ec.log(result.to_csv_string(true));
-  get_database();
+  get_database(db);
 }
 
 
 
-int AnalyzeRunner::get_database() const {
-  //create data base with no arguments passed
+int AnalyzeRunner::get_database(std::auto_ptr<odb::core::database> db) const {
 
-  char *argv[] = {(char*)"./perf_test",
-                  (char*)"--database",
-                  (char*)"test_database"};
-  int argc = 3;
-  try {
-    std::auto_ptr<odb::core::database> db
-    (new odb::sqlite::database(argc, argv, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
-    {
-      odb::core::connection_ptr c (db->connection ());
+  odb::core::transaction t (db->begin());
+  db->persist(m_ec);
+  t.commit();
 
-      c->execute ("PRAGMA foreign_keys=OFF");
-
-      odb::core::transaction t (c->begin ());
-      odb::core::schema_catalog::create_schema (*db);
-      t.commit ();
-
-      c->execute ("PRAGMA foreign_keys=ON");
-
-      odb::core::transaction t_2 (db->begin());
-      auto & ec = performance_test::ExperimentConfiguration::get();
-      db->persist(ec);
-      t_2.commit();
-    }
-
-  }
-
-  catch (const odb::exception &e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
-  }
 }
 
 bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_start) const
