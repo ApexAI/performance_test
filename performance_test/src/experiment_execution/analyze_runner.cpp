@@ -138,15 +138,11 @@ void AnalyzeRunner::analyze(
   );
 
   m_ec.log(result.to_csv_string(true));
-  get_database(db);
-}
 
-
-
-int AnalyzeRunner::get_database(std::auto_ptr<odb::core::database> db) const {
-
+  //save values to sql database
   odb::core::transaction t (db->begin());
   db->persist(m_ec);
+  db->persist(result);
   t.commit();
 
 }
