@@ -17,12 +17,13 @@
 
 #include <sys/time.h>
 #include <sys/resource.h>
-
+#include <cstddef>
 #include <chrono>
 #include <sstream>
 #include <string>
 
 #include "../utilities/statistics_tracker.hpp"
+#include <odb/core.hxx>
 
 namespace performance_test
 {
@@ -31,6 +32,7 @@ namespace performance_test
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
 
 /// Represents the results of an experiment iteration.
+#pragma db object no_id
 class AnalysisResult
 {
 public:
@@ -70,22 +72,31 @@ public:
    * \brief Returns the data contained the analysis result as a string.
    * \param pretty_print If set, inserts additional tabs to format the output nicer.
    * \param st The data seperator.
+   *
    * \return A string with the contained data as CSV row.
    */
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
 private:
+  friend class odb::access;
+
+  #pragma db transient
   const std::chrono::duration<double> m_experiment_start;
+  #pragma db transient
   const std::chrono::duration<double> m_loop_start;
   const uint64_t m_num_samples_received;
   const uint64_t m_num_samples_sent;
   const uint64_t m_num_samples_lost;
   const std::size_t m_total_data_received;
 
+  #pragma db transient
   const StatisticsTracker m_latency;
+  #pragma db transient
   const StatisticsTracker m_pub_loop_time_reserve;
+  #pragma db transient
   const StatisticsTracker m_sub_loop_time_reserve;
 
+  #pragma db transient
   rusage m_sys_usage;
 };
 
