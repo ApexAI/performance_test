@@ -17,13 +17,51 @@
 #include "experiment_configuration/experiment_configuration.hpp"
 #include "experiment_execution/analyze_runner.hpp"
 
+#include <memory>
+#include <odb/database.hxx>
+#include <odb/sqlite/database.hxx>
+#include <odb/transaction.hxx>
+#include <odb/schema-catalog.hxx>
+
+
+inline std::auto_ptr<odb::database> create_database (int& argc, char* argv[])
+{
+  std::auto_ptr<odb::core::database> db
+      (new odb::sqlite::database(argc, argv, false, SQLITE_OPEN_READWRITE |
+                                                    SQLITE_OPEN_CREATE));
+  {
+    odb::core::connection_ptr c (db->connection ());
+    c->execute ("PRAGMA foreign_keys=OFF");
+    odb::core::transaction t (c->begin ());
+    odb::core::schema_catalog::create_schema (*db);
+    t.commit ();
+    c->execute ("PRAGMA foreign_keys=ON");
+  }
+  return db;
+}
+
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 
-  auto & ec = performance_test::ExperimentConfiguration::get();
-  ec.setup(argc, argv);
+  char *argv_db[] = {(char*)"./perf_test",
+                  (char*)"--database",
+                  (char*)"test_database"};
+  int argc_db = 3;
 
-  performance_test::AnalyzeRunner ar;
-  ar.run();
+  try {
+    std::auto_ptr<odb::core::database> db (create_database (argc_db, argv_db));
+
+    auto & ec = performance_test::ExperimentConfiguration::get();
+    ec.setup(argc, argv);
+
+    performance_test::AnalyzeRunner ar;
+    ar.run(db);
+  }
+
+  catch (const odb::exception &e) {
+    std::cerr << e.what() << std::endl;
+    return 1;
+  }
 }
+
