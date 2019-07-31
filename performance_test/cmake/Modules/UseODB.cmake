@@ -43,14 +43,6 @@ function(odb_compile outvar)
 		list(APPEND ODB_ARGS -d "${db}")
 	endforeach()
 
-	if(USE_CPP_11)
-		list(APPEND ODB_ARGS --std c++11)
-	endif()
-
-	if(ODB_BOOST_PROFILE)
-		list(APPEND ODB_ARGS --profile boost)
-	endif()
-
 	if(PARAM_GENERATE_QUERY)
 		list(APPEND ODB_ARGS --generate-query)
 	endif()
@@ -61,10 +53,6 @@ function(odb_compile outvar)
 
 	if(PARAM_GENERATE_SCHEMA)
 		list(APPEND ODB_ARGS --generate-schema)
-	endif()
-
-	if(USE_SQL_SCHEMA_FORMAT)
-		list(APPEND ODB_ARGS --schema-format sql)
 	endif()
 
 	if(PARAM_GENERATE_PREPARED)

@@ -31,7 +31,7 @@
 #include <odb/transaction.hxx>
 #include <odb/schema-catalog.hxx>
 #include "../experiment_configuration/experiment_configuration.hpp"
-//#include "experiment_configuration_odb.hpp"
+#include "experiment_configuration_odb.hpp"
 
 namespace performance_test
 {
@@ -143,6 +143,8 @@ void AnalyzeRunner::analyze(
   get_database();
 }
 
+
+
 int AnalyzeRunner::get_database() const {
   //create data base with no arguments passed
 
@@ -163,9 +165,11 @@ int AnalyzeRunner::get_database() const {
       t.commit ();
 
       c->execute ("PRAGMA foreign_keys=ON");
-      //odb::core::transaction t (db->begin());
-      //db->persist(m_ec);
-      //t.commit();
+
+      odb::core::transaction t_2 (db->begin());
+      auto & ec = performance_test::ExperimentConfiguration::get();
+      db->persist(ec);
+      t_2.commit();
     }
 
   }
