@@ -163,7 +163,6 @@ private:
   /// throw if the experiment configuration is not set up.
   void open_file();
 
-  #pragma db transient
   boost::uuids::uuid m_id;
   bool m_is_setup;
 
