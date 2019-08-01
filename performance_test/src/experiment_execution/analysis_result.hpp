@@ -32,6 +32,8 @@ namespace performance_test
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
 
 #pragma db value(StatisticsTracker) definition
+#pragma db value(rusage) definition
+#pragma db value(timeval) definition
 
 /// Represents the results of an experiment iteration.
 #pragma db object no_id
@@ -95,7 +97,6 @@ private:
   const StatisticsTracker m_pub_loop_time_reserve;
   const StatisticsTracker m_sub_loop_time_reserve;
 
-  #pragma db transient
   rusage m_sys_usage;
 };
 
