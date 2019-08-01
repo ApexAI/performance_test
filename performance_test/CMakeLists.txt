@@ -143,7 +143,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
 
-odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11)
+odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite
+    GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11 PROFILE boost)
 
 set(sources
     src/data_running/data_runner_factory.cpp
@@ -182,7 +183,8 @@ endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution)
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
+  /usr/lib/odb/x86_64-linux-gnu/include/)
 
 
 set(EXE_NAME perf_test)
