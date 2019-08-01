@@ -30,6 +30,28 @@
 #include "experiment_configuration_odb.hpp"
 #include "analysis_result_odb.hpp"
 
+#include <memory>
+#include <odb/database.hxx>
+#include <odb/sqlite/database.hxx>
+#include <odb/transaction.hxx>
+#include <odb/schema-catalog.hxx>
+
+inline std::auto_ptr<odb::database> create_database (int& argc, char* argv[])
+{
+  std::auto_ptr<odb::core::database> db
+      (new odb::sqlite::database(argc, argv, false, SQLITE_OPEN_READWRITE |
+                                                    SQLITE_OPEN_CREATE));
+  {
+    odb::core::connection_ptr c (db->connection ());
+    c->execute ("PRAGMA foreign_keys=OFF");
+    odb::core::transaction t (c->begin ());
+    odb::core::schema_catalog::create_schema (*db);
+    t.commit ();
+    c->execute ("PRAGMA foreign_keys=ON");
+  }
+  return db;
+}
+
 namespace performance_test
 {
 
@@ -60,12 +82,20 @@ AnalyzeRunner::AnalyzeRunner()
   }
 }
 
-void AnalyzeRunner::run(std::auto_ptr<odb::core::database> db) const
+void AnalyzeRunner::run() const
 {
   m_ec.log("---EXPERIMENT-START---");
   m_ec.log(AnalysisResult::csv_header(true));
 
   const auto experiment_start = std::chrono::steady_clock::now();
+
+  //TODO: this all should be provided in the command line:
+  char *argv_db[] = {(char*)"./perf_test",
+                     (char*)"--database",
+                     (char*)"test_database"};
+  int argc_db = 3;
+  std::auto_ptr<odb::core::database> db (create_database (argc_db, argv_db));
+  odb::core::transaction t (db->begin());
 
   while (!check_exit(experiment_start)) {
     const auto loop_start = std::chrono::steady_clock::now();
@@ -84,8 +114,10 @@ void AnalyzeRunner::run(std::auto_ptr<odb::core::database> db) const
     auto now = std::chrono::steady_clock::now();
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
+
     analyze(loop_diff_start, experiment_diff_start, db);
   }
+  t.commit();
 }
 
 void AnalyzeRunner::analyze(
@@ -140,10 +172,9 @@ void AnalyzeRunner::analyze(
   m_ec.log(result.to_csv_string(true));
 
   //save values to sql database
-  odb::core::transaction t (db->begin());
   db->persist(m_ec);
   db->persist(result);
-  t.commit();
+
 
 }
 
