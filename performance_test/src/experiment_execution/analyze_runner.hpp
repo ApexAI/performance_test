@@ -41,7 +41,7 @@ public:
   /**
    * \brief Runs the experiment.
    */
-  void run(std::auto_ptr<odb::core::database>) const;
+  void run() const;
 
 private:
   /**
@@ -53,8 +53,6 @@ private:
     const std::chrono::duration<double> loop_diff_start,
     const std::chrono::duration<double> experiment_diff_start,
     std::auto_ptr<odb::core::database> db) const;
-
-  int get_database(std::auto_ptr<odb::core::database> db) const;
 
   /**
    * \brief Checks if the experiment is finished.
