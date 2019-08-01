@@ -43,7 +43,7 @@ inline std::auto_ptr<odb::database> create_database (int& argc, char* argv[])
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-
+  //TODO: this all should be provided in the command line:
   char *argv_db[] = {(char*)"./perf_test",
                   (char*)"--database",
                   (char*)"test_database"};
