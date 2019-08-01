@@ -36,6 +36,7 @@ namespace performance_test
  * configuration by command line arguments are supported.
  */
 
+#pragma db value(QOSAbstraction) definition
 
 #pragma db object no_id
 class ExperimentConfiguration
@@ -175,7 +176,6 @@ private:
   CommunicationMean m_com_mean;
   uint32_t m_dds_domain_id;
 
-  #pragma db transient
   QOSAbstraction m_qos;
 
   uint32_t m_rate;
