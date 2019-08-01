@@ -31,6 +31,8 @@ namespace performance_test
 /// Outstream operator for timeval to seconds (double).
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
 
+#pragma db value(StatisticsTracker) definition
+
 /// Represents the results of an experiment iteration.
 #pragma db object no_id
 class AnalysisResult
@@ -89,11 +91,8 @@ private:
   const uint64_t m_num_samples_lost;
   const std::size_t m_total_data_received;
 
-  #pragma db transient
   const StatisticsTracker m_latency;
-  #pragma db transient
   const StatisticsTracker m_pub_loop_time_reserve;
-  #pragma db transient
   const StatisticsTracker m_sub_loop_time_reserve;
 
   #pragma db transient
