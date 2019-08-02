@@ -18,6 +18,7 @@
 #include <string>
 #include <iostream>
 
+
 namespace performance_test
 {
 
@@ -27,8 +28,8 @@ std::ostream & operator<<(std::ostream & stream, const timeval & e)
 }
 
 AnalysisResult::AnalysisResult(
-  const std::chrono::duration<double> experiment_start,
-  const std::chrono::duration<double> loop_start,
+  const boost::posix_time::time_duration experiment_start,
+  const boost::posix_time::time_duration loop_start,
   const uint64_t num_samples_received,
   const uint64_t num_samples_sent,
   const uint64_t num_samples_lost,
@@ -67,6 +68,7 @@ std::string AnalysisResult::csv_header(const bool pretty_print, std::string st)
 
   std::stringstream ss;
   ss << "T_experiment" << st;
+  ss << "T_experiment_boost" << st;
   ss << "T_loop" << st;
   ss << "received" << st;
   ss << "sent" << st;
@@ -117,10 +119,9 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   }
 
   std::stringstream ss;
-
   ss << std::fixed;
-  ss << m_experiment_start.count() << st;
-  ss << m_loop_start.count() << st;
+  ss << m_experiment_start.ticks()*0.000001 << st;
+  ss << m_loop_start.ticks()*0.000001 << st;
   ss << std::setprecision(0);
   ss << m_num_samples_received << st;
   ss << m_num_samples_sent << st;

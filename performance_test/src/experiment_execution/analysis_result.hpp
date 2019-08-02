@@ -21,6 +21,8 @@
 #include <chrono>
 #include <sstream>
 #include <string>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <odb/boost/date-time/exceptions.hxx>
 
 #include "../utilities/statistics_tracker.hpp"
 #include <odb/core.hxx>
@@ -53,8 +55,8 @@ public:
    * \param sub_loop_time_reserve Loop time statistics of the subscriber threads.
    */
   AnalysisResult(
-    const std::chrono::duration<double> experiment_start,
-    const std::chrono::duration<double> loop_start,
+    const boost::posix_time::time_duration experiment_start,
+    const boost::posix_time::time_duration loop_start,
     const uint64_t num_samples_received,
     const uint64_t num_samples_sent,
     const uint64_t num_samples_lost,
@@ -85,9 +87,9 @@ private:
   friend class odb::access;
 
   #pragma db transient
-  const std::chrono::duration<double> m_experiment_start;
+  const boost::posix_time::time_duration m_experiment_start;
   #pragma db transient
-  const std::chrono::duration<double> m_loop_start;
+  const boost::posix_time::time_duration m_loop_start;
   const uint64_t m_num_samples_received;
   const uint64_t m_num_samples_sent;
   const uint64_t m_num_samples_lost;

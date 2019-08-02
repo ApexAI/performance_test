@@ -87,7 +87,7 @@ void AnalyzeRunner::run() const
   m_ec.log("---EXPERIMENT-START---");
   m_ec.log(AnalysisResult::csv_header(true));
 
-  const auto experiment_start = std::chrono::steady_clock::now();
+  const auto experiment_start = boost::posix_time::microsec_clock::local_time();
 
   //TODO: this all should be provided in the command line:
   char *argv_db[] = {(char*)"./perf_test",
@@ -95,10 +95,10 @@ void AnalyzeRunner::run() const
                      (char*)"test_database"};
   int argc_db = 3;
   std::auto_ptr<odb::core::database> db (create_database (argc_db, argv_db));
-  odb::core::transaction t (db->begin());
+  //odb::core::transaction t (db->begin());
 
   while (!check_exit(experiment_start)) {
-    const auto loop_start = std::chrono::steady_clock::now();
+    const auto loop_start = boost::posix_time::microsec_clock::local_time();
 
     sleep(1);
 
@@ -110,19 +110,18 @@ void AnalyzeRunner::run() const
       post_proc_rt_init();
       m_is_first_entry = false;
     }
-
-    auto now = std::chrono::steady_clock::now();
+    auto now = boost::posix_time::microsec_clock::local_time();
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
 
     analyze(loop_diff_start, experiment_diff_start, db);
   }
-  t.commit();
+  //t.commit();
 }
 
 void AnalyzeRunner::analyze(
-  const std::chrono::duration<double> loop_diff_start,
-  const std::chrono::duration<double> experiment_diff_start,
+  const boost::posix_time::time_duration loop_diff_start,
+  const boost::posix_time::time_duration experiment_diff_start,
   std::auto_ptr<odb::core::database> db) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
@@ -172,13 +171,13 @@ void AnalyzeRunner::analyze(
   m_ec.log(result.to_csv_string(true));
 
   //save values to sql database
-  db->persist(m_ec);
-  db->persist(result);
+  //db->persist(m_ec);
+  //db->persist(result);
 
 
 }
 
-bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_start) const
+bool AnalyzeRunner::check_exit(boost::posix_time::ptime experiment_start) const
 {
   if (m_ec.exit_requested()) {
     std::cout << "Caught signal. Exiting." << std::endl;
@@ -191,7 +190,8 @@ bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_
   }
 
   const double runtime_sec =
-    std::chrono::duration<double>(std::chrono::steady_clock::now() - experiment_start).count();
+      boost::posix_time::time_duration(boost::posix_time::microsec_clock::local_time() -
+      experiment_start).seconds();
 
   if (runtime_sec > m_ec.max_runtime()) {
     std::cout << "Maximum runtime reached. Exiting." << std::endl;

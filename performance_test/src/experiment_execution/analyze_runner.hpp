@@ -50,8 +50,8 @@ private:
    * \param experiment_diff_start
    */
   void analyze(
-    const std::chrono::duration<double> loop_diff_start,
-    const std::chrono::duration<double> experiment_diff_start,
+    const boost::posix_time::time_duration loop_diff_start,
+    const boost::posix_time::time_duration experiment_diff_start,
     std::auto_ptr<odb::core::database> db) const;
 
   /**
@@ -59,7 +59,7 @@ private:
    * \param experiment_start The start of the experiment.
    * \return Is the experiment finnished
    */
-  bool check_exit(std::chrono::steady_clock::time_point experiment_start) const;
+  bool check_exit(boost::posix_time::ptime experiment_start) const;
 
   const ExperimentConfiguration & m_ec;
 
