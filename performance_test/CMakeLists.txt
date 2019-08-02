@@ -97,7 +97,7 @@ endif()
 # add ODB CMake code start: here
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-find_package(ODB REQUIRED COMPONENTS qt sqlite)
+find_package(ODB REQUIRED COMPONENTS qt sqlite boost)
 include(${ODB_USE_FILE})
 
 set(${PROJECT_NAME}_SOURCES
