@@ -22,7 +22,8 @@
 #include "analysis_result.hpp"
 #include "../data_running/data_runner_factory.hpp"
 #include "../experiment_configuration/experiment_configuration.hpp"
-
+#include <odb/database.hxx>
+//#include <odb/sqlite/database.hxx>
 
 namespace performance_test
 {
@@ -43,6 +44,7 @@ public:
    */
   void run() const;
 
+
 private:
   /**
    * \brief Analyezes and logs the state of the experiment.
@@ -51,8 +53,7 @@ private:
    */
   void analyze(
     const boost::posix_time::time_duration loop_diff_start,
-    const boost::posix_time::time_duration experiment_diff_start,
-    std::unique_ptr<odb::core::database> &db) const;
+    const boost::posix_time::time_duration experiment_diff_start) const;
 
   /**
    * \brief Checks if the experiment is finished.
@@ -67,6 +68,7 @@ private:
   std::vector<std::shared_ptr<DataRunnerBase>> m_sub_runners;
   mutable bool m_is_first_entry;
 
+  std::unique_ptr<odb::core::database> m_db;
 };
 
 }  // namespace performance_test
