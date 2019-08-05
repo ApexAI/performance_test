@@ -52,7 +52,7 @@ private:
   void analyze(
     const boost::posix_time::time_duration loop_diff_start,
     const boost::posix_time::time_duration experiment_diff_start,
-    std::auto_ptr<odb::core::database> db) const;
+    std::unique_ptr<odb::core::database> &db) const;
 
   /**
    * \brief Checks if the experiment is finished.
@@ -66,6 +66,7 @@ private:
   std::vector<std::shared_ptr<DataRunnerBase>> m_pub_runners;
   std::vector<std::shared_ptr<DataRunnerBase>> m_sub_runners;
   mutable bool m_is_first_entry;
+
 };
 
 }  // namespace performance_test
