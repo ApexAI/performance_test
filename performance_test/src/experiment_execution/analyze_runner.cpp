@@ -36,28 +36,14 @@
 #include <odb/transaction.hxx>
 #include <odb/schema-catalog.hxx>
 
-inline std::unique_ptr<odb::core::database> create_database (int& argc, char* argv[])
-{
-  std::unique_ptr<odb::core::database> db
-      (new odb::sqlite::database(argc, argv, false, SQLITE_OPEN_READWRITE |
-                                                    SQLITE_OPEN_CREATE));
-  {
-    odb::core::connection_ptr c(db->connection());
-    c->execute ("PRAGMA foreign_keys=OFF");
-    odb::core::transaction t (c->begin ());
-    odb::core::schema_catalog::create_schema(*db);
-    t.commit ();
-    c->execute ("PRAGMA foreign_keys=ON");
-  }
-  return db;
-}
 
 namespace performance_test
 {
 
 AnalyzeRunner::AnalyzeRunner()
 : m_ec(ExperimentConfiguration::get()),
-  m_is_first_entry(true)
+  m_is_first_entry(true),
+  m_db()
 {
   std::stringstream os;
   os << m_ec;
@@ -80,6 +66,22 @@ AnalyzeRunner::AnalyzeRunner()
     m_sub_runners.push_back(DataRunnerFactory::get(m_ec.topic_name(), m_ec.com_mean(),
       RunType::SUBSCRIBER));
   }
+
+  char *argv_db[] = {(char*)"./perf_test",
+                     (char*)"--database",
+                     (char*)"test_database"};
+  int argc_db = 3;
+  m_db = std::unique_ptr<odb::core::database>
+      (new odb::sqlite::database(argc_db, argv_db, false, SQLITE_OPEN_READWRITE |
+                                                    SQLITE_OPEN_CREATE));
+  {
+    odb::core::connection_ptr c(m_db->connection());
+    c->execute ("PRAGMA foreign_keys=OFF");
+    odb::core::transaction t (c->begin ());
+    odb::core::schema_catalog::create_schema(*m_db);
+    t.commit ();
+    c->execute ("PRAGMA foreign_keys=ON");
+  }
 }
 
 void AnalyzeRunner::run() const
@@ -89,14 +91,8 @@ void AnalyzeRunner::run() const
 
   const auto experiment_start = boost::posix_time::microsec_clock::local_time();
 
-  //TODO: this all should be provided in the command line:
-  char *argv_db[] = {(char*)"./perf_test",
-                     (char*)"--database",
-                     (char*)"test_database"};
-  int argc_db = 3;
-  std::unique_ptr<odb::core::database> db = create_database(argc_db, argv_db);
-  odb::core::transaction t (db->begin());
-  
+  odb::core::transaction t(m_db->begin());
+  m_db->persist(m_ec);
 
   while (!check_exit(experiment_start)) {
     const auto loop_start = boost::posix_time::microsec_clock::local_time();
@@ -115,15 +111,14 @@ void AnalyzeRunner::run() const
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
 
-    analyze(loop_diff_start, experiment_diff_start, db);
+    analyze(loop_diff_start, experiment_diff_start);
   }
   t.commit();
 }
 
 void AnalyzeRunner::analyze(
   const boost::posix_time::time_duration loop_diff_start,
-  const boost::posix_time::time_duration experiment_diff_start,
-  std::unique_ptr<odb::core::database> &db) const
+  const boost::posix_time::time_duration experiment_diff_start) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -170,8 +165,8 @@ void AnalyzeRunner::analyze(
   );
 
   m_ec.log(result.to_csv_string(true));
-  db->persist(m_ec);
-  db->persist(result);
+
+  m_db->persist(result);
 }
 
 bool AnalyzeRunner::check_exit(boost::posix_time::ptime experiment_start) const
