@@ -36,16 +36,16 @@
 #include <odb/transaction.hxx>
 #include <odb/schema-catalog.hxx>
 
-inline std::auto_ptr<odb::database> create_database (int& argc, char* argv[])
+inline std::unique_ptr<odb::core::database> create_database (int& argc, char* argv[])
 {
-  std::auto_ptr<odb::core::database> db
+  std::unique_ptr<odb::core::database> db
       (new odb::sqlite::database(argc, argv, false, SQLITE_OPEN_READWRITE |
                                                     SQLITE_OPEN_CREATE));
   {
-    odb::core::connection_ptr c (db->connection ());
+    odb::core::connection_ptr c(db->connection());
     c->execute ("PRAGMA foreign_keys=OFF");
     odb::core::transaction t (c->begin ());
-    odb::core::schema_catalog::create_schema (*db);
+    odb::core::schema_catalog::create_schema(*db);
     t.commit ();
     c->execute ("PRAGMA foreign_keys=ON");
   }
@@ -94,8 +94,9 @@ void AnalyzeRunner::run() const
                      (char*)"--database",
                      (char*)"test_database"};
   int argc_db = 3;
-  std::auto_ptr<odb::core::database> db (create_database (argc_db, argv_db));
-  //odb::core::transaction t (db->begin());
+  std::unique_ptr<odb::core::database> db = create_database(argc_db, argv_db);
+  odb::core::transaction t (db->begin());
+  
 
   while (!check_exit(experiment_start)) {
     const auto loop_start = boost::posix_time::microsec_clock::local_time();
@@ -116,13 +117,13 @@ void AnalyzeRunner::run() const
 
     analyze(loop_diff_start, experiment_diff_start, db);
   }
-  //t.commit();
+  t.commit();
 }
 
 void AnalyzeRunner::analyze(
   const boost::posix_time::time_duration loop_diff_start,
   const boost::posix_time::time_duration experiment_diff_start,
-  std::auto_ptr<odb::core::database> db) const
+  std::unique_ptr<odb::core::database> &db) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -169,12 +170,8 @@ void AnalyzeRunner::analyze(
   );
 
   m_ec.log(result.to_csv_string(true));
-
-  //save values to sql database
-  //db->persist(m_ec);
-  //db->persist(result);
-
-
+  db->persist(m_ec);
+  db->persist(result);
 }
 
 bool AnalyzeRunner::check_exit(boost::posix_time::ptime experiment_start) const
