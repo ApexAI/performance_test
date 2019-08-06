@@ -35,6 +35,13 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
   add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
+# Use ODB support to create SQL database
+option(ODB_FOR_SQL_ENABLED "Enable ODB for SQL" ON)
+
+if(ODB_FOR_SQL_ENABLED)
+  add_definitions(-DODB_FOR_SQL_ENABLED)
+endif()
+
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
 find_package(builtin_interfaces REQUIRED)
@@ -96,9 +103,11 @@ endif()
 
 # add ODB CMake code start: here
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-find_package(ODB REQUIRED COMPONENTS qt sqlite boost)
-include(${ODB_USE_FILE})
+if(ODB_FOR_SQL_ENABLED)
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+  find_package(ODB REQUIRED COMPONENTS qt sqlite boost)
+  include(${ODB_USE_FILE})
+endif()
 
 set(${PROJECT_NAME}_SOURCES
     src/experiment_execution/analyze_runner.cpp)
@@ -142,9 +151,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
-
-odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite
+if(ODB_FOR_SQL_ENABLED)
+  odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite
     GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11 PROFILE boost)
+endif()
 
 set(sources
     src/data_running/data_runner_factory.cpp
@@ -181,11 +191,12 @@ if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
     )
 endif()
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
-  /usr/lib/odb/x86_64-linux-gnu/include/)
-
+if(ODB_FOR_SQL_ENABLED)
+  include_directories(${CMAKE_CURRENT_BINARY_DIR}
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
+      /usr/lib/odb/x86_64-linux-gnu/include/)
+endif()
 
 set(EXE_NAME perf_test)
 add_executable(${EXE_NAME} ${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAME}_ODB_HEADERS})
@@ -202,14 +213,16 @@ target_link_libraries(${EXE_NAME}
     ${OPTIONAL_LIBRARIES}
     ${ODB_LIBRARIES})
 
-target_include_directories(${EXE_NAME}
-    PRIVATE
+if(ODB_FOR_SQL_ENABLED)
+  target_include_directories(${EXE_NAME}
+      PRIVATE
         ${ODB_INCLUDE_DIRS}
         ${ODB_COMPILE_OUTPUT_DIR})
 
-target_compile_definitions(${EXE_NAME}
-    PRIVATE
+  target_compile_definitions(${EXE_NAME}
+      PRIVATE
         DATABASE_SQLITE)
+endif()
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
   target_link_libraries(${EXE_NAME}
