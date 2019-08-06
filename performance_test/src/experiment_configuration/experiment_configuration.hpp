@@ -92,6 +92,7 @@ public:
   std::string topic_name() const;
   /// \returns Returns the time the application should run until it terminates [s]. This will
   /// throw if the experiment configuration is not set up.
+  std::string db_name() const;
   uint64_t max_runtime() const;
   /// \returns Returns the configured number of publishers. This will throw if the experiment
   /// configuration is not set up.
@@ -179,7 +180,7 @@ private:
 
   uint32_t m_rate;
   std::string m_topic_name;
-
+  std::string m_db_name;
   uint64_t m_max_runtime;
 
   uint32_t m_number_of_publishers;

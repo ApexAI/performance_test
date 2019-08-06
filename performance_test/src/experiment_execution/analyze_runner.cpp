@@ -67,13 +67,13 @@ AnalyzeRunner::AnalyzeRunner()
       RunType::SUBSCRIBER));
   }
 
-  char *argv_db[] = {(char*)"./perf_test",
-                     (char*)"--database",
-                     (char*)"test_database"};
+  std::string db = "--database";
+  std::string exec = "./perf_test";
+  char *argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
   int argc_db = 3;
   m_db = std::unique_ptr<odb::core::database>
       (new odb::sqlite::database(argc_db, argv_db, false, SQLITE_OPEN_READWRITE |
-                                                    SQLITE_OPEN_CREATE));
+                                                          SQLITE_OPEN_CREATE));
   {
     odb::core::connection_ptr c(m_db->connection());
     c->execute ("PRAGMA foreign_keys=OFF");
