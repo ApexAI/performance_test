@@ -22,19 +22,18 @@
 #include <vector>
 
 #include "analyze_runner.hpp"
-
 #include "analysis_result.hpp"
 
-#include <odb/database.hxx>
-#include <odb/transaction.hxx>
-#include "experiment_configuration_odb.hpp"
-#include "analysis_result_odb.hpp"
+#ifdef ODB_FOR_SQL_ENABLED
+  #include "experiment_configuration_odb.hpp"
+  #include "analysis_result_odb.hpp"
 
-#include <memory>
-#include <odb/database.hxx>
-#include <odb/sqlite/database.hxx>
-#include <odb/transaction.hxx>
-#include <odb/schema-catalog.hxx>
+  #include <memory>
+  #include <odb/database.hxx>
+  #include <odb/sqlite/database.hxx>
+  #include <odb/transaction.hxx>
+  #include <odb/schema-catalog.hxx>
+#endif
 
 
 namespace performance_test
@@ -67,21 +66,26 @@ AnalyzeRunner::AnalyzeRunner()
       RunType::SUBSCRIBER));
   }
 
-  std::string db = "--database";
-  std::string exec = "./perf_test";
-  char *argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
-  int argc_db = 3;
-  m_db = std::unique_ptr<odb::core::database>
-      (new odb::sqlite::database(argc_db, argv_db, false, SQLITE_OPEN_READWRITE |
-                                                          SQLITE_OPEN_CREATE));
-  {
-    odb::core::connection_ptr c(m_db->connection());
-    c->execute ("PRAGMA foreign_keys=OFF");
-    odb::core::transaction t (c->begin ());
-    odb::core::schema_catalog::create_schema(*m_db);
-    t.commit ();
-    c->execute ("PRAGMA foreign_keys=ON");
-  }
+  #ifdef ODB_FOR_SQL_ENABLED
+    std::string exe_name = EXE_NAME;
+    std::string db = "--database";
+    std::string exec = "./"+ exe_name;
+
+    char *argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
+    int argc_db = sizeof(argv_db)/sizeof(argv_db[0]);
+
+    m_db = std::unique_ptr<odb::core::database>
+        (new odb::sqlite::database(argc_db, argv_db, false, SQLITE_OPEN_READWRITE |
+                                                            SQLITE_OPEN_CREATE));
+    {
+      odb::core::connection_ptr c(m_db->connection());
+      c->execute ("PRAGMA foreign_keys=OFF");
+      odb::core::transaction t (c->begin ());
+      odb::core::schema_catalog::create_schema(*m_db);
+      t.commit ();
+      c->execute ("PRAGMA foreign_keys=ON");
+    }
+  #endif
 }
 
 void AnalyzeRunner::run() const
@@ -91,8 +95,10 @@ void AnalyzeRunner::run() const
 
   const auto experiment_start = boost::posix_time::microsec_clock::local_time();
 
-  odb::core::transaction t(m_db->begin());
-  m_db->persist(m_ec);
+  #ifdef ODB_FOR_SQL_ENABLED
+    odb::core::transaction t(m_db->begin());
+    m_db->persist(m_ec);
+  #endif
 
   while (!check_exit(experiment_start)) {
     const auto loop_start = boost::posix_time::microsec_clock::local_time();
@@ -113,7 +119,10 @@ void AnalyzeRunner::run() const
 
     analyze(loop_diff_start, experiment_diff_start);
   }
-  t.commit();
+
+  #ifdef ODB_FOR_SQL_ENABLED
+    t.commit();
+  #endif
 }
 
 void AnalyzeRunner::analyze(
@@ -166,7 +175,9 @@ void AnalyzeRunner::analyze(
 
   m_ec.log(result.to_csv_string(true));
 
-  m_db->persist(result);
+  #ifdef ODB_FOR_SQL_ENABLED
+    m_db->persist(result);
+  #endif
 }
 
 bool AnalyzeRunner::check_exit(boost::posix_time::ptime experiment_start) const

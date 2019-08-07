@@ -108,8 +108,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "with_security", "Enables the security with ROS2")("roundtrip_mode",
     po::value<std::string>()->default_value("None"),
     "Selects the round trip mode (None, Main, Relay).")
-    ("create_sql_db", "Saves results to SQL database.")("db_name", po::value<std::string>()
-        ->default_value("test_database"),"Name of the SQL database.")
+    ("db_name", po::value<std::string>()->default_value("test_database"),"Name of the SQL database.")
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
@@ -275,13 +274,8 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
         throw std::invalid_argument("Invalid roundtrip mode: " + mode);
       }
     }
-    if (vm.count("create_sql_db")) {
-      if (vm.count("db_name")){
-        m_db_name = vm["db_name"].as<std::string>();
-      }
-      else {
-        throw std::invalid_argument("Provide a database name");
-      }
+    if (vm.count("db_name")) {
+      m_db_name = vm["db_name"].as<std::string>();
     }
     m_is_setup = true;
     // Logfile needs to be opened at the end, as the experiment configuration influences the

@@ -199,6 +199,8 @@ if(ODB_FOR_SQL_ENABLED)
 endif()
 
 set(EXE_NAME perf_test)
+add_definitions(-DEXE_NAME="${EXE_NAME}")
+
 add_executable(${EXE_NAME} ${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAME}_ODB_HEADERS})
 
 set_compile_options(${EXE_NAME})

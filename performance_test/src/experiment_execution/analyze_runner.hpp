@@ -22,8 +22,10 @@
 #include "analysis_result.hpp"
 #include "../data_running/data_runner_factory.hpp"
 #include "../experiment_configuration/experiment_configuration.hpp"
-#include <odb/database.hxx>
-//#include <odb/sqlite/database.hxx>
+
+#ifdef ODB_FOR_SQL_ENABLED
+  #include <odb/database.hxx>
+#endif
 
 namespace performance_test
 {
