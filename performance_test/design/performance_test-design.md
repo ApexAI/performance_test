@@ -35,6 +35,7 @@ Note that `pandas` is required to run this script.
 * `-DPERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED` Enable Connext DDS Micro support. Enabled by default.
 * `-DPERFORMANCE_TEST_FASTRTPS_ENABLED` Enables FastRTPS support. Enabled by default.
 * `-DPERFORMANCE_TEST_CYCLONEDDS_ENABLED` Enables CycloneDDS support. Enabled by default.
+* `-DODB_FOR_SQL_ENABLED` Enables saving results to SQL database format. Disabled by default.
 
 > ROS 2 support is always enabled.
 
