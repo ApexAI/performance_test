@@ -78,6 +78,25 @@ perfplot log_Array1k_19-09-2019_12-13-49
 
 This will generate a file called `log_Array1k_19-09-2019_12-13-49.pdf`.
 
+# Save results to SQL database
+
+## Requirements
+All the downloads can be found [here](https://www.codesynthesis.com/products/odb/download.xhtml).
+* Odb compiler ([Instructions](https://www.codesynthesis.com/products/odb/doc/install-unix.xhtml))
+* Common Runtime Library: libodb-2.4.0
+* Database Runtime Library: libodb-sqlite-2.4.0
+* Profile Libraries: libodb-boost-2.4.0, libodb-qt-2.4.0
+
+## How to run
+To create a database, you need to build performance_test with enabled `ODB_FOR_SQL_ENABLED` option:
+```
+source ros2_install_path/setup.bash
+colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release -DODB_FOR_SQL_ENABLED=ON
+source install/setup.bash
+```
+Then you can normally run the tool using `ros2 run`. The default name of resulting database is
+"test_database", you can change it by using `--db_name` argument in `ros2 run`.
+
 # Batch run experiments (for advanced users)
 
 Multiple experiments can be run using the following command:
