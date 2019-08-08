@@ -36,7 +36,7 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
 # Use ODB support to create SQL database
-option(ODB_FOR_SQL_ENABLED "Enable ODB for SQL" ON)
+option(ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
 if(ODB_FOR_SQL_ENABLED)
   add_definitions(-DODB_FOR_SQL_ENABLED)

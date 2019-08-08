@@ -70,7 +70,11 @@ private:
   std::vector<std::shared_ptr<DataRunnerBase>> m_sub_runners;
   mutable bool m_is_first_entry;
 
+#ifdef ODB_FOR_SQL_ENABLED
   std::unique_ptr<odb::core::database> m_db;
+#else
+  std::string m_db;
+#endif
 };
 
 }  // namespace performance_test

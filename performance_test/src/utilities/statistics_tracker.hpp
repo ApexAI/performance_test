@@ -18,7 +18,10 @@
 #include <vector>
 #include <limits>
 #include <cmath>
-#include <odb/core.hxx>
+#ifdef ODB_FOR_SQL_ENABLED
+  #include <odb/core.hxx>
+#endif
+
 namespace performance_test
 {
 /// Calculates statistical metrics out of incrementally added samples.
@@ -134,7 +137,9 @@ public:
   }
 
 private:
+#ifdef ODB_FOR_SQL_ENABLED
   friend class odb::access;
+#endif
   double m_min;
   double m_max;
   double m_n;

@@ -22,10 +22,12 @@
 #include <sstream>
 #include <string>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <odb/boost/date-time/exceptions.hxx>
-
 #include "../utilities/statistics_tracker.hpp"
-#include <odb/core.hxx>
+
+#ifdef ODB_FOR_SQL_ENABLED
+  #include <odb/boost/date-time/exceptions.hxx>
+  #include <odb/core.hxx>
+#endif
 
 namespace performance_test
 {
@@ -84,7 +86,10 @@ public:
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
 private:
+
+#ifdef ODB_FOR_SQL_ENABLED
   friend class odb::access;
+#endif
 
   #pragma db transient
   const boost::posix_time::time_duration m_experiment_start;

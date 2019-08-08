@@ -24,7 +24,11 @@
 #include "qos_abstraction.hpp"
 #include "communication_mean.hpp"
 #include "../utilities/rt_enabler.hpp"
-#include <odb/core.hxx>
+
+#ifdef ODB_FOR_SQL_ENABLED
+  #include <odb/core.hxx>
+#endif
+
 
 namespace performance_test
 {
@@ -155,7 +159,9 @@ private:
     m_roundtrip_mode(RoundTripMode::NONE)
   {}
 
+#ifdef ODB_FOR_SQL_ENABLED
   friend class odb::access;
+#endif
 
   /// Throws #std::runtime_error if the experiment is not set up.
   void check_setup() const;
