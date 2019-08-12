@@ -7,6 +7,14 @@ trigger:
     - README.md
 
 jobs:
+- job: build_cross_image
+  steps:
+    -script: |
+      docker build --build-arg AUTOWARE_DOCKER_ARCH=arm64v8 --build-arg AUTOWARE_TARGET_ARCH=aarch64 -t performance_test_cross -f tools/Dockerimage.crossbuild .
+      docker run -it -v ${PWD}:${PWD} -w ${PWD} \
+        --rm performance_test_cross \
+        sh -c "colcon build --merge-install --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/tools/toolchain.cmake -DBUILD_TESTING=OFF"
+
 - job: ubuntu_bionic
   container:
     image: ros:dashing

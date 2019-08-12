@@ -45,3 +45,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc-aarch64-linux-gnu \
     g++-aarch64-linux-gnu \
     default-jre
+
+RUN find /sysroot/opt/ros/dashing/ -name "*.cmake" -type f -exec sed -i -e "s#/usr/lib#/sysroot/usr/lib#g" {} \;
+RUN find /sysroot/opt/ros/dashing/ -name "*.cmake" -type f -exec sed -i -e "s#/usr/include#/sysroot/usr/include#g" {} \;
