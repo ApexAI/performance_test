@@ -9,7 +9,7 @@ trigger:
 jobs:
 - job: build_cross_image
   steps:
-    -script: |
+    - script: |
       docker build --build-arg AUTOWARE_DOCKER_ARCH=arm64v8 --build-arg AUTOWARE_TARGET_ARCH=aarch64 -t performance_test_cross -f tools/Dockerimage.crossbuild .
       docker run -it -v `pwd`:`pwd` -w `pwd` \
         --rm performance_test_cross \
