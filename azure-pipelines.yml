@@ -6,49 +6,50 @@ trigger:
     exclude:
     - README.md
 
-container:
-  image: ros:dashing
-  options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
-
-steps:
-  - script: |
-      /tmp/docker exec -t -u 0 ci-container \
-      sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-    displayName: Set up sudo
-  - script: |
-      sudo apt-get install -y maven default-jdk
-    displayName: Install Cyclone DDS dependencies
-  - script: |
-      cd ${PIPELINE_WORKSPACE}
-      git clone https://github.com/eclipse-cyclonedds/cyclonedds.git
-      cd cyclonedds
-      git checkout 4e805597631ed0dcbdc0eecfe9d532cb75180ae7 # Head as of 20190725
-      mkdir -p build
-      cd build
-      cmake -DCMAKE_INSTALL_PREFIX=/opt/cyclonedds ../src
-      cmake --build .
-      sudo cmake --build . --target install
-      find /opt/cyclonedds
-    displayName: Build and install Cyclone DDS
-  - script: sudo apt-get install -y ros-dashing-osrf-testing-tools-cpp default-jre
-    displayName: Install APT dependencies
-  - script: sudo apt-get install -y python3-colcon-common-extensions
-    displayName: Install colcon
-  - script: rosdep update && rosdep install -y --from performance_test --ignore-src
-    displayName: Install ROS dependencies
-  - script: |
-      source /opt/ros/dashing/setup.bash
-      colcon build \
-        --merge-install \
-        --cmake-args \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DPERFORMANCE_TEST_FORCE_CYCLONEDDS=BOOL:ON \
-        --base-path performance_test
-    displayName: Build performance_test
-  - script: |
-      source /opt/ros/dashing/setup.bash
-      colcon test \
-        --merge-install \
-        --base-path performance_test
-      colcon test-result --verbose
-    displayName: Test performance_test
+jobs:
+- job: ubuntu_bionic
+  container:
+    image: ros:dashing
+    options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
+  steps:
+    - script: |
+        /tmp/docker exec -t -u 0 ci-container \
+        sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+      displayName: Set up sudo
+    - script: |
+        sudo apt-get install -y maven default-jdk
+      displayName: Install Cyclone DDS dependencies
+    - script: |
+        cd ${PIPELINE_WORKSPACE}
+        git clone https://github.com/eclipse-cyclonedds/cyclonedds.git
+        cd cyclonedds
+        git checkout 4e805597631ed0dcbdc0eecfe9d532cb75180ae7 # Head as of 20190725
+        mkdir -p build
+        cd build
+        cmake -DCMAKE_INSTALL_PREFIX=/opt/cyclonedds ../src
+        cmake --build .
+        sudo cmake --build . --target install
+        find /opt/cyclonedds
+      displayName: Build and install Cyclone DDS
+    - script: sudo apt-get install -y ros-dashing-osrf-testing-tools-cpp default-jre
+      displayName: Install APT dependencies
+    - script: sudo apt-get install -y python3-colcon-common-extensions
+      displayName: Install colcon
+    - script: rosdep update && rosdep install -y --from performance_test --ignore-src
+      displayName: Install ROS dependencies
+    - script: |
+        source /opt/ros/dashing/setup.bash
+        colcon build \
+          --merge-install \
+          --cmake-args \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DPERFORMANCE_TEST_FORCE_CYCLONEDDS=BOOL:ON \
+          --base-path performance_test
+      displayName: Build performance_test
+    - script: |
+        source /opt/ros/dashing/setup.bash
+        colcon test \
+          --merge-install \
+          --base-path performance_test
+        colcon test-result --verbose
+      displayName: Test performance_test
