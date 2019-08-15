@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ros-dashing-ament-cmake-nose \
   ros-dashing-launch-testing
 
+# Convert all absolute symbolic links to relative so that they can be found when copied to the sysroot
 # hadolint ignore=SC2156
 RUN find / -depth -xdev -type l -lname '/*' -exec sh -c 'linkpath="$(readlink {})" && rm -f {} && ln -frsv "$linkpath" "{}"' \;
 
