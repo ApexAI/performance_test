@@ -13,7 +13,7 @@ jobs:
         sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-user-static
       displayName: Install QEMU static emulator
     - script: |
-        docker build --build-arg AUTOWARE_DOCKER_ARCH=arm64v8 --build-arg AUTOWARE_TARGET_ARCH=aarch64 -t performance_test_cross -f tools/Dockerimage.crossbuild .
+        docker build --build-arg PERFORMANCE_TEST_DOCKER_ARCH=arm64v8 --build-arg PERFORMANCE_TEST_TARGET_ARCH=aarch64 -t performance_test_cross -f tools/Dockerimage.crossbuild .
       displayName: Build Docker image
     - script: |
         docker run -t -v `pwd`:`pwd` -w `pwd` \
