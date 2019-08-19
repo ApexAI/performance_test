@@ -39,11 +39,14 @@ namespace performance_test
  * This experiment configuration could be created from various sources. At the moment, only
  * configuration by command line arguments are supported.
  */
+#ifdef ODB_FOR_SQL_ENABLED
+  #pragma db value(QOSAbstraction) definition
 
-#pragma db value(QOSAbstraction) definition
-
-#pragma db object no_id
+  #pragma db object no_id
+  class ExperimentConfiguration
+#else
 class ExperimentConfiguration
+#endif
 {
 public:
   // Implementing the standard C++11 singleton pattern.
@@ -176,9 +179,12 @@ private:
   std::string m_logfile;
   std::string m_final_logfile_name;
 
+#ifdef ODB_FOR_SQL_ENABLED
   #pragma db transient
   mutable std::ofstream m_os;
-
+#else
+  mutable std::ofstream m_os;
+#endif
   CommunicationMean m_com_mean;
   uint32_t m_dds_domain_id;
 

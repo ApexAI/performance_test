@@ -34,7 +34,7 @@ namespace performance_test
 
 /// Outstream operator for timeval to seconds (double).
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
-
+#ifdef ODB_FOR_SQL_ENABLED
 #pragma db value(StatisticsTracker) definition
 #pragma db value(rusage) definition
 #pragma db value(timeval) definition
@@ -42,6 +42,9 @@ std::ostream & operator<<(std::ostream & stream, const timeval & e);
 /// Represents the results of an experiment iteration.
 #pragma db object no_id
 class AnalysisResult
+#else
+class AnalysisResult
+#endif
 {
 public:
   /**
@@ -91,9 +94,7 @@ private:
   friend class odb::access;
 #endif
 
-  #pragma db transient
   const boost::posix_time::time_duration m_experiment_start;
-  #pragma db transient
   const boost::posix_time::time_duration m_loop_start;
   const uint64_t m_num_samples_received;
   const uint64_t m_num_samples_sent;
