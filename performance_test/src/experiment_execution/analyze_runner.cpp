@@ -25,14 +25,14 @@
 #include "analysis_result.hpp"
 
 #ifdef ODB_FOR_SQL_ENABLED
-  #include "experiment_configuration_odb.hpp"
-  #include "analysis_result_odb.hpp"
-
   #include <memory>
   #include <odb/database.hxx>
   #include <odb/sqlite/database.hxx>
   #include <odb/transaction.hxx>
   #include <odb/schema-catalog.hxx>
+  
+  #include "experiment_configuration_odb.hpp"
+  #include "analysis_result_odb.hpp"
 #endif
 
 
