@@ -100,7 +100,7 @@ endif()
 set(ODB_INCLUDE_DIRS ${ODB_LIBODB_INCLUDE_DIRS})
 set(ODB_LIBRARIES ${ODB_LIBODB_LIBRARIES})
 
-set(ODB_FIND_COMPONENTS "pgsql" "sqlite")
+set(ODB_FIND_COMPONENTS "pgsql" "sqlite" "boost")
 foreach(component ${ODB_FIND_COMPONENTS})
 	find_odb_api(${component})
 endforeach()
