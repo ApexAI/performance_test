@@ -41,12 +41,9 @@ namespace performance_test
  */
 #ifdef ODB_FOR_SQL_ENABLED
   #pragma db value(QOSAbstraction) definition
-
-  #pragma db object no_id
-class ExperimentConfiguration
-#else
-class ExperimentConfiguration
+  #pragma db object
 #endif
+class ExperimentConfiguration
 {
 public:
   // Implementing the standard C++11 singleton pattern.
@@ -173,7 +170,14 @@ private:
   /// throw if the experiment configuration is not set up.
   void open_file();
 
+#ifdef ODB_FOR_SQL_ENABLED
+  friend odb::access;
+
+  // Using the GUID of the experiment as ID.
+  #pragma db id
+#endif
   boost::uuids::uuid m_id;
+
   bool m_is_setup;
 
   std::string m_logfile;
@@ -181,10 +185,9 @@ private:
 
 #ifdef ODB_FOR_SQL_ENABLED
   #pragma db transient
-  mutable std::ofstream m_os;
-#else
-  mutable std::ofstream m_os;
 #endif
+  mutable std::ofstream m_os;
+
   CommunicationMean m_com_mean;
   uint32_t m_dds_domain_id;
 
