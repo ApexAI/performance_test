@@ -43,7 +43,7 @@ namespace performance_test
   #pragma db value(QOSAbstraction) definition
 
   #pragma db object no_id
-  class ExperimentConfiguration
+class ExperimentConfiguration
 #else
 class ExperimentConfiguration
 #endif

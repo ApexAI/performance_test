@@ -30,7 +30,7 @@
   #include <odb/sqlite/database.hxx>
   #include <odb/transaction.hxx>
   #include <odb/schema-catalog.hxx>
-  
+
   #include "experiment_configuration_odb.hpp"
   #include "analysis_result_odb.hpp"
 #endif
@@ -67,24 +67,25 @@ AnalyzeRunner::AnalyzeRunner()
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
-    std::string exe_name = EXE_NAME;
-    std::string db = "--database";
-    std::string exec = "./"+ exe_name;
+  std::string exe_name = EXE_NAME;
+  std::string db = "--database";
+  std::string exec = "./" + exe_name;
 
-    char *argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
-    int argc_db = sizeof(argv_db)/sizeof(argv_db[0]);
+  char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
+  int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
 
-    m_db = std::unique_ptr<odb::core::database>
-        (new odb::sqlite::database(argc_db, argv_db, false, SQLITE_OPEN_READWRITE |
-                                                            SQLITE_OPEN_CREATE));
-    {
-      odb::core::connection_ptr c(m_db->connection());
-      c->execute ("PRAGMA foreign_keys=OFF");
-      odb::core::transaction t (c->begin ());
-      odb::core::schema_catalog::create_schema(*m_db);
-      t.commit ();
-      c->execute ("PRAGMA foreign_keys=ON");
-    }
+  m_db =
+    std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
+      SQLITE_OPEN_READWRITE |
+      SQLITE_OPEN_CREATE));
+  {
+    odb::core::connection_ptr c(m_db->connection());
+    c->execute("PRAGMA foreign_keys=OFF");
+    odb::core::transaction t(c->begin());
+    odb::core::schema_catalog::create_schema(*m_db);
+    t.commit();
+    c->execute("PRAGMA foreign_keys=ON");
+  }
   #endif
 }
 
@@ -96,8 +97,8 @@ void AnalyzeRunner::run() const
   const auto experiment_start = boost::posix_time::microsec_clock::local_time();
 
   #ifdef ODB_FOR_SQL_ENABLED
-    odb::core::transaction t(m_db->begin());
-    m_db->persist(m_ec);
+  odb::core::transaction t(m_db->begin());
+  m_db->persist(m_ec);
   #endif
 
   while (!check_exit(experiment_start)) {
@@ -121,7 +122,7 @@ void AnalyzeRunner::run() const
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
-    t.commit();
+  t.commit();
   #endif
 }
 
@@ -176,7 +177,7 @@ void AnalyzeRunner::analyze(
   m_ec.log(result.to_csv_string(true));
 
   #ifdef ODB_FOR_SQL_ENABLED
-    m_db->persist(result);
+  m_db->persist(result);
   #endif
 }
 
@@ -193,7 +194,7 @@ bool AnalyzeRunner::check_exit(boost::posix_time::ptime experiment_start) const
   }
 
   const double runtime_sec =
-      boost::posix_time::time_duration(boost::posix_time::microsec_clock::local_time() -
+    boost::posix_time::time_duration(boost::posix_time::microsec_clock::local_time() -
       experiment_start).seconds();
 
   if (runtime_sec > m_ec.max_runtime()) {
@@ -203,7 +204,6 @@ bool AnalyzeRunner::check_exit(boost::posix_time::ptime experiment_start) const
     return false;
   }
 }
-
 
 
 }  // namespace performance_test
