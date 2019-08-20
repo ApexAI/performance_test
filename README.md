@@ -69,7 +69,7 @@ ros2 run performance_test performance_test_file_reader.py .
 ## Requirements
 ***ODB 2.5.0 (this is required for gcc 7.4.0):***
 
-Build the latest staged build2 toolchain: (following instruction from [here.](https://www.codesynthesis.com/pipermail/odb-users/2018-June/004039.html))
+Build the latest staged build2 toolchain: (following instruction from [here](https://www.codesynthesis.com/pipermail/odb-users/2018-June/004039.html))
 ```
 curl -sSfO https://stage.build2.org/0/0.12.0-a.0/build2-install-0.12.0-a.0-stage.sh
 shasum -a 256 -b build2-install-0.12.0-a.0-stage.sh
@@ -110,8 +110,9 @@ source ros2_install_path/setup.bash
 mkdir -p perf_test_ws/src
 cd perf_test_ws/src
 git clone https://github.com/ApexAI/performance_test.git
+cd performance_test
 git checkout 3749-add-sql-support
-cd ..
+cd ../..
 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release -DODB_FOR_SQL_ENABLED=ON
 source install/setup.bash
 ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
