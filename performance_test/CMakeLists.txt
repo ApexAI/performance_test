@@ -105,7 +105,7 @@ endif()
 
 if(ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-  find_package(ODB REQUIRED COMPONENTS qt sqlite)
+  find_package(ODB REQUIRED COMPONENTS sqlite boost)
   include(${ODB_USE_FILE})
 endif()
 
@@ -153,7 +153,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
 if(ODB_FOR_SQL_ENABLED)
   odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite
-      GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11 PROFILE boost)
+      GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11 PROFILE boost X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
 endif()
 
 set(sources
@@ -195,7 +195,7 @@ if(ODB_FOR_SQL_ENABLED)
     include_directories(${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
-        /usr/lib/odb/x86_64-linux-gnu/include/)
+            ${ODB_INCLUDE_DIRS})
 endif()
 
 set(EXE_NAME perf_test)
