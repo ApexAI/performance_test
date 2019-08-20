@@ -89,7 +89,6 @@ public:
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
 private:
-
 #ifdef ODB_FOR_SQL_ENABLED
   friend class odb::access;
 #endif

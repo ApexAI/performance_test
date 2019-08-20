@@ -67,21 +67,58 @@ ros2 run performance_test performance_test_file_reader.py .
 # Save results to SQL database
 
 ## Requirements
+***ODB 2.5.0 (this is required for gcc 7.4.0):***
+
+Build the latest staged build2 toolchain: (following instruction from [here.](https://www.codesynthesis.com/pipermail/odb-users/2018-June/004039.html))
+```
+curl -sSfO https://stage.build2.org/0/0.12.0-a.0/build2-install-0.12.0-a.0-stage.sh
+shasum -a 256 -b build2-install-0.12.0-a.0-stage.sh
+sh build2-install-0.12.0-a.0-stage.sh
+```
+Install plugin for gcc 7:
+```
+sudo apt-get update
+sudo apt-get install gcc-7-plugin-dev
+```
+Install `odb` and `libodb-boost`:
+```
+bpkg create -d odb-build cc config.cxx=g++
+cd odb-build
+bpkg build odb@https://stage.build2.org/1
+bpkg build libodb-boost@https://stage.build2.org/1
+bpkg install \
+     config.install.root=/usr/local \
+     config.install.sudo=sudo \
+     odb \
+     libodb-boost
+cd ..
+```
+```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+```
+
+***ODB 2.4.0:***
 All the downloads can be found [here](https://www.codesynthesis.com/products/odb/download.xhtml).
 * Odb compiler ([Instructions](https://www.codesynthesis.com/products/odb/doc/install-unix.xhtml))
 * Common Runtime Library: libodb-2.4.0
 * Database Runtime Library: libodb-sqlite-2.4.0
 * Profile Libraries: libodb-boost-2.4.0, libodb-qt-2.4.0
 
-## How to run
-To create a database, you need to build performance_test with enabled `ODB_FOR_SQL_ENABLED` option:
+## How to build and run
 ```
 source ros2_install_path/setup.bash
+mkdir -p perf_test_ws/src
+cd perf_test_ws/src
+git clone https://github.com/ApexAI/performance_test.git
+git checkout 3749-add-sql-support
+cd ..
 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release -DODB_FOR_SQL_ENABLED=ON
 source install/setup.bash
+ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
 ```
-Then you can normally run the tool using `ros2 run`. The default name of resulting database is
-"test_database", you can change it by using `--db_name` argument in `ros2 run`.
+
+The default name of resulting database is "test_database", you can change it by using `--db_name`
+argument in `ros2 run`.
 
 # Batch run experiments (for advanced users)
 

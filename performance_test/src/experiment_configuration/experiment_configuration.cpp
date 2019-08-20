@@ -107,8 +107,8 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "no_micro_intra", "Disables the Connext DDS Micro INTRA transport.")(
     "with_security", "Enables the security with ROS2")("roundtrip_mode",
     po::value<std::string>()->default_value("None"),
-    "Selects the round trip mode (None, Main, Relay).")
-    ("db_name", po::value<std::string>()->default_value("test_database"),"Name of the SQL database.")
+    "Selects the round trip mode (None, Main, Relay).")("db_name",
+    po::value<std::string>()->default_value("test_database"), "Name of the SQL database.")
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
