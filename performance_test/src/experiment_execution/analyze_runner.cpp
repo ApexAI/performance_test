@@ -67,6 +67,7 @@ AnalyzeRunner::AnalyzeRunner()
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
+  typedef odb::query<ExperimentConfiguration> query;
   std::string exe_name = EXE_NAME;
   std::string db = "--database";
   std::string exec = "./" + exe_name;
@@ -82,7 +83,11 @@ AnalyzeRunner::AnalyzeRunner()
     odb::core::connection_ptr c(m_db->connection());
     c->execute("PRAGMA foreign_keys=OFF");
     odb::core::transaction t(c->begin());
-    odb::core::schema_catalog::create_schema(*m_db);
+    try {
+      m_db->query<ExperimentConfiguration>(false);
+    } catch (const odb::exception & e) {
+      odb::core::schema_catalog::create_schema(*m_db);
+    }
     t.commit();
     c->execute("PRAGMA foreign_keys=ON");
   }
