@@ -40,6 +40,8 @@ namespace performance_test
  * configuration by command line arguments are supported.
  */
 #ifdef ODB_FOR_SQL_ENABLED
+class AnalysisResult;
+
   #pragma db value(QOSAbstraction) definition
   #pragma db object
 #endif
@@ -141,6 +143,7 @@ public:
   /// \return Returns true if the user requested the application to exit.
   bool exit_requested() const;
 
+
 private:
   ExperimentConfiguration()
   : m_id(boost::uuids::random_generator()()),
@@ -170,10 +173,8 @@ private:
   /// throw if the experiment configuration is not set up.
   void open_file();
 
-#ifdef ODB_FOR_SQL_ENABLED
-  friend odb::access;
-
   // Using the GUID of the experiment as ID.
+#ifdef ODB_FOR_SQL_ENABLED
   #pragma db id
 #endif
   boost::uuids::uuid m_id;
@@ -209,6 +210,12 @@ private:
   bool m_with_security;
 
   RoundTripMode m_roundtrip_mode;
+
+#ifdef ODB_FOR_SQL_ENABLED
+#pragma db value_not_null inverse(configuration)
+  std::vector<std::weak_ptr<AnalysisResult>> results;
+#endif
+
 };
 
 /// Outstream operator for RoundTripMode.
@@ -218,5 +225,6 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration::
 /// Outstream operator for ExperimentConfiguration.
 std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration & e);
 }  // namespace performance_test
+
 
 #endif  // EXPERIMENT_CONFIGURATION__EXPERIMENT_CONFIGURATION_HPP_
