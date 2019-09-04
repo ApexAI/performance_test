@@ -40,7 +40,7 @@ namespace performance_test
  * configuration by command line arguments are supported.
  */
 #ifdef ODB_FOR_SQL_ENABLED
-class AnalysisResult;
+//class AnalysisResult;
 
   #pragma db value(QOSAbstraction) definition
   #pragma db object
@@ -210,12 +210,12 @@ private:
   bool m_with_security;
 
   RoundTripMode m_roundtrip_mode;
-
+/*
 #ifdef ODB_FOR_SQL_ENABLED
 #pragma db value_not_null inverse(configuration)
   std::vector<std::weak_ptr<AnalysisResult>> results;
 #endif
-
+*/
 };
 
 /// Outstream operator for RoundTripMode.
