@@ -27,7 +27,12 @@
 #ifdef ODB_FOR_SQL_ENABLED
   #include <memory>
   #include <odb/database.hxx>
-  #include <odb/sqlite/database.hxx>
+  #ifdef MYSQL
+    #include <odb/mysql/database.hxx>
+  #endif
+  #ifdef SQLITE
+    #include <odb/sqlite/database.hxx>
+  #endif
   #include <odb/transaction.hxx>
   #include <odb/schema-catalog.hxx>
 
@@ -67,30 +72,34 @@ AnalyzeRunner::AnalyzeRunner()
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
-  typedef odb::query<ExperimentConfiguration> query;
-  std::string exe_name = EXE_NAME;
-  std::string db = "--database";
-  std::string exec = "./" + exe_name;
+    typedef odb::query<ExperimentConfiguration> query;
+    std::string exe_name = EXE_NAME;
+    std::string db = "--database";
+    std::string exec = "./" + exe_name;
 
-  char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
-  int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
-
-  m_db =
-    std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
-      SQLITE_OPEN_READWRITE |
-      SQLITE_OPEN_CREATE));
-  {
-    odb::core::connection_ptr c(m_db->connection());
-    c->execute("PRAGMA foreign_keys=OFF");
-    odb::core::transaction t(c->begin());
-    try {
-      m_db->query<ExperimentConfiguration>(false);
-    } catch (const odb::exception & e) {
-      odb::core::schema_catalog::create_schema(*m_db);
-    }
-    t.commit();
-    c->execute("PRAGMA foreign_keys=ON");
-  }
+    char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
+    int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
+    #ifdef SQLITE
+      m_db =
+        std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
+          SQLITE_OPEN_READWRITE |
+          SQLITE_OPEN_CREATE));
+      {
+        odb::core::connection_ptr c(m_db->connection());
+        c->execute("PRAGMA foreign_keys=OFF");
+        odb::core::transaction t(c->begin());
+        try {
+          m_db->query<ExperimentConfiguration>(false);
+        } catch (const odb::exception & e) {
+          odb::core::schema_catalog::create_schema(*m_db);
+        }
+        t.commit();
+        c->execute("PRAGMA foreign_keys=ON");
+      }
+    #endif
+    #ifdef MYSQL
+      m_db = std::unique_ptr<odb::core::database> (new odb::mysql::database (argc_db, argv_db));
+    #endif
   #endif
 }
 
