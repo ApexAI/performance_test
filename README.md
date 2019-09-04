@@ -80,17 +80,19 @@ Install plugin for gcc 7:
 sudo apt-get update
 sudo apt-get install gcc-7-plugin-dev
 ```
-Install `odb` and `libodb-boost`:
+Install `odb` and `libodb-boost` (also `libodb-mysql` if you plan to use MySQL instead of SQLite:
 ```
 bpkg create -d odb-build cc config.cxx=g++
 cd odb-build
 bpkg build odb@https://stage.build2.org/1
 bpkg build libodb-boost@https://stage.build2.org/1
+bpkg build libodb-mysql@https://stage.build2.org/1
 bpkg install \
      config.install.root=/usr/local \
      config.install.sudo=sudo \
      odb \
-     libodb-boost
+     libodb-boost \
+     libodb-mysql
 cd ..
 ```
 ```
@@ -113,13 +115,14 @@ git clone https://github.com/ApexAI/performance_test.git
 cd performance_test
 git checkout 3749-add-sql-support
 cd ../..
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release -DODB_FOR_SQL_ENABLED=ON
+colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release -DODB_FOR_SQL_ENABLED=ON -DSQLITE=ON
 source install/setup.bash
 ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
 ```
 
 The default name of resulting database is "test_database", you can change it by using `--db_name`
-argument in `ros2 run`.
+argument in `ros2 run`. Additionally, if you want to use MySQL instead of SQLite, use -DMYSQL=ON
+instead -DSQLITE=ON.
 
 # Batch run experiments (for advanced users)
 

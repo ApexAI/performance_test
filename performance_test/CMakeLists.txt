@@ -36,10 +36,20 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
 # Use ODB support to create SQL database
-option(ODB_FOR_SQL_ENABLED "Enable ODB for SQL" ON)
+option(ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
 if(ODB_FOR_SQL_ENABLED)
   add_definitions(-DODB_FOR_SQL_ENABLED)
+  option(SQLITE "Select DB type" OFF)
+  option(MYSQL "Select DB type" OFF)
+  if(SQLITE)
+    add_definitions(-DSQLITE)
+    set(DB_TYPE sqlite)
+  endif()
+  if(MYSQL)
+    add_definitions(-DMYSQL)
+    set(DB_TYPE mysql)
+  endif()
 endif()
 
 find_package(rclcpp REQUIRED)
@@ -105,7 +115,7 @@ endif()
 
 if(ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-  find_package(ODB REQUIRED COMPONENTS sqlite boost)
+  find_package(ODB REQUIRED COMPONENTS sqlite mysql boost)
   include(${ODB_USE_FILE})
 endif()
 
@@ -152,10 +162,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
 if(ODB_FOR_SQL_ENABLED)
-  odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB sqlite
-      GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11 PROFILE boost X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
+  odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB "${DB_TYPE}" GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11 PROFILE boost X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
 endif()
-
 set(sources
     src/data_running/data_runner_factory.cpp
     src/experiment_execution/analysis_result.cpp
@@ -220,10 +228,16 @@ if(ODB_FOR_SQL_ENABLED)
       PRIVATE
         ${ODB_INCLUDE_DIRS}
         ${ODB_COMPILE_OUTPUT_DIR})
-
+  if(SQLITE)
   target_compile_definitions(${EXE_NAME}
       PRIVATE
         DATABASE_SQLITE)
+  endif()
+  if(MYSQL)
+  target_compile_definitions(${EXE_NAME}
+      PRIVATE
+        DATABASE_MYSQL)
+  endif()
 endif()
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
