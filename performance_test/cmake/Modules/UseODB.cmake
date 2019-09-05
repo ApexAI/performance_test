@@ -14,8 +14,8 @@ function(odb_compile outvar)
 	endif()
 
 	set(options GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA GENERATE_PREPARED)
-	set(oneValueParams SCHEMA_FORMAT SCHEMA_NAME TABLE_PREFIX
-		STANDARD SLOC_LIMIT
+	set(oneValueParams SCHEMA_FORMAT SCHEMA_NAME TABLE_PREFIX EPILOGUE
+		STANDARD SLOC_LIMIT DEFAULT_POINTER
 		HEADER_PROLOGUE INLINE_PROLOGUE SOURCE_PROLOGUE
 		HEADER_EPILOGUE INLINE_EPILOGUE SOURCE_EPILOGUE
 		MULTI_DATABASE
@@ -47,7 +47,11 @@ function(odb_compile outvar)
 		list(APPEND ODB_ARGS --generate-query)
 	endif()
 
-	if(PARAM_GENERATE_SESSION)
+	if(PARAM_DEFAULT_POINTER)
+		list(APPEND ODB_ARGS --default-pointer "{DEFAULT_POINTER}")
+  endif()
+
+if(PARAM_GENERATE_SESSION)
 		list(APPEND ODB_ARGS --generate-session)
 	endif()
 
@@ -57,6 +61,10 @@ function(odb_compile outvar)
 
 	if(PARAM_GENERATE_PREPARED)
 		list(APPEND ODB_ARGS --generate-prepared)
+	endif()
+
+	if(PARAM_EPILOGUE)
+		list(APPEND ODB_ARGS --odb-epilogue "${PARAM_EPILOGUE}")
 	endif()
 
 	if(PARAM_SCHEMA_FORMAT)

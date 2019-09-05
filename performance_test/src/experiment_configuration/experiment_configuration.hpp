@@ -27,6 +27,7 @@
 
 #ifdef ODB_FOR_SQL_ENABLED
   #include <odb/core.hxx>
+  #include <tr1/memory>
 #endif
 
 
@@ -40,7 +41,7 @@ namespace performance_test
  * configuration by command line arguments are supported.
  */
 #ifdef ODB_FOR_SQL_ENABLED
-//class AnalysisResult;
+class AnalysisResult;
 
   #pragma db value(QOSAbstraction) definition
   #pragma db object
@@ -210,12 +211,12 @@ private:
   bool m_with_security;
 
   RoundTripMode m_roundtrip_mode;
-/*
+
 #ifdef ODB_FOR_SQL_ENABLED
 #pragma db value_not_null inverse(configuration)
-  std::vector<std::weak_ptr<AnalysisResult>> results;
+  std::vector<std::tr1::weak_ptr<AnalysisResult>> results;
 #endif
-*/
+
 };
 
 /// Outstream operator for RoundTripMode.
@@ -226,5 +227,7 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration::
 std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration & e);
 }  // namespace performance_test
 
-
+#ifdef ODB_FOR_SQL_ENABLED
+#include "analysis_result.hpp"
+#endif
 #endif  // EXPERIMENT_CONFIGURATION__EXPERIMENT_CONFIGURATION_HPP_
