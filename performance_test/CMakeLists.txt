@@ -162,8 +162,13 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
 if(ODB_FOR_SQL_ENABLED)
-  odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB "${DB_TYPE}" GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA STANDARD c++11 PROFILE boost X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
+  odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB "${DB_TYPE}"
+      GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA INCLUDE
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
+      DEFAULT_POINTER std::tr1::shared_ptr
+      STANDARD c++11 PROFILE boost X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
 endif()
+
 set(sources
     src/data_running/data_runner_factory.cpp
     src/experiment_execution/analysis_result.cpp
@@ -222,6 +227,7 @@ target_link_libraries(${EXE_NAME}
     ${Boost_LIBRARIES}
     ${OPTIONAL_LIBRARIES}
     ${ODB_LIBRARIES})
+
 
 if(ODB_FOR_SQL_ENABLED)
   target_include_directories(${EXE_NAME}

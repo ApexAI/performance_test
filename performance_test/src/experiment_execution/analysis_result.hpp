@@ -27,7 +27,7 @@
 #ifdef ODB_FOR_SQL_ENABLED
   #include <odb/boost/date-time/exceptions.hxx>
   #include <odb/core.hxx>
-  //#include "../experiment_configuration/experiment_configuration.hpp"
+  #include "experiment_configuration.hpp"
 #endif
 
 namespace performance_test
@@ -41,7 +41,7 @@ std::ostream & operator<<(std::ostream & stream, const timeval & e);
 #pragma db value(timeval) definition
 
 /// Represents the results of an experiment iteration.
-#pragma db object no_id
+#pragma db object
 class AnalysisResult
 #else
 class AnalysisResult
@@ -93,9 +93,7 @@ private:
 #ifdef ODB_FOR_SQL_ENABLED
   friend class odb::access;
 #endif
-
-
-
+  #pragma db id
   const boost::posix_time::time_duration m_experiment_start;
   const boost::posix_time::time_duration m_loop_start;
   const uint64_t m_num_samples_received;
@@ -108,17 +106,12 @@ private:
   const StatisticsTracker m_sub_loop_time_reserve;
 
   rusage m_sys_usage;
-/*
-#ifdef ODB_FOR_SQL_ENABLED
-#pragma db id
-  unsigned long id_;
-#endif
 
 #ifdef ODB_FOR_SQL_ENABLED
 #pragma db not_null
-  std::shared_ptr<ExperimentConfiguration> configuration;
+  std::tr1::shared_ptr<ExperimentConfiguration> configuration;
 #endif
-*/
+
 };
 
 }  // namespace performance_test
