@@ -41,11 +41,9 @@ std::ostream & operator<<(std::ostream & stream, const timeval & e);
 #pragma db value(timeval) definition
 
 /// Represents the results of an experiment iteration.
-#pragma db object
-class AnalysisResult
-#else
-class AnalysisResult
+#pragma db object pointer(std::shared_ptr)
 #endif
+class AnalysisResult
 {
 public:
   /**
@@ -72,6 +70,7 @@ public:
     const StatisticsTracker sub_loop_time_reserve
   );
 
+    AnalysisResult() {}
   /**
    * \brief Returns a header for a CVS file containing the analysis result data as a string.
    * \param pretty_print If set, inserts additional tabs to format the output nicer.
@@ -96,10 +95,10 @@ private:
   #pragma db id
   const boost::posix_time::time_duration m_experiment_start;
   const boost::posix_time::time_duration m_loop_start;
-  const uint64_t m_num_samples_received;
-  const uint64_t m_num_samples_sent;
-  const uint64_t m_num_samples_lost;
-  const std::size_t m_total_data_received;
+  const uint64_t m_num_samples_received = {};
+  const uint64_t m_num_samples_sent = {};
+  const uint64_t m_num_samples_lost = {};
+  const std::size_t m_total_data_received  = {};
 
   const StatisticsTracker m_latency;
   const StatisticsTracker m_pub_loop_time_reserve;
@@ -109,7 +108,7 @@ private:
 
 #ifdef ODB_FOR_SQL_ENABLED
 #pragma db not_null
-  std::tr1::shared_ptr<ExperimentConfiguration> configuration;
+  std::shared_ptr<ExperimentConfiguration> configuration;
 #endif
 
 };
