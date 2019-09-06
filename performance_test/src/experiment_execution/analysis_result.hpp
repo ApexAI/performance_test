@@ -70,7 +70,7 @@ public:
     const StatisticsTracker sub_loop_time_reserve
   );
 
-    AnalysisResult() {}
+  AnalysisResult() {}
   /**
    * \brief Returns a header for a CVS file containing the analysis result data as a string.
    * \param pretty_print If set, inserts additional tabs to format the output nicer.
@@ -88,6 +88,13 @@ public:
    */
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
+#ifdef ODB_FOR_SQL_ENABLED
+  std::shared_ptr<ExperimentConfiguration> & get_configuration()
+  {
+    return m_configuration;
+  }
+#endif
+
 private:
 #ifdef ODB_FOR_SQL_ENABLED
   friend class odb::access;
@@ -98,7 +105,7 @@ private:
   const uint64_t m_num_samples_received = {};
   const uint64_t m_num_samples_sent = {};
   const uint64_t m_num_samples_lost = {};
-  const std::size_t m_total_data_received  = {};
+  const std::size_t m_total_data_received = {};
 
   const StatisticsTracker m_latency;
   const StatisticsTracker m_pub_loop_time_reserve;
@@ -108,7 +115,7 @@ private:
 
 #ifdef ODB_FOR_SQL_ENABLED
 #pragma db not_null
-  std::shared_ptr<ExperimentConfiguration> configuration;
+  std::shared_ptr<ExperimentConfiguration> m_configuration;
 #endif
 
 };
