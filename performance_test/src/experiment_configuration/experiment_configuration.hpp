@@ -27,7 +27,6 @@
 
 #ifdef ODB_FOR_SQL_ENABLED
   #include <odb/core.hxx>
-  #include <tr1/memory>
 #endif
 
 

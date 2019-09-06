@@ -18,6 +18,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 include(compile_options)
 project(performance_test)
 
+
 set(OPTIONAL_AMENT_DEPENDENCES)
 set(OPTIONAL_LIBRARIES)
 
@@ -40,14 +41,14 @@ option(ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
 if(ODB_FOR_SQL_ENABLED)
   add_definitions(-DODB_FOR_SQL_ENABLED)
-  option(SQLITE "Select DB type" OFF)
-  option(MYSQL "Select DB type" OFF)
-  if(SQLITE)
-    add_definitions(-DSQLITE)
+  option(ODB_SQLITE "Select DB type" OFF)
+  option(ODB_MYSQL "Select DB type" OFF)
+  if(ODB_SQLITE)
+    add_definitions(-DPERFORMANCE_TEST_ODB_SQLITE)
     set(DB_TYPE sqlite)
   endif()
-  if(MYSQL)
-    add_definitions(-DMYSQL)
+  if(ODB_MYSQL)
+    add_definitions(-DPERFORMANCE_TEST_ODB_MYSQL)
     set(DB_TYPE mysql)
   endif()
 endif()
@@ -113,11 +114,17 @@ endif()
 
 # add ODB CMake code start: here
 
-if(ODB_FOR_SQL_ENABLED)
+#if(ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
   find_package(ODB REQUIRED COMPONENTS sqlite mysql boost)
+
+  find_package(MySQL REQUIRED)
+
+  include_directories(${MYSQL_INCLUDE_DIR})
+  MESSAGE(**************** ${MYSQL_INCLUDE_DIR})
   include(${ODB_USE_FILE})
-endif()
+#endif()
+
 
 set(${PROJECT_NAME}_SOURCES
     src/experiment_execution/analyze_runner.cpp)
@@ -233,12 +240,12 @@ if(ODB_FOR_SQL_ENABLED)
       PRIVATE
         ${ODB_INCLUDE_DIRS}
         ${ODB_COMPILE_OUTPUT_DIR})
-  if(SQLITE)
+  if(ODB_SQLITE)
   target_compile_definitions(${EXE_NAME}
       PRIVATE
         DATABASE_SQLITE)
   endif()
-  if(MYSQL)
+  if(ODB_MYSQL)
   target_compile_definitions(${EXE_NAME}
       PRIVATE
         DATABASE_MYSQL)
