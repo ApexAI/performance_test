@@ -44,7 +44,7 @@ namespace performance_test
 class AnalysisResult;
 
   #pragma db value(QOSAbstraction) definition
-  #pragma db object
+  #pragma db object pointer(std::shared_ptr)
 #endif
 class ExperimentConfiguration
 {
@@ -214,7 +214,7 @@ private:
 
 #ifdef ODB_FOR_SQL_ENABLED
 #pragma db value_not_null inverse(configuration)
-  std::vector<std::tr1::weak_ptr<AnalysisResult>> results;
+std::vector<std::weak_ptr<AnalysisResult>> results;
 #endif
 
 };
