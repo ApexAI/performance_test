@@ -72,33 +72,33 @@ AnalyzeRunner::AnalyzeRunner()
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
-    typedef odb::query<ExperimentConfiguration> query;
-    std::string exe_name = EXE_NAME;
-    std::string db = "--database";
-    std::string exec = "./" + exe_name;
+  typedef odb::query<ExperimentConfiguration> query;
+  std::string exe_name = EXE_NAME;
+  std::string db = "--database";
+  std::string exec = "./" + exe_name;
 
-    char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
-    int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
+  char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
+  int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
     #ifdef PERFORMANCE_TEST_ODB_SQLITE
-      m_db =
-        std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
-          SQLITE_OPEN_READWRITE |
-          SQLITE_OPEN_CREATE));
-      {
-        odb::core::connection_ptr c(m_db->connection());
-        c->execute("PRAGMA foreign_keys=OFF");
-        odb::core::transaction t(c->begin());
-        try {
-          m_db->query<ExperimentConfiguration>(false);
-        } catch (const odb::exception & e) {
-          odb::core::schema_catalog::create_schema(*m_db);
-        }
-        t.commit();
-        c->execute("PRAGMA foreign_keys=ON");
-      }
+  m_db =
+    std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
+      SQLITE_OPEN_READWRITE |
+      SQLITE_OPEN_CREATE));
+  {
+    odb::core::connection_ptr c(m_db->connection());
+    c->execute("PRAGMA foreign_keys=OFF");
+    odb::core::transaction t(c->begin());
+    try {
+      m_db->query<ExperimentConfiguration>(false);
+    } catch (const odb::exception & e) {
+      odb::core::schema_catalog::create_schema(*m_db);
+    }
+    t.commit();
+    c->execute("PRAGMA foreign_keys=ON");
+  }
     #endif
     #ifdef PERFORMANCE_TEST_ODB_MYSQL
-      m_db = std::unique_ptr<odb::core::database> (new odb::mysql::database (argc_db, argv_db));
+  m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(argc_db, argv_db));
     #endif
   #endif
 }
@@ -113,6 +113,7 @@ void AnalyzeRunner::run() const
   #ifdef ODB_FOR_SQL_ENABLED
   odb::core::transaction t(m_db->begin());
   m_db->persist(m_ec);
+  auto & vector_of_results_pointers = m_ec.get_results();
   #endif
 
   while (!check_exit(experiment_start)) {
@@ -131,18 +132,27 @@ void AnalyzeRunner::run() const
     auto now = boost::posix_time::microsec_clock::local_time();
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
-
+    #ifdef ODB_FOR_SQL_ENABLED
+    analyze(loop_diff_start, experiment_diff_start, vector_of_results_pointers);
+    #else
     analyze(loop_diff_start, experiment_diff_start);
+    #endif
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
   t.commit();
   #endif
 }
-
+#ifdef ODB_FOR_SQL_ENABLED
+void AnalyzeRunner::analyze(
+  const boost::posix_time::time_duration loop_diff_start,
+  const boost::posix_time::time_duration experiment_diff_start,
+  std::vector<std::weak_ptr<AnalysisResult>> & vector_of_results_pointers) const
+#else
 void AnalyzeRunner::analyze(
   const boost::posix_time::time_duration loop_diff_start,
   const boost::posix_time::time_duration experiment_diff_start) const
+#endif
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -176,6 +186,7 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
+  //issue: make_shared
   AnalysisResult result(
     experiment_diff_start,
     loop_diff_start,
@@ -187,9 +198,11 @@ void AnalyzeRunner::analyze(
     StatisticsTracker(ltr_pub_vec),
     StatisticsTracker(ltr_sub_vec)
   );
-
+  #ifdef ODB_FOR_SQL_ENABLED
+  auto ptr_result = std::make_shared<AnalysisResult>(result);
+  vector_of_results_pointers.push_back(ptr_result);
+  #endif
   m_ec.log(result.to_csv_string(true));
-
   #ifdef ODB_FOR_SQL_ENABLED
   m_db->persist(result);
   #endif
