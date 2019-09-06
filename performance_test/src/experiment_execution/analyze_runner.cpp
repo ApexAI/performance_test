@@ -27,10 +27,10 @@
 #ifdef ODB_FOR_SQL_ENABLED
   #include <memory>
   #include <odb/database.hxx>
-  #ifdef MYSQL
+  #ifdef PERFORMANCE_TEST_ODB_MYSQL
     #include <odb/mysql/database.hxx>
   #endif
-  #ifdef SQLITE
+  #ifdef PERFORMANCE_TEST_ODB_SQLITE
     #include <odb/sqlite/database.hxx>
   #endif
   #include <odb/transaction.hxx>
@@ -79,7 +79,7 @@ AnalyzeRunner::AnalyzeRunner()
 
     char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
     int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
-    #ifdef SQLITE
+    #ifdef PERFORMANCE_TEST_ODB_SQLITE
       m_db =
         std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
           SQLITE_OPEN_READWRITE |
@@ -97,7 +97,7 @@ AnalyzeRunner::AnalyzeRunner()
         c->execute("PRAGMA foreign_keys=ON");
       }
     #endif
-    #ifdef MYSQL
+    #ifdef PERFORMANCE_TEST_ODB_MYSQL
       m_db = std::unique_ptr<odb::core::database> (new odb::mysql::database (argc_db, argv_db));
     #endif
   #endif
