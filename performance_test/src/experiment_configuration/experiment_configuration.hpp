@@ -143,6 +143,12 @@ public:
   /// \return Returns true if the user requested the application to exit.
   bool exit_requested() const;
 
+#ifdef ODB_FOR_SQL_ENABLED
+  std::vector<std::weak_ptr<AnalysisResult>> & get_results() const
+  {
+    return m_results;
+  }
+#endif
 
 private:
   ExperimentConfiguration()
@@ -212,8 +218,8 @@ private:
   RoundTripMode m_roundtrip_mode;
 
 #ifdef ODB_FOR_SQL_ENABLED
-#pragma db value_not_null inverse(configuration)
-std::vector<std::weak_ptr<AnalysisResult>> results;
+  #pragma db value_not_null inverse(m_configuration)
+  mutable std::vector<std::weak_ptr<AnalysisResult>> m_results;
 #endif
 
 };
