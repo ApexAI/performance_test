@@ -118,7 +118,6 @@ void AnalyzeRunner::run() const
 
   #ifdef ODB_FOR_SQL_ENABLED
   odb::core::transaction t(m_db->begin());
-  //m_db->persist(m_ec);
   #endif
 
   while (!check_exit(experiment_start)) {
@@ -184,8 +183,7 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
-  auto result = std::make_shared<AnalysisResult>
-      (
+  auto result = std::make_shared<AnalysisResult>(
     experiment_diff_start,
     loop_diff_start,
     sum_received_samples,
@@ -197,12 +195,11 @@ void AnalyzeRunner::analyze(
     StatisticsTracker(ltr_sub_vec)
   );
 
+  m_ec.log(result->to_csv_string(true));
+
   #ifdef ODB_FOR_SQL_ENABLED
   result->set_configuration_ptr(&m_ec);
-
   m_ec.get_results().push_back(std::move(result));
-
-  //m_db->persist(result.get_configuration());
   m_db->persist(result);
   #endif
 }
