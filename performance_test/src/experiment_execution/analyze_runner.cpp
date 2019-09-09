@@ -199,7 +199,8 @@ void AnalyzeRunner::analyze(
 
   #ifdef ODB_FOR_SQL_ENABLED
   result->set_configuration_ptr(&m_ec);
-  m_ec.get_results().push_back(std::move(result));
+  m_ec.get_results().push_back(result);
+
   m_db->persist(result);
   #endif
 }
