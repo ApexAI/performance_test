@@ -90,10 +90,10 @@ public:
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
 #ifdef ODB_FOR_SQL_ENABLED
-  void set_configuration_ptr (const ExperimentConfiguration * ec)
+  void set_configuration_ptr(const ExperimentConfiguration * ec)
   {
-   m_configuration_ptr = ec;
-  };
+    m_configuration_ptr = ec;
+  }
 #endif
 
 private:
