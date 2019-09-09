@@ -42,10 +42,11 @@ std::shared_ptr<rclcpp::Node> ResourceManager::ros2_node() const
     rand_str = std::to_string(std::rand());
   }
 
-  auto options = rclcpp::NodeOptions()
-    .use_intra_process_comms(m_ec.use_ros_shm());
+  bool intra_process_comms = m_ec.use_ros_shm();
+  rclcpp::NodeOptions options;
+  options.use_intra_process_comms(intra_process_comms);
 
-  return rclcpp::Node::make_shared("performance_test" + rand_str, options);
+  return rclcpp::Node::make_shared("performance_test" + rand_str, "", options);
 }
 
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
