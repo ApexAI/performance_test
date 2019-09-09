@@ -90,9 +90,9 @@ public:
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
 #ifdef ODB_FOR_SQL_ENABLED
-  std::shared_ptr<ExperimentConfiguration> get_configuration()
+  void set_configuration_ptr (const ExperimentConfiguration * ec)
   {
-    return m_configuration_ptr;
+   m_configuration_ptr = ec;
   };
 #endif
 
@@ -116,7 +116,7 @@ private:
 
 #ifdef ODB_FOR_SQL_ENABLED
 #pragma db not_null
-  mutable std::shared_ptr<ExperimentConfiguration> m_configuration_ptr;
+  const ExperimentConfiguration * m_configuration_ptr;
 #endif
 
 };

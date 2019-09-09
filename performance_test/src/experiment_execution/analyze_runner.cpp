@@ -143,7 +143,7 @@ void AnalyzeRunner::run() const
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
-  m_db->persist(m_ec.get_results());
+  m_db->persist(m_ec);
   t.commit();
   #endif
 }
@@ -184,7 +184,8 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
-  AnalysisResult result(
+  auto result = std::make_shared<AnalysisResult>
+      (
     experiment_diff_start,
     loop_diff_start,
     sum_received_samples,
@@ -197,15 +198,12 @@ void AnalyzeRunner::analyze(
   );
 
   #ifdef ODB_FOR_SQL_ENABLED
-  std::shared_ptr<ExperimentConfiguration> config_ptr;
-  config_ptr.reset(&m_ec.get());
-  result.get_configuration() = config_ptr;
+  result->set_configuration_ptr(&m_ec);
 
-  auto ptr_result = std::make_shared<AnalysisResult>(result);
-  m_ec.get_results().push_back(ptr_result);
+  m_ec.get_results().push_back(std::move(result));
 
-  m_db->persist(result.get_configuration());
-  // m_db->persist(result);
+  //m_db->persist(result.get_configuration());
+  m_db->persist(result);
   #endif
 }
 
