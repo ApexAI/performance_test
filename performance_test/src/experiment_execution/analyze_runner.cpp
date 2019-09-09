@@ -112,8 +112,7 @@ void AnalyzeRunner::run() const
 
   #ifdef ODB_FOR_SQL_ENABLED
   odb::core::transaction t(m_db->begin());
-  m_db->persist(m_ec);
-  auto & vector_of_results_pointers = m_ec.get_results();
+  //m_db->persist(m_ec);
   #endif
 
   while (!check_exit(experiment_start)) {
@@ -132,27 +131,20 @@ void AnalyzeRunner::run() const
     auto now = boost::posix_time::microsec_clock::local_time();
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
-    #ifdef ODB_FOR_SQL_ENABLED
-    analyze(loop_diff_start, experiment_diff_start, vector_of_results_pointers);
-    #else
+
     analyze(loop_diff_start, experiment_diff_start);
-    #endif
+
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
-  t.commit();
+  m_db->persist(m_ec.get_results());
+  //t.commit();
   #endif
 }
-#ifdef ODB_FOR_SQL_ENABLED
-void AnalyzeRunner::analyze(
-  const boost::posix_time::time_duration loop_diff_start,
-  const boost::posix_time::time_duration experiment_diff_start,
-  std::vector<std::weak_ptr<AnalysisResult>> & vector_of_results_pointers) const
-#else
+
 void AnalyzeRunner::analyze(
   const boost::posix_time::time_duration loop_diff_start,
   const boost::posix_time::time_duration experiment_diff_start) const
-#endif
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -186,7 +178,6 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
-  //issue: make_shared
   AnalysisResult result(
     experiment_diff_start,
     loop_diff_start,
@@ -198,13 +189,17 @@ void AnalyzeRunner::analyze(
     StatisticsTracker(ltr_pub_vec),
     StatisticsTracker(ltr_sub_vec)
   );
+
   #ifdef ODB_FOR_SQL_ENABLED
+  std::shared_ptr<ExperimentConfiguration> config_ptr;
+  config_ptr.reset(&m_ec.get());
+  result.get_configuration() = config_ptr;
+
   auto ptr_result = std::make_shared<AnalysisResult>(result);
-  vector_of_results_pointers.push_back(ptr_result);
-  #endif
-  m_ec.log(result.to_csv_string(true));
-  #ifdef ODB_FOR_SQL_ENABLED
-  m_db->persist(result);
+  m_ec.get_results().push_back(ptr_result);
+
+  m_db->persist(result.get_configuration());
+  //m_db->perisit(result);
   #endif
 }
 

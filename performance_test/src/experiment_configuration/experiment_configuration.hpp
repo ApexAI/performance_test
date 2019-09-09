@@ -57,6 +57,7 @@ public:
     return instance;
   }
 
+
   ExperimentConfiguration(ExperimentConfiguration const &) = delete;
   ExperimentConfiguration(ExperimentConfiguration &&) = delete;
 
@@ -218,7 +219,7 @@ private:
   RoundTripMode m_roundtrip_mode;
 
 #ifdef ODB_FOR_SQL_ENABLED
-  #pragma db value_not_null inverse(m_configuration)
+  #pragma db value_not_null inverse(m_configuration_ptr)
   mutable std::vector<std::weak_ptr<AnalysisResult>> m_results;
 #endif
 
