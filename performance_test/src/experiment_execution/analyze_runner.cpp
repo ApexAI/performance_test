@@ -33,6 +33,9 @@
   #ifdef PERFORMANCE_TEST_ODB_SQLITE
     #include <odb/sqlite/database.hxx>
   #endif
+  #ifdef PERFORMANCE_TEST_ODB_PGSQL
+    #include <odb/pgsql/database.hxx>
+  #endif
   #include <odb/transaction.hxx>
   #include <odb/schema-catalog.hxx>
 
@@ -100,6 +103,9 @@ AnalyzeRunner::AnalyzeRunner()
     #ifdef PERFORMANCE_TEST_ODB_MYSQL
   m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(argc_db, argv_db));
     #endif
+    #ifdef PERFORMANCE_TEST_ODB_PGSQL
+  m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(argc_db, argv_db));
+    #endif
   #endif
 }
 
@@ -138,7 +144,7 @@ void AnalyzeRunner::run() const
 
   #ifdef ODB_FOR_SQL_ENABLED
   m_db->persist(m_ec.get_results());
-  //t.commit();
+  t.commit();
   #endif
 }
 
@@ -199,7 +205,7 @@ void AnalyzeRunner::analyze(
   m_ec.get_results().push_back(ptr_result);
 
   m_db->persist(result.get_configuration());
-  //m_db->perisit(result);
+  // m_db->persist(result);
   #endif
 }
 
