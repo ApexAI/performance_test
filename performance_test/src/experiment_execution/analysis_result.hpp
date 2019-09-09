@@ -22,8 +22,9 @@
 #include <sstream>
 #include <string>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "../utilities/statistics_tracker.hpp"
 
+#include "../utilities/statistics_tracker.hpp"
+#include <boost/uuid/uuid_io.hpp>
 #ifdef ODB_FOR_SQL_ENABLED
   #include <odb/boost/date-time/exceptions.hxx>
   #include <odb/core.hxx>
@@ -89,10 +90,10 @@ public:
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
 #ifdef ODB_FOR_SQL_ENABLED
-  std::shared_ptr<ExperimentConfiguration> & get_configuration()
+  std::shared_ptr<ExperimentConfiguration> get_configuration()
   {
-    return m_configuration;
-  }
+    return m_configuration_ptr;
+  };
 #endif
 
 private:
@@ -115,7 +116,7 @@ private:
 
 #ifdef ODB_FOR_SQL_ENABLED
 #pragma db not_null
-  std::shared_ptr<ExperimentConfiguration> m_configuration;
+  mutable std::shared_ptr<ExperimentConfiguration> m_configuration_ptr;
 #endif
 
 };

@@ -52,16 +52,10 @@ private:
    * \param loop_diff_start// std::auto_ptr
    * \param experiment_diff_start
    */
-#ifdef ODB_FOR_SQL_ENABLED
-  void analyze(
-    const boost::posix_time::time_duration loop_diff_start,
-    const boost::posix_time::time_duration experiment_diff_start,
-    std::vector<std::weak_ptr<AnalysisResult>> & vector_of_results_pointers) const;
-#else
+
   void analyze(
     const boost::posix_time::time_duration loop_diff_start,
     const boost::posix_time::time_duration experiment_diff_start) const;
-#endif
 
   /**
    * \brief Checks if the experiment is finished.
