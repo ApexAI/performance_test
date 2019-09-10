@@ -56,6 +56,7 @@ if(ODB_FOR_SQL_ENABLED)
     add_definitions(-DPERFORMANCE_TEST_ODB_PGSQL)
     set(DB_TYPE pgsql)
   endif()
+  add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
 endif()
 
 find_package(rclcpp REQUIRED)

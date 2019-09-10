@@ -120,8 +120,8 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
 
   std::stringstream ss;
   ss << std::fixed;
-  ss << m_experiment_start.ticks()*0.000001 << st;
-  ss << m_loop_start.ticks()*0.000001 << st;
+  ss << m_experiment_start.ticks() * 0.000000000001 << st;
+  ss << m_loop_start.ticks() * 0.000000000001 << st;
   ss << std::setprecision(0);
   ss << m_num_samples_received << st;
   ss << m_num_samples_sent << st;
