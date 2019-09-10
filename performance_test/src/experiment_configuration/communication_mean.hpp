@@ -24,6 +24,7 @@ namespace performance_test
 enum class CommunicationMean
 {
   ROS2
+  , ROS2PollingSub
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   , FASTRTPS
 #endif
@@ -40,6 +41,9 @@ inline std::ostream & operator<<(std::ostream & stream, const CommunicationMean 
 {
   if (cm == CommunicationMean::ROS2) {
     return stream << "ROS2";
+  }
+  else if (cm == CommunicationMean::ROS2PollingSub) {
+    return stream <<"ROSPollingSub";
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   } else if (cm == CommunicationMean::FASTRTPS) {
     return stream << "FASTRTPS";

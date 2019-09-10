@@ -135,7 +135,9 @@ set(sources
     src/communication_abstractions/communicator.cpp
     src/communication_abstractions/resource_manager.cpp
     src/communication_abstractions/resource_manager.hpp
+    src/communication_abstractions/ros2_communicator.hpp
     src/communication_abstractions/ros2_callback_communicator.hpp
+    src/communication_abstractions/ros2_waitset_communicator.hpp
     src/experiment_configuration/topics.hpp
     src/data_running/data_runner.hpp
     src/data_running/data_runner_base.hpp

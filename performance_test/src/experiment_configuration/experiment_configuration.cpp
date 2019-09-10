@@ -140,7 +140,10 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 
     if (vm["communication"].as<std::string>() == "ROS2") {
       m_com_mean = CommunicationMean::ROS2;
-    } else if (vm["communication"].as<std::string>() == "FastRTPS") {
+    } else if (vm["communication"].as<std::string>() == "ROS2PollingSub") {
+      m_com_mean = CommunicationMean::ROS2PollingSub;
+    }
+    else if (vm["communication"].as<std::string>() == "FastRTPS") {
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
       m_com_mean = CommunicationMean::FASTRTPS;
 #else
