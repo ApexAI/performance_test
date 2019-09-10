@@ -13,7 +13,8 @@
 // limitations under the License.
 #include <cstddef>
 #include <boost/algorithm/string.hpp>
-
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/chrono.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
@@ -27,11 +28,11 @@
 #ifdef ODB_FOR_SQL_ENABLED
   #include <memory>
   #include <odb/database.hxx>
-  #ifdef PERFORMANCE_TEST_ODB_MYSQL
-    #include <odb/mysql/database.hxx>
-  #endif
   #ifdef PERFORMANCE_TEST_ODB_SQLITE
     #include <odb/sqlite/database.hxx>
+  #endif
+  #ifdef PERFORMANCE_TEST_ODB_MYSQL
+    #include <odb/mysql/database.hxx>
   #endif
   #ifdef PERFORMANCE_TEST_ODB_PGSQL
     #include <odb/pgsql/database.hxx>
@@ -114,14 +115,14 @@ void AnalyzeRunner::run() const
   m_ec.log("---EXPERIMENT-START---");
   m_ec.log(AnalysisResult::csv_header(true));
 
-  const auto experiment_start = boost::posix_time::microsec_clock::local_time();
+  const auto experiment_start = std::chrono::steady_clock::now();
 
   #ifdef ODB_FOR_SQL_ENABLED
   odb::core::transaction t(m_db->begin());
   #endif
 
   while (!check_exit(experiment_start)) {
-    const auto loop_start = boost::posix_time::microsec_clock::local_time();
+    const auto loop_start = std::chrono::steady_clock::now();
 
     sleep(1);
 
@@ -133,11 +134,11 @@ void AnalyzeRunner::run() const
       post_proc_rt_init();
       m_is_first_entry = false;
     }
-    auto now = boost::posix_time::microsec_clock::local_time();
-    auto loop_diff_start = now - loop_start;
-    auto experiment_diff_start = now - experiment_start;
+    auto now = std::chrono::steady_clock::now();
+    auto loop_diff_st = now - loop_start;
+    auto experiment_diff_st = now - experiment_start;
 
-    analyze(loop_diff_start, experiment_diff_start);
+    analyze(loop_diff_st, experiment_diff_st);
 
   }
 
@@ -148,8 +149,8 @@ void AnalyzeRunner::run() const
 }
 
 void AnalyzeRunner::analyze(
-  const boost::posix_time::time_duration loop_diff_start,
-  const boost::posix_time::time_duration experiment_diff_start) const
+  const std::chrono::duration<double> loop_diff_start_chrono,
+  const std::chrono::duration<double> experiment_diff_start_chrono) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -183,6 +184,13 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
+  auto experiment_diff_start =
+    boost::posix_time::milliseconds(std::chrono::duration_cast<std::chrono::nanoseconds>(
+        experiment_diff_start_chrono).count());
+  auto loop_diff_start =
+    boost::posix_time::milliseconds(std::chrono::duration_cast<std::chrono::nanoseconds>(
+        loop_diff_start_chrono).count());
+
   auto result = std::make_shared<AnalysisResult>(
     experiment_diff_start,
     loop_diff_start,
@@ -205,7 +213,7 @@ void AnalyzeRunner::analyze(
   #endif
 }
 
-bool AnalyzeRunner::check_exit(boost::posix_time::ptime experiment_start) const
+bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_start) const
 {
   if (m_ec.exit_requested()) {
     std::cout << "Caught signal. Exiting." << std::endl;
@@ -218,8 +226,7 @@ bool AnalyzeRunner::check_exit(boost::posix_time::ptime experiment_start) const
   }
 
   const double runtime_sec =
-    boost::posix_time::time_duration(boost::posix_time::microsec_clock::local_time() -
-      experiment_start).seconds();
+    std::chrono::duration<double>(std::chrono::steady_clock::now() - experiment_start).count();
 
   if (runtime_sec > m_ec.max_runtime()) {
     std::cout << "Maximum runtime reached. Exiting." << std::endl;
