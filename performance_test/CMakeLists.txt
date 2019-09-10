@@ -123,12 +123,6 @@ endif()
 if(ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
   find_package(ODB REQUIRED COMPONENTS sqlite mysql pgsql boost)
-  #if(PERFORMANCE_TEST_ODB_MYSQL)
-  #  find_package(MySQL REQUIRED)
-
-  #  include_directories(${MYSQL_INCLUDE_DIR})
-  #  MESSAGE(**************** ${MYSQL_INCLUDE_DIR})
-  #endif()
   include(${ODB_USE_FILE})
 endif()
 
