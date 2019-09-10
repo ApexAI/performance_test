@@ -41,7 +41,7 @@ option(ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
 if(ODB_FOR_SQL_ENABLED)
   add_definitions(-DODB_FOR_SQL_ENABLED)
-  option(PERFORMANCE_TEST_ODB_SQLITE "Select DB type" OFF)
+  option(PERFORMANCE_TEST_ODB_SQLITE "Select DB type" ON)
   option(PERFORMANCE_TEST_ODB_MYSQL "Select DB type" OFF)
   option(PERFORMANCE_TEST_ODB_PGSQL "Select DB type" OFF)
   if(PERFORMANCE_TEST_ODB_SQLITE)
@@ -56,8 +56,9 @@ if(ODB_FOR_SQL_ENABLED)
     add_definitions(-DPERFORMANCE_TEST_ODB_PGSQL)
     set(DB_TYPE pgsql)
   endif()
-  add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
 endif()
+
+add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
 
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
@@ -122,7 +123,7 @@ endif()
 
 if(ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-  find_package(ODB REQUIRED COMPONENTS sqlite mysql pgsql boost)
+  find_package(ODB REQUIRED COMPONENTS sqlite boost OPTIONAL_COMPONENTS mysql pgsql)
   include(${ODB_USE_FILE})
 endif()
 
@@ -281,8 +282,6 @@ if(BUILD_TESTING)
 
     set_compile_options(${APEX_PERFORMANCE_TEST_GTEST})
 endif()
-
-
 
 install(TARGETS
     ${EXE_NAME}
