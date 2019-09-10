@@ -59,8 +59,11 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
            "\nNot using waitset: " << e.no_waitset() <<
            "\nNot using Connext DDS Micro INTRA: " << e.no_micro_intra() <<
            "\nWith security: " << e.is_with_security() <<
-           "\nRoundtrip Mode: " << e.roundtrip_mode() <<
-           "\nDatabase name: " << e.db_name();
+           "\nRoundtrip Mode: " << e.roundtrip_mode()
+           #ifdef ODB_FOR_SQL_ENABLED
+           << "\nDatabase name: " << e.db_name()
+           #endif
+    ;
   } else {
     return stream << "ERROR: Experiment is not yet setup!";
   }
@@ -107,8 +110,10 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "no_micro_intra", "Disables the Connext DDS Micro INTRA transport.")(
     "with_security", "Enables the security with ROS2")("roundtrip_mode",
     po::value<std::string>()->default_value("None"),
-    "Selects the round trip mode (None, Main, Relay).")("db_name",
-    po::value<std::string>()->default_value("test_database"), "Name of the SQL database.")
+    "Selects the round trip mode (None, Main, Relay).")
+#ifdef ODB_FOR_SQL_ENABLED
+  ("db_name", po::value<std::string>()->default_value("test_database"), "Name of the SQL database.")
+#endif
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
@@ -274,9 +279,11 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
         throw std::invalid_argument("Invalid roundtrip mode: " + mode);
       }
     }
+#ifdef ODB_FOR_SQL_ENABLED
     if (vm.count("db_name")) {
       m_db_name = vm["db_name"].as<std::string>();
     }
+#endif
     m_is_setup = true;
     // Logfile needs to be opened at the end, as the experiment configuration influences the
     // filename.
@@ -322,11 +329,13 @@ std::string ExperimentConfiguration::topic_name() const
   check_setup();
   return m_topic_name;
 }
+#ifdef ODB_FOR_SQL_ENABLED
 std::string ExperimentConfiguration::db_name() const
 {
   check_setup();
   return m_db_name;
 }
+#endif
 uint64_t ExperimentConfiguration::max_runtime() const
 {
   check_setup();
