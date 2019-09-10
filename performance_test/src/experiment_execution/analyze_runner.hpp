@@ -72,8 +72,6 @@ private:
 
 #ifdef ODB_FOR_SQL_ENABLED
   std::unique_ptr<odb::core::database> m_db;
-
-  void create_database();
 #endif
 };
 
