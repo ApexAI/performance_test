@@ -99,7 +99,6 @@ public:
   std::string topic_name() const;
   /// \returns Returns the time the application should run until it terminates [s]. This will
   /// throw if the experiment configuration is not set up.
-  std::string db_name() const;
   uint64_t max_runtime() const;
   /// \returns Returns the configured number of publishers. This will throw if the experiment
   /// configuration is not set up.
@@ -145,6 +144,8 @@ public:
   bool exit_requested() const;
 
 #ifdef ODB_FOR_SQL_ENABLED
+  std::string db_name() const;
+
   std::vector<std::shared_ptr<AnalysisResult>> & get_results() const
   {
     return m_results;
@@ -203,7 +204,6 @@ private:
 
   uint32_t m_rate;
   std::string m_topic_name;
-  std::string m_db_name;
   uint64_t m_max_runtime;
 
   uint32_t m_number_of_publishers;
@@ -221,6 +221,8 @@ private:
 #ifdef ODB_FOR_SQL_ENABLED
   #pragma db value_not_null inverse(m_configuration_ptr)
   mutable std::vector<std::shared_ptr<AnalysisResult>> m_results;
+
+  std::string m_db_name;
 #endif
 
 };
