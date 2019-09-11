@@ -58,8 +58,6 @@ if(ODB_FOR_SQL_ENABLED)
   endif()
 endif()
 
-add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
-
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
 find_package(builtin_interfaces REQUIRED)
@@ -123,7 +121,7 @@ endif()
 
 if(ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-  find_package(ODB REQUIRED COMPONENTS sqlite boost OPTIONAL_COMPONENTS mysql pgsql)
+  find_package(ODB REQUIRED COMPONENTS sqlite OPTIONAL_COMPONENTS mysql pgsql)
   include(${ODB_USE_FILE})
 endif()
 
