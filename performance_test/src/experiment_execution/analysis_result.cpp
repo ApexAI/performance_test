@@ -28,8 +28,12 @@ std::ostream & operator<<(std::ostream & stream, const timeval & e)
 }
 
 AnalysisResult::AnalysisResult(
-  const boost::posix_time::time_duration experiment_start,
-  const boost::posix_time::time_duration loop_start,
+#ifdef ODB_FOR_SQL_ENABLED
+  const std::string experiment_start_db,
+  const std::string loop_start_db,
+#endif
+  const std::chrono::duration<double> experiment_start,
+  const std::chrono::duration<double> loop_start,
   const uint64_t num_samples_received,
   const uint64_t num_samples_sent,
   const uint64_t num_samples_lost,
@@ -37,8 +41,14 @@ AnalysisResult::AnalysisResult(
   const StatisticsTracker latency,
   const StatisticsTracker pub_loop_time_reserve,
   const StatisticsTracker sub_loop_time_reserve
+
 )
-:     m_experiment_start(experiment_start),
+:
+#ifdef ODB_FOR_SQL_ENABLED
+  m_experiment_start_db(experiment_start_db),
+  m_loop_start_db(loop_start_db),
+#endif
+  m_experiment_start(experiment_start),
   m_loop_start(loop_start),
   m_num_samples_received(num_samples_received),
   m_num_samples_sent(num_samples_sent),
@@ -47,6 +57,7 @@ AnalysisResult::AnalysisResult(
   m_latency(latency),
   m_pub_loop_time_reserve(pub_loop_time_reserve),
   m_sub_loop_time_reserve(sub_loop_time_reserve)
+
 {
   const auto ret = getrusage(RUSAGE_SELF, &m_sys_usage);
   if (ret != 0) {
@@ -120,8 +131,8 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
 
   std::stringstream ss;
   ss << std::fixed;
-  ss << m_experiment_start.ticks() * 0.000000000001 << st;
-  ss << m_loop_start.ticks() * 0.000000000001 << st;
+  ss << m_experiment_start.count() << st;
+  ss << m_loop_start.count() << st;
   ss << std::setprecision(0);
   ss << m_num_samples_received << st;
   ss << m_num_samples_sent << st;

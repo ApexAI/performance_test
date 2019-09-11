@@ -137,10 +137,10 @@ void AnalyzeRunner::run() const
       m_is_first_entry = false;
     }
     auto now = std::chrono::steady_clock::now();
-    auto loop_diff_st = now - loop_start;
-    auto experiment_diff_st = now - experiment_start;
+    auto loop_diff_start = now - loop_start;
+    auto experiment_diff_start = now - experiment_start;
 
-    analyze(loop_diff_st, experiment_diff_st);
+    analyze(loop_diff_start, experiment_diff_start);
 
   }
 
@@ -151,8 +151,8 @@ void AnalyzeRunner::run() const
 }
 
 void AnalyzeRunner::analyze(
-  const std::chrono::duration<double> loop_diff_start_chrono,
-  const std::chrono::duration<double> experiment_diff_start_chrono) const
+  const std::chrono::duration<double> loop_diff_start,
+  const std::chrono::duration<double> experiment_diff_start) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -186,14 +186,14 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
-  auto experiment_diff_start =
-    boost::posix_time::milliseconds(std::chrono::duration_cast<std::chrono::nanoseconds>(
-        experiment_diff_start_chrono).count());
-  auto loop_diff_start =
-    boost::posix_time::milliseconds(std::chrono::duration_cast<std::chrono::nanoseconds>(
-        loop_diff_start_chrono).count());
+  auto experiment_diff_db = std::to_string(experiment_diff_start.count());
+  auto loop_diff_db = std::to_string(loop_diff_start.count());
 
   auto result = std::make_shared<AnalysisResult>(
+#ifdef ODB_FOR_SQL_ENABLED
+    experiment_diff_db,
+    loop_diff_db,
+#endif
     experiment_diff_start,
     loop_diff_start,
     sum_received_samples,
