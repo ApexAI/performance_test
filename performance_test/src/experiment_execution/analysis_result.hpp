@@ -26,7 +26,6 @@
 #include "../utilities/statistics_tracker.hpp"
 #include <boost/uuid/uuid_io.hpp>
 #ifdef ODB_FOR_SQL_ENABLED
-  #include <odb/boost/date-time/exceptions.hxx>
   #include <odb/core.hxx>
   #include "experiment_configuration.hpp"
 #endif

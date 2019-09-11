@@ -82,33 +82,15 @@ This will generate a file called `log_Array1k_19-09-2019_12-13-49.pdf`.
 
 ## Requirements
 ***ODB 2.5.0 (this is required for gcc 7.4.0):***
+Follow the instructions [here](https://www.codesynthesis.com/products/odb/doc/install-build2.xhtml)
+ to install build2 toolchain, odb compiler and runtime libraries.
 
-Build the latest staged build2 toolchain: (following instruction from [here](https://www.codesynthesis.com/pipermail/odb-users/2018-June/004039.html))
-```
-curl -sSfO https://stage.build2.org/0/0.12.0-a.0/build2-install-0.12.0-a.0-stage.sh
-shasum -a 256 -b build2-install-0.12.0-a.0-stage.sh
-sh build2-install-0.12.0-a.0-stage.sh
-```
-Install plugin for gcc 7:
+Remember to install the correct gcc plugin, for example (for gcc 7):
 ```
 sudo apt-get update
 sudo apt-get install gcc-7-plugin-dev
 ```
-Install `odb` and `libodb-boost` (also `libodb-mysql` if you plan to use MySQL instead of SQLite:
-```
-bpkg create -d odb-build cc config.cxx=g++
-cd odb-build
-bpkg build odb@https://stage.build2.org/1
-bpkg build libodb-boost@https://stage.build2.org/1
-bpkg build libodb-mysql@https://stage.build2.org/1
-bpkg install \
-     config.install.root=/usr/local \
-     config.install.sudo=sudo \
-     odb \
-     libodb-boost \
-     libodb-mysql
-cd ..
-```
+
 ```
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ```
@@ -135,8 +117,8 @@ ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
 ```
 
 The default name of resulting database is "test_database", you can change it by using `--db_name`
-argument in `ros2 run`. Additionally, if you want to use MySQL instead of SQLite, use -DMYSQL=ON
-instead -DSQLITE=ON.
+argument in `ros2 run`. Additionally, if you want to use MySQL or PostgreSQL instead of SQLite, use
+-DMYSQL=ON or -DPGSQL and disable the SQLite by adding _DSQLITE=OFF option.
 
 # Batch run experiments (for advanced users)
 
