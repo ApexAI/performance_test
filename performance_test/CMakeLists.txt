@@ -172,7 +172,7 @@ if(ODB_FOR_SQL_ENABLED)
   odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB "${DB_TYPE}"
       GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA INCLUDE
       ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
-      STANDARD c++11 PROFILE boost/date-time boost/uuid X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
+      STANDARD c++11 PROFILE boost/uuid X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
 endif()
 
 set(sources
@@ -214,7 +214,7 @@ if(ODB_FOR_SQL_ENABLED)
     include_directories(${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
-            ${ODB_INCLUDE_DIRS})
+        ${ODB_INCLUDE_DIRS})
 endif()
 
 set(EXE_NAME perf_test)
@@ -249,6 +249,11 @@ if(ODB_FOR_SQL_ENABLED)
   target_compile_definitions(${EXE_NAME}
       PRIVATE
         DATABASE_MYSQL)
+  endif()
+  if(PERFORMANCE_TEST_ODB_PGSQL)
+    target_compile_definitions(${EXE_NAME}
+        PRIVATE
+        DATABASE_PGSQL)
   endif()
 endif()
 
