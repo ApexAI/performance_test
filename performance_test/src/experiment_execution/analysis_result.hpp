@@ -60,8 +60,12 @@ public:
    * \param sub_loop_time_reserve Loop time statistics of the subscriber threads.
    */
   AnalysisResult(
-    const boost::posix_time::time_duration experiment_start,
-    const boost::posix_time::time_duration loop_start,
+#ifdef ODB_FOR_SQL_ENABLED
+    const std::string m_experiment_start_db,
+    const std::string m_loop_start_db,
+#endif
+    const std::chrono::duration<double> experiment_start,
+    const std::chrono::duration<double> loop_start,
     const uint64_t num_samples_received,
     const uint64_t num_samples_sent,
     const uint64_t num_samples_lost,
@@ -99,10 +103,21 @@ public:
 private:
 #ifdef ODB_FOR_SQL_ENABLED
   friend class odb::access;
+
+#pragma db not_null
+  const ExperimentConfiguration * m_configuration_ptr;
+#pragma db id
+  const std::string m_experiment_start_db = {};
+  const std::string m_loop_start_db = {};
+
+  #pragma db transient
 #endif
-  #pragma db id
-  const boost::posix_time::time_duration m_experiment_start;
-  const boost::posix_time::time_duration m_loop_start;
+  const std::chrono::duration<double> m_experiment_start = {};
+#ifdef ODB_FOR_SQL_ENABLED
+  #pragma db transient
+#endif
+  const std::chrono::duration<double> m_loop_start = {};
+
   const uint64_t m_num_samples_received = {};
   const uint64_t m_num_samples_sent = {};
   const uint64_t m_num_samples_lost = {};
@@ -113,12 +128,6 @@ private:
   const StatisticsTracker m_sub_loop_time_reserve;
 
   rusage m_sys_usage;
-
-#ifdef ODB_FOR_SQL_ENABLED
-#pragma db not_null
-  const ExperimentConfiguration * m_configuration_ptr;
-#endif
-
 };
 
 }  // namespace performance_test
