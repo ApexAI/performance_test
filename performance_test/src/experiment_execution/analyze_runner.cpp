@@ -76,14 +76,15 @@ AnalyzeRunner::AnalyzeRunner()
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
-  typedef odb::query<ExperimentConfiguration> query;
   std::string exe_name = EXE_NAME;
   std::string db = "--database";
   std::string exec = "./" + exe_name;
 
   char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
   int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
+
 #ifdef PERFORMANCE_TEST_ODB_SQLITE
+  typedef odb::query<ExperimentConfiguration> query;
   m_db =
       std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
                                                                      SQLITE_OPEN_READWRITE |
