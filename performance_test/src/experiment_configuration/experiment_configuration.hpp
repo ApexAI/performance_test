@@ -186,9 +186,13 @@ private:
   #pragma db id
 #endif
   boost::uuids::uuid m_id;
-
+#ifdef ODB_FOR_SQL_ENABLED
+  #pragma db transient
+#endif
   bool m_is_setup;
-
+#ifdef ODB_FOR_SQL_ENABLED
+  #pragma db transient
+#endif
   std::string m_logfile;
   std::string m_final_logfile_name;
 

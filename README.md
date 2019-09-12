@@ -86,7 +86,19 @@ Remember to install the correct gcc plugin, for example (for gcc 7):
 sudo apt-get update
 sudo apt-get install gcc-7-plugin-dev
 ```
+Additionally, if you want to use MYSQL database, you will need to build a not yet released version,
+so instead of executing:
+```
+bpkg build libodb-mysql
+bpkg install libodb-mysq
 
+```
+you will need to execute:
+```
+bpkg build libodb-mysql@https://git.codesynthesis.com/odb/libodb-mysql.git#fix-bind-decl
+bpkg install libodb-mysq
+```
+After installing all the libraries make sure to add `/usr/local/lib` to your PATH:
 ```
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ```
@@ -104,18 +116,16 @@ source ros2_install_path/setup.bash
 mkdir -p perf_test_ws/src
 cd perf_test_ws/src
 git clone https://github.com/ApexAI/performance_test.git
-cd performance_test
-git checkout 3749-add-sql-support
-cd ../..
+cd ..
 colcon build --cmake-clean-cache --cmake-args -DCMAKE_BUILD_TYPE=Release -DODB_FOR_SQL_ENABLED=ON
 source install/setup.bash
 ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
 ```
 
 The default name of resulting database is "test_database", you can change it by using `--db_name`
-argument in `ros2 run`. Additionally, if you want to use MySQL or PostgreSQL instead of SQLite, use
--DPERFORMANCE_TEST_ODB_MYSQL=ON or -DPERFORMANCE_TEST_ODB_PGSQL=ON and disable the SQLite by adding
- -DPERFORMANCE_TEST_ODB_SQLITE=OFF option.
+argument in `ros2 run`. Additionally, if you want to use MySQL or PostgreSQL instead of
+the default SQLite, use `-DPERFORMANCE_TEST_ODB_MYSQL=ON` or `-DPERFORMANCE_TEST_ODB_PGSQL=ON` and
+disable the SQLite by adding `-DPERFORMANCE_TEST_ODB_SQLITE=OFF` option.
 
 # Batch run experiments (for advanced users)
 
