@@ -57,7 +57,6 @@ AnalysisResult::AnalysisResult(
   m_latency(latency),
   m_pub_loop_time_reserve(pub_loop_time_reserve),
   m_sub_loop_time_reserve(sub_loop_time_reserve)
-
 {
   const auto ret = getrusage(RUSAGE_SELF, &m_sys_usage);
   if (ret != 0) {
