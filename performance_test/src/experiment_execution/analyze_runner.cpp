@@ -86,9 +86,9 @@ AnalyzeRunner::AnalyzeRunner()
 #ifdef PERFORMANCE_TEST_ODB_SQLITE
   typedef odb::query<ExperimentConfiguration> query;
   m_db =
-      std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
-                                                                     SQLITE_OPEN_READWRITE |
-                                                                     SQLITE_OPEN_CREATE));
+    std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
+      SQLITE_OPEN_READWRITE |
+      SQLITE_OPEN_CREATE));
   {
     odb::core::connection_ptr c(m_db->connection());
     c->execute("PRAGMA foreign_keys=OFF");
