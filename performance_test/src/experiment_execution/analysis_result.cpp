@@ -79,7 +79,6 @@ std::string AnalysisResult::csv_header(const bool pretty_print, std::string st)
 
   std::stringstream ss;
   ss << "T_experiment" << st;
-  ss << "T_experiment_boost" << st;
   ss << "T_loop" << st;
   ss << "received" << st;
   ss << "sent" << st;
