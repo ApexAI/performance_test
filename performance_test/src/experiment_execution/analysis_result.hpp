@@ -127,7 +127,6 @@ private:
   const StatisticsTracker m_sub_loop_time_reserve;
 
   rusage m_sys_usage;
-  #pragma db member(variance) virtual(double) access(m_latency.variance())
 
 };
 
