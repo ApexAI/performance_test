@@ -145,6 +145,10 @@ public:
 
 #ifdef ODB_FOR_SQL_ENABLED
   std::string db_name() const;
+  std::string db_user() const;
+  std::string db_password() const;
+  std::string db_host() const;
+  std::string db_port() const;
 
   std::vector<std::shared_ptr<AnalysisResult>> & get_results() const
   {
@@ -226,7 +230,16 @@ private:
   #pragma db value_not_null inverse(m_configuration_ptr)
   mutable std::vector<std::shared_ptr<AnalysisResult>> m_results;
 
+  #pragma db transient
   std::string m_db_name;
+  #pragma db transient
+  std::string m_db_user;
+  #pragma db transient
+  std::string m_db_password;
+  #pragma db transient
+  std::string m_db_host;
+  #pragma db transient
+  std::string m_db_port;
 #endif
 
 };
