@@ -62,6 +62,10 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
            "\nRoundtrip Mode: " << e.roundtrip_mode()
            #ifdef ODB_FOR_SQL_ENABLED
            << "\nDatabase name: " << e.db_name()
+           << "\nDatabase user login: " << e.db_user()
+           << "\nDatabase password: " << e.db_password()
+           << "\nDatabase host: " << e.db_host()
+           << "\nDatabase port: " << e.db_port()
            #endif
     ;
   } else {
@@ -116,7 +120,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
   "Name of the SQL database.")("db_user",
     po::value<std::string>()->default_value("performance_test"),
     "User name to login to the SQL database.")("db_password",
-    po::value<std::string>()->default_value("password"),
+    po::value<std::string>()->default_value("pass"),
     "Password to login to the SQL database.")("db_host",
     po::value<std::string>()->default_value("172.17.0.27"),
     "IP address of SQL server.")("db_port", po::value<std::string>()->default_value("3306"),

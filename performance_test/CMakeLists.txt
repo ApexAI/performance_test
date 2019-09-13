@@ -117,19 +117,16 @@ if(CycloneDDS_FOUND)
   include_directories(${CYCLONEDDS_IDL_INCLUDE_DIR})
 endif()
 
-# add ODB CMake code start: here
-
 if(ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
   find_package(ODB REQUIRED COMPONENTS sqlite OPTIONAL_COMPONENTS mysql pgsql)
   include(${ODB_USE_FILE})
 endif()
 
-
 set(${PROJECT_NAME}_SOURCES
     src/experiment_execution/analyze_runner.cpp)
 
-set(${PROJECT_NAME}_ODB_HEADERS
+set(${PROJECT_NAME}_HEADERS
     src/experiment_configuration/experiment_configuration.hpp
     src/experiment_execution/analysis_result.hpp)
 
@@ -169,39 +166,39 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
 if(ODB_FOR_SQL_ENABLED)
-  odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_ODB_HEADERS} DB "${DB_TYPE}"
+  odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_HEADERS} DB "${DB_TYPE}"
       GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA INCLUDE
       ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
       STANDARD c++11 PROFILE boost/uuid X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
 endif()
 
 set(sources
-    src/data_running/data_runner_factory.cpp
-    src/experiment_execution/analysis_result.cpp
-    src/experiment_configuration/qos_abstraction.cpp
+    src/main.cpp
+    src/communication_abstractions/communicator.hpp
     src/communication_abstractions/communicator.cpp
     src/communication_abstractions/resource_manager.cpp
-    src/experiment_configuration/experiment_configuration.cpp
-    src/main.cpp
-    src/experiment_configuration/topics.hpp
     src/communication_abstractions/resource_manager.hpp
+    src/experiment_configuration/experiment_configuration.cpp
     src/communication_abstractions/ros2_callback_communicator.hpp
-    src/experiment_configuration/communication_mean.hpp
+    src/experiment_configuration/topics.hpp
+    src/data_running/data_runner.hpp
     src/data_running/data_runner_base.hpp
+    src/data_running/data_runner_factory.cpp
     src/data_running/data_runner_factory.hpp
+    src/experiment_execution/analyze_runner.hpp
+    src/experiment_execution/analysis_result.cpp
+    src/experiment_configuration/communication_mean.hpp
+    src/experiment_configuration/qos_abstraction.cpp
     src/experiment_configuration/qos_abstraction.hpp
     src/utilities/rt_enabler.hpp
     src/utilities/spin_lock.hpp
     src/utilities/statistics_tracker.hpp
-    src/communication_abstractions/communicator.hpp
-    src/data_running/data_runner.hpp
-    src/experiment_execution/analyze_runner.hpp
 )
-
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     set(sources ${sources}
-        src/communication_abstractions/fast_rtps_communicator.hpp)
+        src/communication_abstractions/fast_rtps_communicator.hpp
+        )
 endif()
 
 if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
@@ -220,7 +217,7 @@ endif()
 set(EXE_NAME perf_test)
 add_definitions(-DEXE_NAME="${EXE_NAME}")
 
-add_executable(${EXE_NAME} ${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAME}_ODB_HEADERS})
+add_executable(${EXE_NAME} ${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAME}_HEADERS})
 
 set_compile_options(${EXE_NAME})
 
@@ -231,11 +228,10 @@ ament_target_dependencies(${EXE_NAME}
 
 target_link_libraries(${EXE_NAME}
     ${Boost_LIBRARIES}
-    ${OPTIONAL_LIBRARIES}
-    ${ODB_LIBRARIES})
-
+    ${OPTIONAL_LIBRARIES})
 
 if(ODB_FOR_SQL_ENABLED)
+  target_link_libraries(${EXE_NAME} ${ODB_LIBRARIES})
   target_include_directories(${EXE_NAME}
       PRIVATE
         ${ODB_INCLUDE_DIRS}

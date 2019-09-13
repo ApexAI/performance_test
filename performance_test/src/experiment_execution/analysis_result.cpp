@@ -18,7 +18,6 @@
 #include <string>
 #include <iostream>
 
-
 namespace performance_test
 {
 
@@ -41,7 +40,6 @@ AnalysisResult::AnalysisResult(
   const StatisticsTracker latency,
   const StatisticsTracker pub_loop_time_reserve,
   const StatisticsTracker sub_loop_time_reserve
-
 )
 :
 #ifdef ODB_FOR_SQL_ENABLED
@@ -128,6 +126,7 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   }
 
   std::stringstream ss;
+
   ss << std::fixed;
   ss << m_experiment_start.count() << st;
   ss << m_loop_start.count() << st;
