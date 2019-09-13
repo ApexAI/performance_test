@@ -112,11 +112,15 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     po::value<std::string>()->default_value("None"),
     "Selects the round trip mode (None, Main, Relay).")
 #ifdef ODB_FOR_SQL_ENABLED
-  ("db_name", po::value<std::string>()->default_value("odb_test"), "Name of the SQL database.")
-  ("db_user", po::value<std::string>()->default_value("performance_test"), "User name to login to the SQL database.")
-  ("db_password", po::value<std::string>()->default_value("password"), "Password to login to the SQL database")
-  ("db_host", po::value<std::string>()->default_value("172.17.0.27"), "IP address of SQL server running")
-  ("db_port", po::value<std::string>()->default_value("3306"), "Port.")
+  ("db_name", po::value<std::string>()->default_value("odb_test"),
+  "Name of the SQL database.")("db_user",
+    po::value<std::string>()->default_value("performance_test"),
+    "User name to login to the SQL database.")("db_password",
+    po::value<std::string>()->default_value("password"),
+    "Password to login to the SQL database.")("db_host",
+    po::value<std::string>()->default_value("172.17.0.27"),
+    "IP address of SQL server.")("db_port", po::value<std::string>()->default_value("3306"),
+    "Port for SQL protocol.")
 #endif
   ;
   po::variables_map vm;
