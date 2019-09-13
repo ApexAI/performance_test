@@ -23,6 +23,7 @@ int main(int argc, char ** argv)
 
   auto & ec = performance_test::ExperimentConfiguration::get();
   ec.setup(argc, argv);
+
   performance_test::AnalyzeRunner ar;
   ar.run();
 

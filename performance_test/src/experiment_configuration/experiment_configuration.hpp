@@ -29,7 +29,6 @@
   #include <odb/core.hxx>
 #endif
 
-
 namespace performance_test
 {
 
@@ -56,7 +55,6 @@ public:
 
     return instance;
   }
-
 
   ExperimentConfiguration(ExperimentConfiguration const &) = delete;
   ExperimentConfiguration(ExperimentConfiguration &&) = delete;
@@ -207,9 +205,7 @@ private:
 
   CommunicationMean m_com_mean;
   uint32_t m_dds_domain_id;
-
   QOSAbstraction m_qos;
-
   uint32_t m_rate;
   std::string m_topic_name;
   uint64_t m_max_runtime;

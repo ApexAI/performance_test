@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "analyze_runner.hpp"
+
 #include "analysis_result.hpp"
 
 #ifdef ODB_FOR_SQL_ENABLED
@@ -75,7 +76,7 @@ AnalyzeRunner::AnalyzeRunner()
       RunType::SUBSCRIBER));
   }
 
-  #ifdef ODB_FOR_SQL_ENABLED
+#ifdef ODB_FOR_SQL_ENABLED
   std::string exe_name = EXE_NAME;
   std::string exec = "./" + exe_name;
   std::string db = "--database";
@@ -119,7 +120,7 @@ AnalyzeRunner::AnalyzeRunner()
     &port[0], &m_ec.db_port()[0]};
   m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(argc_db, argv_db));
 #endif
-  #endif
+#endif
 }
 
 void AnalyzeRunner::run() const
@@ -146,12 +147,11 @@ void AnalyzeRunner::run() const
       post_proc_rt_init();
       m_is_first_entry = false;
     }
+
     auto now = std::chrono::steady_clock::now();
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
-
     analyze(loop_diff_start, experiment_diff_start);
-
   }
 
   #ifdef ODB_FOR_SQL_ENABLED
@@ -247,6 +247,5 @@ bool AnalyzeRunner::check_exit(std::chrono::steady_clock::time_point experiment_
     return false;
   }
 }
-
 
 }  // namespace performance_test
