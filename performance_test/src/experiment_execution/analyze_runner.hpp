@@ -49,7 +49,7 @@ public:
 private:
   /**
    * \brief Analyezes and logs the state of the experiment.
-   * \param loop_diff_start// std::auto_ptr
+   * \param loop_diff_start
    * \param experiment_diff_start
    */
 

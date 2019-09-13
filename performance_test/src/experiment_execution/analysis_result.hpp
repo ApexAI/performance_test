@@ -21,7 +21,6 @@
 #include <chrono>
 #include <sstream>
 #include <string>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "../utilities/statistics_tracker.hpp"
 #include <boost/uuid/uuid_io.hpp>
@@ -87,7 +86,6 @@ public:
    * \brief Returns the data contained the analysis result as a string.
    * \param pretty_print If set, inserts additional tabs to format the output nicer.
    * \param st The data seperator.
-   *
    * \return A string with the contained data as CSV row.
    */
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
@@ -127,7 +125,6 @@ private:
   const StatisticsTracker m_sub_loop_time_reserve;
 
   rusage m_sys_usage;
-
 };
 
 }  // namespace performance_test
