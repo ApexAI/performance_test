@@ -77,13 +77,16 @@ AnalyzeRunner::AnalyzeRunner()
 
   #ifdef ODB_FOR_SQL_ENABLED
   std::string exe_name = EXE_NAME;
-  std::string db = "--database";
   std::string exec = "./" + exe_name;
-
-  char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
-  int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
+  std::string db = "--database";
+  std::string user = "--user";
+  std::string password = "--password";
+  std::string host = "--host";
+  std::string port = "--port";
 
 #ifdef PERFORMANCE_TEST_ODB_SQLITE
+  char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0]};
+  int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
   typedef odb::query<ExperimentConfiguration> query;
   m_db =
     std::unique_ptr<odb::core::database>(new odb::sqlite::database(argc_db, argv_db, false,
@@ -103,9 +106,17 @@ AnalyzeRunner::AnalyzeRunner()
   }
 #endif
 #ifdef PERFORMANCE_TEST_ODB_MYSQL
+  char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0], &user[0], &m_ec.db_user()[0],
+                      &password[0], &m_ec.db_password()[0], &host[0], &m_ec.db_host()[0],
+                      &port[0], &m_ec.db_port()[0]};
+  std::cout<<&m_ec.db_user()[0]<<std::endl;
+  int argc_db = sizeof(argv_db) / sizeof(argv_db[0]);
   m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(argc_db, argv_db));
 #endif
 #ifdef PERFORMANCE_TEST_ODB_PGSQL
+  char * argv_db[] = {&exec[0], &db[0], &m_ec.db_name()[0], &user[0], &m_ec.db_user()[0],
+                      &password[0], &m_ec.db_password()[0], &host[0], &m_ec.db_host()[0],
+                      &port[0], &m_ec.db_port()[0]};
   m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(argc_db, argv_db));
 #endif
   #endif

@@ -112,7 +112,11 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     po::value<std::string>()->default_value("None"),
     "Selects the round trip mode (None, Main, Relay).")
 #ifdef ODB_FOR_SQL_ENABLED
-  ("db_name", po::value<std::string>()->default_value("test_database"), "Name of the SQL database.")
+  ("db_name", po::value<std::string>()->default_value("odb_test"), "Name of the SQL database.")
+  ("db_user", po::value<std::string>()->default_value("performance_test"), "User name to login to the SQL database.")
+  ("db_password", po::value<std::string>()->default_value("password"), "Password to login to the SQL database")
+  ("db_host", po::value<std::string>()->default_value("172.17.0.27"), "IP address of SQL server running")
+  ("db_port", po::value<std::string>()->default_value("3306"), "Port.")
 #endif
   ;
   po::variables_map vm;
@@ -283,6 +287,18 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     if (vm.count("db_name")) {
       m_db_name = vm["db_name"].as<std::string>();
     }
+    if (vm.count("db_user")) {
+      m_db_user = vm["db_user"].as<std::string>();
+    }
+    if (vm.count("db_password")) {
+      m_db_password = vm["db_password"].as<std::string>();
+    }
+    if (vm.count("db_host")) {
+      m_db_host = vm["db_host"].as<std::string>();
+    }
+    if (vm.count("db_port")) {
+      m_db_port = vm["db_port"].as<std::string>();
+    }
 #endif
     m_is_setup = true;
     // Logfile needs to be opened at the end, as the experiment configuration influences the
@@ -334,6 +350,22 @@ std::string ExperimentConfiguration::db_name() const
 {
   check_setup();
   return m_db_name;
+}
+std::string ExperimentConfiguration::db_user() const
+{
+  return m_db_user;
+}
+std::string ExperimentConfiguration::db_password() const
+{
+  return m_db_password;
+}
+std::string ExperimentConfiguration::db_host() const
+{
+  return m_db_host;
+}
+std::string ExperimentConfiguration::db_port() const
+{
+  return m_db_port;
 }
 #endif
 uint64_t ExperimentConfiguration::max_runtime() const
