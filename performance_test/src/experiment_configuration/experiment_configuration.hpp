@@ -143,10 +143,12 @@ public:
 
 #ifdef ODB_FOR_SQL_ENABLED
   std::string db_name() const;
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
   std::string db_user() const;
   std::string db_password() const;
   std::string db_host() const;
-  std::string db_port() const;
+  unsigned int db_port() const;
+#endif
 
   std::vector<std::shared_ptr<AnalysisResult>> & get_results() const
   {
@@ -228,6 +230,7 @@ private:
 
   #pragma db transient
   std::string m_db_name;
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
   #pragma db transient
   std::string m_db_user;
   #pragma db transient
@@ -235,7 +238,8 @@ private:
   #pragma db transient
   std::string m_db_host;
   #pragma db transient
-  std::string m_db_port;
+  unsigned int m_db_port;
+#endif
 #endif
 
 };
