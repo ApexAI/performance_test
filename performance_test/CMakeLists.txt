@@ -167,7 +167,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
 if(ODB_FOR_SQL_ENABLED)
   odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_HEADERS} DB "${DB_TYPE}"
-      GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA INCLUDE
+      GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA SCHEMA_FORMAT embedded INCLUDE
       ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
       STANDARD c++11 PROFILE boost/uuid X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
 endif()
@@ -178,7 +178,6 @@ set(sources
     src/communication_abstractions/communicator.cpp
     src/communication_abstractions/resource_manager.cpp
     src/communication_abstractions/resource_manager.hpp
-    src/experiment_configuration/experiment_configuration.cpp
     src/communication_abstractions/ros2_callback_communicator.hpp
     src/experiment_configuration/topics.hpp
     src/data_running/data_runner.hpp
@@ -190,6 +189,7 @@ set(sources
     src/experiment_configuration/communication_mean.hpp
     src/experiment_configuration/qos_abstraction.cpp
     src/experiment_configuration/qos_abstraction.hpp
+    src/experiment_configuration/experiment_configuration.cpp
     src/utilities/rt_enabler.hpp
     src/utilities/spin_lock.hpp
     src/utilities/statistics_tracker.hpp
@@ -198,7 +198,7 @@ set(sources
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     set(sources ${sources}
         src/communication_abstractions/fast_rtps_communicator.hpp
-        )
+    )
 endif()
 
 if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
@@ -236,7 +236,7 @@ if(ODB_FOR_SQL_ENABLED)
       PRIVATE
         ${ODB_INCLUDE_DIRS}
         ${ODB_COMPILE_OUTPUT_DIR})
-  if(OPERFORMANCE_TEST_ODB_SQLITE)
+  if(PERFORMANCE_TEST_ODB_SQLITE)
   target_compile_definitions(${EXE_NAME}
       PRIVATE
         DATABASE_SQLITE)
@@ -248,7 +248,7 @@ if(ODB_FOR_SQL_ENABLED)
   endif()
   if(PERFORMANCE_TEST_ODB_PGSQL)
     target_compile_definitions(${EXE_NAME}
-        PRIVATE
+      PRIVATE
         DATABASE_PGSQL)
   endif()
 endif()

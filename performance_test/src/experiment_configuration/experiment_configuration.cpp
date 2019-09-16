@@ -62,10 +62,12 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
            "\nRoundtrip Mode: " << e.roundtrip_mode()
            #ifdef ODB_FOR_SQL_ENABLED
            << "\nDatabase name: " << e.db_name()
-           << "\nDatabase user login: " << e.db_user()
-           << "\nDatabase password: " << e.db_password()
-           << "\nDatabase host: " << e.db_host()
-           << "\nDatabase port: " << e.db_port()
+           #if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+           << "\nDatabase user login: " << e.db_user() <<
+           "\nDatabase password: " << e.db_password() <<
+           "\nDatabase host: " << e.db_host() <<
+           "\nDatabase port: " << e.db_port()
+           #endif
            #endif
     ;
   } else {
@@ -116,15 +118,16 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     po::value<std::string>()->default_value("None"),
     "Selects the round trip mode (None, Main, Relay).")
 #ifdef ODB_FOR_SQL_ENABLED
-  ("db_name", po::value<std::string>()->default_value("odb_test"),
-  "Name of the SQL database.")("db_user",
-    po::value<std::string>()->default_value("performance_test"),
-    "User name to login to the SQL database.")("db_password",
-    po::value<std::string>()->default_value("pass"),
+  ("db_name", po::value<std::string>()->default_value("db_name"),
+  "Name of the SQL database.")
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+  ("db_user", po::value<std::string>()->default_value("user"),
+  "User name to login to the SQL database.")("db_password",
+    po::value<std::string>()->default_value("password"),
     "Password to login to the SQL database.")("db_host",
-    po::value<std::string>()->default_value("172.17.0.27"),
-    "IP address of SQL server.")("db_port", po::value<std::string>()->default_value("3306"),
-    "Port for SQL protocol.")
+    po::value<std::string>()->default_value("127.0.0.1"), "IP address of SQL server.")("db_port",
+    po::value<unsigned int>()->default_value(3306), "Port for SQL protocol.")
+#endif
 #endif
   ;
   po::variables_map vm;
@@ -295,6 +298,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     if (vm.count("db_name")) {
       m_db_name = vm["db_name"].as<std::string>();
     }
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
     if (vm.count("db_user")) {
       m_db_user = vm["db_user"].as<std::string>();
     }
@@ -305,8 +309,9 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
       m_db_host = vm["db_host"].as<std::string>();
     }
     if (vm.count("db_port")) {
-      m_db_port = vm["db_port"].as<std::string>();
+      m_db_port = vm["db_port"].as<unsigned int>();
     }
+#endif
 #endif
     m_is_setup = true;
     // Logfile needs to be opened at the end, as the experiment configuration influences the
@@ -359,6 +364,7 @@ std::string ExperimentConfiguration::db_name() const
   check_setup();
   return m_db_name;
 }
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
 std::string ExperimentConfiguration::db_user() const
 {
   return m_db_user;
@@ -371,10 +377,11 @@ std::string ExperimentConfiguration::db_host() const
 {
   return m_db_host;
 }
-std::string ExperimentConfiguration::db_port() const
+unsigned int ExperimentConfiguration::db_port() const
 {
   return m_db_port;
 }
+#endif
 #endif
 uint64_t ExperimentConfiguration::max_runtime() const
 {
