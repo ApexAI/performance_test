@@ -18,7 +18,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 include(compile_options)
 project(performance_test)
 
-
 set(OPTIONAL_AMENT_DEPENDENCES)
 set(OPTIONAL_LIBRARIES)
 

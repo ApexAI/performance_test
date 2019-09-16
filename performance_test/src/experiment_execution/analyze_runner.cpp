@@ -100,6 +100,15 @@ AnalyzeRunner::AnalyzeRunner()
         m_ec.db_name(),
         m_ec.db_host(),
         m_ec.db_port()));
+  {
+    odb::core::transaction t (m_db->begin());
+    try {
+      m_db->query<ExperimentConfiguration>(false);
+    } catch (const odb::exception & e) {
+      odb::core::schema_catalog::create_schema(*m_db);
+    }
+    t.commit ();
+  }
 #endif
 #ifdef PERFORMANCE_TEST_ODB_PGSQL
   m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(
@@ -108,6 +117,15 @@ AnalyzeRunner::AnalyzeRunner()
         m_ec.db_name(),
         m_ec.db_host(),
         m_ec.db_port()));
+    {
+    odb::core::transaction t (m_db->begin());
+    try {
+      m_db->query<ExperimentConfiguration>(false);
+    } catch (const odb::exception & e) {
+      odb::core::schema_catalog::create_schema(*m_db);
+    }
+    t.commit ();
+  }
 #endif
 #endif
 }

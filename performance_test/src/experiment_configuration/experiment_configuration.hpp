@@ -210,6 +210,7 @@ private:
   QOSAbstraction m_qos;
   uint32_t m_rate;
   std::string m_topic_name;
+
   uint64_t m_max_runtime;
 
   uint32_t m_number_of_publishers;
