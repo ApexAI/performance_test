@@ -26,6 +26,4 @@ int main(int argc, char ** argv)
 
   performance_test::AnalyzeRunner ar;
   ar.run();
-
 }
-
