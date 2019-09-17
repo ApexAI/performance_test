@@ -11,10 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include <cstddef>
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
 #include <cstdlib>
+#include <cstddef>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -25,8 +25,8 @@
 #include "analysis_result.hpp"
 
 #ifdef ODB_FOR_SQL_ENABLED
-  #include <memory>
   #include <odb/database.hxx>
+  #include <memory>
   #ifdef PERFORMANCE_TEST_ODB_SQLITE
     #include <odb/sqlite/database.hxx>
   #endif
@@ -79,7 +79,7 @@ AnalyzeRunner::AnalyzeRunner()
 #ifdef ODB_FOR_SQL_ENABLED
 #ifdef PERFORMANCE_TEST_ODB_SQLITE
   m_db = std::unique_ptr<odb::core::database>(new odb::sqlite::database(
-      m_ec.db_name(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
+        m_ec.db_name(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
   {
     odb::core::connection_ptr c(m_db->connection());
     c->execute("PRAGMA foreign_keys=OFF");
@@ -101,13 +101,13 @@ AnalyzeRunner::AnalyzeRunner()
         m_ec.db_host(),
         m_ec.db_port()));
   {
-    odb::core::transaction t (m_db->begin());
+    odb::core::transaction t(m_db->begin());
     try {
       m_db->query<ExperimentConfiguration>(false);
     } catch (const odb::exception & e) {
       odb::core::schema_catalog::create_schema(*m_db);
     }
-    t.commit ();
+    t.commit();
   }
 #endif
 #ifdef PERFORMANCE_TEST_ODB_PGSQL
@@ -117,14 +117,14 @@ AnalyzeRunner::AnalyzeRunner()
         m_ec.db_name(),
         m_ec.db_host(),
         m_ec.db_port()));
-    {
-    odb::core::transaction t (m_db->begin());
+  {
+    odb::core::transaction t(m_db->begin());
     try {
       m_db->query<ExperimentConfiguration>(false);
     } catch (const odb::exception & e) {
       odb::core::schema_catalog::create_schema(*m_db);
     }
-    t.commit ();
+    t.commit();
   }
 #endif
 #endif
