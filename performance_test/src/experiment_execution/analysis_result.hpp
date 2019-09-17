@@ -17,13 +17,13 @@
 
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <boost/uuid/uuid_io.hpp>
 #include <cstddef>
 #include <chrono>
 #include <sstream>
 #include <string>
 
 #include "../utilities/statistics_tracker.hpp"
-#include <boost/uuid/uuid_io.hpp>
 #ifdef ODB_FOR_SQL_ENABLED
   #include <odb/core.hxx>
   #include "experiment_configuration.hpp"
