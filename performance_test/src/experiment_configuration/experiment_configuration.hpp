@@ -20,6 +20,8 @@
 
 #include <string>
 #include <fstream>
+#include <vector>
+#include <memory>
 
 #include "qos_abstraction.hpp"
 #include "communication_mean.hpp"
@@ -242,7 +244,6 @@ private:
   unsigned int m_db_port;
 #endif
 #endif
-
 };
 
 /// Outstream operator for RoundTripMode.

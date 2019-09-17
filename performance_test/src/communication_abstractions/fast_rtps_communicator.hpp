@@ -169,7 +169,7 @@ public:
       wparam.topic.resourceLimitsQos.max_samples = qos.resource_limits_samples();
       wparam.topic.resourceLimitsQos.allocated_samples = qos.resource_limits_samples();
       wparam.times.heartbeatPeriod.seconds = 2;
-      wparam.times.heartbeatPeriod.fraction = 200 * 1000 * 1000;
+      wparam.times.heartbeatPeriod.fraction(200 * 1000 * 1000);
       wparam.qos.m_reliability.kind = qos.reliability();
       wparam.qos.m_durability.kind = qos.durability();
       wparam.qos.m_publishMode.kind = qos.publish_mode();
