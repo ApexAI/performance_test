@@ -48,9 +48,8 @@ public:
   void update_subscription() override
   {
     if (!m_polling_subscription) {
-      const auto qos = ROS2QOSAdapter(this->m_ec.qos()).get();
       m_polling_subscription = this->m_node->template create_polling_subscription<DataType>(
-        Topic::topic_name() + this->m_ec.sub_topic_postfix(), qos);
+        Topic::topic_name() + this->m_ec.sub_topic_postfix(), this->m_ROS2QOSAdapter);
 
     }
     this->lock();
