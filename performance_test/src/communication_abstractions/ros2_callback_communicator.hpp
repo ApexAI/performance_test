@@ -47,11 +47,10 @@ public:
   void update_subscription() override
   {
     if (!m_subscription) {
-      const auto qos = ROS2QOSAdapter(this->m_ec.qos()).get();
       m_subscription = this->m_node->template create_subscription<DataType>(
         Topic::topic_name() + this->m_ec.sub_topic_postfix(),
         [this](const typename DataType::SharedPtr data){return this->callback(data);},
-        qos);
+        this->m_ROS2QOSAdapter);
 
     }
     this->lock();

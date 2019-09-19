@@ -108,17 +108,19 @@ public:
   void publish(DataType & data, const std::chrono::nanoseconds time)
   {
     if (!m_publisher) {
+      auto ros2QOSAdapter = m_ROS2QOSAdapter;
       // Workaround for bug where RMW/FastRPS keeps history of volatile publisher.
-      if (m_ROS2QOSAdapter.durability ==
+      if (ros2QOSAdapter.durability ==
         rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_VOLATILE)
       {
-        m_ROS2QOSAdapter.history = rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-        m_ROS2QOSAdapter.depth = std::size_t(10);  // Setting depth to 10 as a safety net.
+        ros2QOSAdapter.history = rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+        ros2QOSAdapter.depth = std::size_t(10);  // Setting depth to 10 as a safety net.
       }
       // End of workaround.
 
       m_publisher = m_node->create_publisher<DataType>(
-        Topic::topic_name() + m_ec.pub_topic_postfix(), m_ROS2QOSAdapter);
+        Topic::topic_name() + m_ec.pub_topic_postfix(), ros2QOSAdapter);
+
     }
     lock();
     data.time = time.count();
@@ -140,6 +142,7 @@ public:
 
 protected:
   std::shared_ptr<rclcpp::Node> m_node;
+  rmw_qos_profile_t m_ROS2QOSAdapter;
   /**
    * \brief Callback handler which handles the received data.
    *
@@ -176,8 +179,6 @@ protected:
 
 private:
   std::shared_ptr<::rclcpp::Publisher<DataType, std::allocator<void>>> m_publisher;
-  rmw_qos_profile_t m_ROS2QOSAdapter;
-
 };
 
 
