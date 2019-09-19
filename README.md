@@ -52,7 +52,7 @@ To plot the results, you will need to install the perfplot tool from the apex_pe
 pip3 install performance_test/helper_scripts/apex_performance_lotter
 ```
 
-This tool will convert performance test log files into PDFs containing graphs of the results
+This tool will convert performance test log files into PDFs containing graphs of the results.
 
 ## Example
 
@@ -72,7 +72,7 @@ The generated log-files can then be plotted into a PDF file using:
 perfplot log_Array1k_19-09-2019_12-13-49
 ```
 
-This will generate a file called `log_Array1k_19-09-2019_12-13-49.pdf`
+This will generate a file called `log_Array1k_19-09-2019_12-13-49.pdf`.
 
 # Batch run experiments (for advanced users)
 
