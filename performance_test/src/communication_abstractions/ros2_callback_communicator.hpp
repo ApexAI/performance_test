@@ -16,6 +16,7 @@
 #define COMMUNICATION_ABSTRACTIONS__ROS2_CALLBACK_COMMUNICATOR_HPP_
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/qos.hpp>
 
 #include <memory>
 #include <atomic>
