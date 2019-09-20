@@ -195,9 +195,10 @@ def create_layout(header, dataframe):
     }
 
 
-def render(template, filename, skip_head=0, skip_tail=0):
+def render(template, filepath, skip_head=0, skip_tail=0):
     """Render one file into a pdf."""
-    header, dataframe = load_logfile(filename)
+    filename = os.path.basename(filepath)
+    header, dataframe = load_logfile(filepath)
 
     dataframe.drop(dataframe.index[0:skip_head], inplace=True)
     dataframe.drop(dataframe.index[len(dataframe) - skip_tail:len(dataframe)], inplace=True)
@@ -209,7 +210,7 @@ def render(template, filename, skip_head=0, skip_tail=0):
         with open(texname, 'w') as fhandle:
             fhandle.write(tex)
 
-        print('Running tex for {}'.format(filename))
+        print('Running tex for {}'.format(filepath))
         cmd = ['lualatex', '--interaction=nonstopmode', texname]
         ret = subprocess.run(cmd, cwd=dirname, stdout=subprocess.PIPE)
         if ret.returncode:
@@ -218,7 +219,7 @@ def render(template, filename, skip_head=0, skip_tail=0):
             sys.exit(2)
 
         pdfname = os.path.join(dirname, '{}.pdf'.format(filename))
-        shutil.copy(pdfname, os.path.dirname(os.path.abspath(filename)))
+        shutil.copy(pdfname, os.path.dirname(os.path.abspath(filepath)))
 
 
 @click.command()
@@ -233,7 +234,8 @@ def plot_logfiles(skip_head, skip_tail, filenames):
 
     template = load_template()
     for filename in filenames:
-        render(template, filename, skip_head, skip_tail)
+        abs_path = os.path.abspath(filename)
+        render(template, abs_path, skip_head, skip_tail)
 
 
 if __name__ == '__main__':
