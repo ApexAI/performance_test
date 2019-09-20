@@ -14,6 +14,11 @@
 
 #include "resource_manager.hpp"
 
+#ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
+  #include <fastrtps/rtps/attributes/RTPSParticipantAttributes.h>
+#endif
+
+
 #include <memory>
 #include <string>
 
