@@ -200,6 +200,20 @@ def render(template, filepath, skip_head=0, skip_tail=0):
     filename = os.path.basename(filepath)
     header, dataframe = load_logfile(filepath)
 
+    # Valudate the dataframe.  We are expected to produce a plot if there is no data, but if the
+    # user gave us silly command line arguments like "skip more data than we recorded" we can
+    # still error out
+    if skip_head + skip_tail > len(dataframe):
+        print(
+            "ERROR: Told to skip {} rows from the start and {} rows from the end "
+            "but there are only {} rows or data".format(
+                skip_head,
+                skip_tail,
+                len(dataframe)
+            )
+        )
+        sys.exit(1)
+
     dataframe.drop(dataframe.index[0:skip_head], inplace=True)
     dataframe.drop(dataframe.index[len(dataframe) - skip_tail:len(dataframe)], inplace=True)
     layout = create_layout(header, dataframe)
