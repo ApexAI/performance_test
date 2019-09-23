@@ -127,7 +127,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 #endif
   ;
   po::variables_map vm;
-  po::store(parse_command_line(argc, argv, desc), vm);
+  po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm);
   m_perf_test_version = version;
 
   try {
