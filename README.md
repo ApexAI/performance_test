@@ -49,7 +49,7 @@ ros2 run performance_test perf_test --help
 To plot the results, you will need to install the perfplot tool from the apex_performance_plotter python module.
 
 ```bash
-pip3 install performance_test/helper_scripts/apex_performance_lotter
+pip3 install performance_test/helper_scripts/apex_performance_plotter
 ```
 
 This tool will convert performance test log files into PDFs containing graphs of the results.
