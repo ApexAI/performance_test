@@ -54,8 +54,8 @@ private:
    */
 
   void analyze(
-    const std::chrono::duration<double> loop_diff_start,
-    const std::chrono::duration<double> experiment_diff_start) const;
+    const std::chrono::nanoseconds loop_diff_start,
+    const std::chrono::nanoseconds experiment_diff_start) const;
 
   /**
    * \brief Checks if the experiment is finished.

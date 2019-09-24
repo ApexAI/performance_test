@@ -168,8 +168,8 @@ void AnalyzeRunner::run() const
 }
 
 void AnalyzeRunner::analyze(
-  const std::chrono::duration<double> loop_diff_start,
-  const std::chrono::duration<double> experiment_diff_start) const
+  const std::chrono::nanoseconds loop_diff_start,
+  const std::chrono::nanoseconds experiment_diff_start) const
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
