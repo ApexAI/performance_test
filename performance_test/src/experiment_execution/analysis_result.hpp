@@ -35,6 +35,9 @@ namespace performance_test
 /// Outstream operator for timeval to seconds (double).
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
 #ifdef ODB_FOR_SQL_ENABLED
+
+
+#pragma db map type(std::chrono::nanoseconds) as(std::chrono::nanoseconds::rep) to((?).count ()) from(std::chrono::nanoseconds (?))
 #pragma db value(StatisticsTracker) definition
 #pragma db value(rusage) definition
 #pragma db value(timeval) definition
@@ -62,8 +65,8 @@ public:
     const std::string m_experiment_start_db,
     const std::string m_loop_start_db,
 #endif
-    const std::chrono::duration<double> experiment_start,
-    const std::chrono::duration<double> loop_start,
+    const std::chrono::nanoseconds experiment_start,
+    const std::chrono::nanoseconds loop_start,
     const uint64_t num_samples_received,
     const uint64_t num_samples_sent,
     const uint64_t num_samples_lost,
@@ -106,14 +109,10 @@ private:
 #pragma db id
   const std::string m_experiment_start_db = {};
   const std::string m_loop_start_db = {};
+#endif
 
-  #pragma db transient
-#endif
-  const std::chrono::duration<double> m_experiment_start = {};
-#ifdef ODB_FOR_SQL_ENABLED
-  #pragma db transient
-#endif
-  const std::chrono::duration<double> m_loop_start = {};
+  const std::chrono::nanoseconds m_experiment_start = {};
+  const std::chrono::nanoseconds m_loop_start = {};
 
   const uint64_t m_num_samples_received = {};
   const uint64_t m_num_samples_sent = {};

@@ -31,8 +31,8 @@ AnalysisResult::AnalysisResult(
   const std::string experiment_start_db,
   const std::string loop_start_db,
 #endif
-  const std::chrono::duration<double> experiment_start,
-  const std::chrono::duration<double> loop_start,
+  const std::chrono::nanoseconds experiment_start,
+  const std::chrono::nanoseconds loop_start,
   const uint64_t num_samples_received,
   const uint64_t num_samples_sent,
   const uint64_t num_samples_lost,
