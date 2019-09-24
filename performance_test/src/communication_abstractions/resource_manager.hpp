@@ -62,6 +62,9 @@ public:
   /// Returns the ROS 2 node.
   std::shared_ptr<rclcpp::Node> ros2_node() const;
 
+  /// Returns true if a single participant is used.
+  bool is_using_single_participant() const;
+
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   /// Returns FastRTPS participant.
   eprosima::fastrtps::Participant * fastrtps_participant() const;
