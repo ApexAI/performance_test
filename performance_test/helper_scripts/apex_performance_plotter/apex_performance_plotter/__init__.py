@@ -39,9 +39,6 @@ from .generate_plots import generate_figures
 __version__ = '0.1.0'
 
 
-GETRUSAGE = '\\href{http://man7.org/linux/man-pages/man2/getrusage.2.html}{man getrusage}'
-
-
 def sanitize(val):
     """Escape latex specical characters in string values."""
     if isinstance(val, str):
