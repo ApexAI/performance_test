@@ -199,15 +199,20 @@ public:
   }
 
 private:
-  /// Registers a topic to the participant. It makes sure that each topic is only registered once.
+  /// Registers a topic to the participant. It makes sure that each topic is only registered
+  /// once if resource manager is using a single participant.
   void register_topic()
   {
-    if (m_topic == 0) {
+    const bool is_single_participant = ResourceManager::get().is_using_single_participant();
+    if (m_single_participant_topic == 0 || !is_single_participant) {
       m_topic = dds_create_topic(m_participant, Topic::CycloneDDSDesc(),
           Topic::topic_name().c_str(), nullptr, nullptr);
+      m_single_participant_topic = m_topic;
       if (m_topic < 0) {
         throw std::runtime_error("failed to create topic");
       }
+    } else {
+      m_topic = m_single_participant_topic;
     }
   }
 
@@ -219,11 +224,12 @@ private:
   dds_entity_t m_waitset;
   dds_entity_t m_condition;
 
-  static dds_entity_t m_topic;
+  dds_entity_t m_topic;
+  static dds_entity_t m_single_participant_topic;
 };
 
 template<class Topic>
-dds_entity_t CycloneDDSCommunicator<Topic>::m_topic = 0;
+dds_entity_t CycloneDDSCommunicator<Topic>::m_single_participant_topic = 0;
 
 }  // namespace performance_test
 

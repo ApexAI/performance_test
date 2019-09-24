@@ -48,6 +48,11 @@ std::shared_ptr<rclcpp::Node> ResourceManager::ros2_node() const
   return rclcpp::Node::make_shared("performance_test" + rand_str, options);
 }
 
+bool ResourceManager::is_using_single_participant() const
+{
+  return m_ec.use_single_participant();
+}
+
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
 eprosima::fastrtps::Participant * ResourceManager::fastrtps_participant() const
 {
