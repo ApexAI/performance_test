@@ -33,6 +33,8 @@ import jinja2
 
 import pandas
 
+from .generate_plots import generate_figures
+
 
 __version__ = '0.1.0'
 
@@ -111,7 +113,7 @@ def create_layout(header, dataframe):
     y11 = dataframe['latency_min (ms)'].tolist()
     y12 = dataframe['latency_max (ms)'].tolist()
     y13 = dataframe['latency_mean (ms)'].tolist()
-    y14 = (dataframe['latency_variance (ms)'] * 100).tolist()
+    y14 = dataframe['latency_variance (ms)'].tolist()
 
     yr11 = (dataframe["ru_maxrss"] / 1e3).tolist()
 
@@ -128,45 +130,17 @@ def create_layout(header, dataframe):
             create_kv(header, 'Experiment id'),
             create_kv(header, 'Communication mean'),
         ],
-        'figures': [
-            {
-                'caption': 'Latencies',
-                'xlabel': 'time',
-                'ylabel': 'latency (ms)',
-                'traces': [
-                    {'name': 'min', 'x': xaxis, 'y': y11},
-                    {'name': 'max', 'x': xaxis, 'y': y12},
-                    {'name': 'mean', 'x': xaxis, 'y': y13},
-                    {'name': 'variance * 100', 'x': xaxis, 'y': y14},
-                ],
-                'xrange': [min(xaxis) - 5, max(xaxis) + 5],
-                'yrange': [min([*y11, *y12, *y13, *y14]) - .5, max([*y11, *y12, *y13, *y14]) + .5],
-                'axis2': {
-                    'ylabel': 'maxrss (MB)',
-                    'traces': [
-                        {'name': 'maxrss (MB)', 'x': xaxis, 'y': yr11},
-                    ],
-                    'xrange': [min(xaxis) - 5, max(xaxis) + 5],
-                    'yrange': [min([*yr11]) - .5, max([*yr11]) + .5],
-                },
-            },
-            {
-                'caption': 'Resource usage ({})'.format(GETRUSAGE),
-                'xlabel': 'time',
-                'ylabel': 'usage',
-                'traces': [
-                    {'name': 'ru_minflt', 'x': xaxis, 'y': y21},
-                    {'name': 'ru_majflt', 'x': xaxis, 'y': y22},
-                    {'name': 'ru_nivcsw', 'x': xaxis, 'y': y23},
-                ],
-                'xrange': [min(xaxis) - 5, max(xaxis) + 5],
-                'yrange': [min([*y21, *y22, *y23]) - 2500, max([*y21, *y22, *y23]) + 2500],
-                'axis2': {
-                    'traces': [
-                    ],
-                },
-            },
-        ],
+        'figures': generate_figures(
+            xaxis,
+            y11,
+            y12,
+            y13,
+            y14,
+            yr11,
+            y21,
+            y22,
+            y23
+        ),
         'categories': [
             {'name': 'test setup', 'items': [
                 create_kv(header, 'Publishing rate'),
