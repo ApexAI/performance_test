@@ -26,9 +26,11 @@ The tool has a fully documented command line interface which can be accessed by 
 To run more extensive tests, the following script can be used and adapted:
 `helper_scripts/run_experiment.py`
 
-The logfiles can be visualized using the following python script:
-`helper_scripts/performance_test_file_reader.py`
-Note that `pandas` is required to run this script.
+The logfiles can be visualized using the apex_performance_plotter module:
+```
+pip3 install performance_test/helper_scripts/apex_performance_plotter
+perfplot NAME_OF_LOG_FILE
+```
 
 ##### CMAKE options
 
