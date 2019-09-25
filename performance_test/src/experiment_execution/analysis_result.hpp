@@ -35,10 +35,9 @@ namespace performance_test
 /// Outstream operator for timeval to seconds (double).
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
 #ifdef ODB_FOR_SQL_ENABLED
-
-
 #pragma \
-  db map type(std::chrono::nanoseconds) as(std::chrono::nanoseconds::rep) to((?).count ()) from(std::chrono::nanoseconds (?))
+  db map type(std::chrono::nanoseconds) as(std::chrono::nanoseconds::rep) to((?).count ()) \
+  from(std::chrono::nanoseconds (?))
 #pragma db value(StatisticsTracker) definition
 #pragma db value(rusage) definition
 #pragma db value(timeval) definition
@@ -103,7 +102,7 @@ private:
 #pragma db not_null
   const ExperimentConfiguration * m_configuration_ptr;
 #pragma db id auto
-  unsigned long m_id;
+  uint64_t m_id;
 #endif
   const std::chrono::nanoseconds m_experiment_start = {};
   const std::chrono::nanoseconds m_loop_start = {};
