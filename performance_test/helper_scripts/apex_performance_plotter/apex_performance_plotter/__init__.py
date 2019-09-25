@@ -156,6 +156,7 @@ def create_layout(header, dataframe):
                 create_kv(header, 'QOS History depth'),
             ]},
             {'name': 'average results', 'items': [
+                {'key': 'Experiment Status', 'value': 'success' if xaxis else 'failed'},
                 *[create_kv(means, key) for key in means.keys()
                   if key != 'T_experiment' and not key.startswith('ru_')],
             ]},

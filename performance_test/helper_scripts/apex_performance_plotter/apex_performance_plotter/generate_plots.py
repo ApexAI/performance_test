@@ -91,36 +91,40 @@ def get_range(padding, *args):
 
 def _generate_empty_figures():
 
-    return [
-        # The left figure, containing latency data
-        {
-            'caption': 'Latencies',
-            'xlabel': 'time',
-            'ylabel': 'latency (ms)',
-            'traces': [
-            ],
-            'xrange': [0, 1],
-            'yrange': [0, 1],
-            'axis2': {
-                'traces': [
-                ],
-            },
-        },
-        # The right figure, containing resource data, page faults, and context switches
-        {
-            'caption': 'Resource usage ({})'.format(GETRUSAGE),
-            'xlabel': 'time',
-            'ylabel': 'usage',
-            'traces': [
-            ],
-            'xrange': [0, 1],
-            'yrange': [0, 1],
-            'axis2': {
-                'ylabel': 'maxrss (MB)',
-                'traces': [
-                ],
-                'xrange': [0, 1],
-                'yrange': [0, 100],
-            },
-        },
-    ]
+    # This will generate no plots
+    return []
+
+    # This will generate empty plots
+    # return [
+    #     # The left figure, containing latency data
+    #     {
+    #         'caption': 'Latencies',
+    #         'xlabel': 'time',
+    #         'ylabel': 'latency (ms)',
+    #         'traces': [
+    #         ],
+    #         'xrange': [0, 1],
+    #         'yrange': [0, 1],
+    #         'axis2': {
+    #             'traces': [
+    #             ],
+    #         },
+    #     },
+    #     # The right figure, containing resource data, page faults, and context switches
+    #     {
+    #         'caption': 'Resource usage ({})'.format(GETRUSAGE),
+    #         'xlabel': 'time',
+    #         'ylabel': 'usage',
+    #         'traces': [
+    #         ],
+    #         'xrange': [0, 1],
+    #         'yrange': [0, 1],
+    #         'axis2': {
+    #             'ylabel': 'maxrss (MB)',
+    #             'traces': [
+    #             ],
+    #             'xrange': [0, 1],
+    #             'yrange': [0, 100],
+    #         },
+    #     },
+    # ]
