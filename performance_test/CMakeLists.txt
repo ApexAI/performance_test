@@ -268,6 +268,9 @@ endif()
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
     ament_lint_auto_find_test_dependencies()
+    list(APPEND AMENT_LINT_AUTO_EXCLUDE ament_cmake_copyright)
+    ament_copyright(${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAME}_HEADERS})
+
     set(APEX_PERFORMANCE_TEST_GTEST apex_performance_test_gtest)
 
     find_package(ament_cmake_gtest REQUIRED)
