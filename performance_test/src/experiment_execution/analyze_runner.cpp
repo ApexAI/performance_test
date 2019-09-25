@@ -203,14 +203,7 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
-  auto experiment_diff_db = std::to_string(experiment_diff_start.count());
-  auto loop_diff_db = std::to_string(loop_diff_start.count());
-
   auto result = std::make_shared<AnalysisResult>(
-#ifdef ODB_FOR_SQL_ENABLED
-    experiment_diff_db,
-    loop_diff_db,
-#endif
     experiment_diff_start,
     loop_diff_start,
     sum_received_samples,

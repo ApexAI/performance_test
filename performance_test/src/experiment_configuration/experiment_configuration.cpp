@@ -59,17 +59,7 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
            "\nNot using waitset: " << e.no_waitset() <<
            "\nNot using Connext DDS Micro INTRA: " << e.no_micro_intra() <<
            "\nWith security: " << e.is_with_security() <<
-           "\nRoundtrip Mode: " << e.roundtrip_mode()
-           #ifdef ODB_FOR_SQL_ENABLED
-           << "\nDatabase name: " << e.db_name()
-           #if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
-           << "\nDatabase user login: " << e.db_user() <<
-           "\nDatabase password: " << e.db_password() <<
-           "\nDatabase host: " << e.db_host() <<
-           "\nDatabase port: " << e.db_port()
-           #endif
-           #endif
-    ;
+           "\nRoundtrip Mode: " << e.roundtrip_mode();
   } else {
     return stream << "ERROR: Experiment is not yet setup!";
   }
