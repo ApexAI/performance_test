@@ -27,10 +27,6 @@ std::ostream & operator<<(std::ostream & stream, const timeval & e)
 }
 
 AnalysisResult::AnalysisResult(
-#ifdef ODB_FOR_SQL_ENABLED
-  const std::string experiment_start_db,
-  const std::string loop_start_db,
-#endif
   const std::chrono::nanoseconds experiment_start,
   const std::chrono::nanoseconds loop_start,
   const uint64_t num_samples_received,
@@ -41,12 +37,7 @@ AnalysisResult::AnalysisResult(
   const StatisticsTracker pub_loop_time_reserve,
   const StatisticsTracker sub_loop_time_reserve
 )
-:
-#ifdef ODB_FOR_SQL_ENABLED
-  m_experiment_start_db(experiment_start_db),
-  m_loop_start_db(loop_start_db),
-#endif
-  m_experiment_start(experiment_start),
+: m_experiment_start(experiment_start),
   m_loop_start(loop_start),
   m_num_samples_received(num_samples_received),
   m_num_samples_sent(num_samples_sent),
@@ -128,8 +119,8 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   std::stringstream ss;
 
   ss << std::fixed;
-  ss << m_experiment_start.count() << st;
-  ss << m_loop_start.count() << st;
+  ss << m_experiment_start.count() * 0.000000001 << st;
+  ss << m_loop_start.count() * 0.000000001 << st;
   ss << std::setprecision(0);
   ss << m_num_samples_received << st;
   ss << m_num_samples_sent << st;
