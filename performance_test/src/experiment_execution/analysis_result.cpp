@@ -119,8 +119,8 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   std::stringstream ss;
 
   ss << std::fixed;
-  ss << m_experiment_start.count() * 0.000000001 << st;
-  ss << m_loop_start.count() * 0.000000001 << st;
+  ss << std::chrono::duration_cast<std::chrono::duration<float>>(m_experiment_start).count() << st;
+  ss << std::chrono::duration_cast<std::chrono::duration<float>>(m_loop_start).count()<< st;
   ss << std::setprecision(0);
   ss << m_num_samples_received << st;
   ss << m_num_samples_sent << st;
