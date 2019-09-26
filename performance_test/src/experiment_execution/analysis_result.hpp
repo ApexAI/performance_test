@@ -62,20 +62,20 @@ private:
   friend class odb::access;
   mutable struct timeval m_ru_utime = {};
   mutable struct timeval m_ru_stime = {};
-  mutable long int m_ru_maxrss = {};
-  mutable long int m_ru_ixrss = {};
-  mutable long int m_ru_idrss = {};
-  mutable long int m_ru_isrss = {};
-  mutable long int m_ru_minflt = {};
-  mutable long int m_ru_majflt = {};
-  mutable long int m_ru_nswap = {};
-  mutable long int m_ru_inblock = {};
-  mutable long int m_ru_oublock = {};
-  mutable long int m_ru_msgsnd = {};
-  mutable long int m_ru_msgrcv = {};
-  mutable long int m_ru_nsignals = {};
-  mutable long int m_ru_nvcsw = {};
-  mutable long int m_ru_nivcsw = {};
+  mutable uint64_t m_ru_maxrss = {};
+  mutable uint64_t m_ru_ixrss = {};
+  mutable uint64_t m_ru_idrss = {};
+  mutable uint64_t m_ru_isrss = {};
+  mutable uint64_t m_ru_minflt = {};
+  mutable uint64_t m_ru_majflt = {};
+  mutable uint64_t m_ru_nswap = {};
+  mutable uint64_t m_ru_inblock = {};
+  mutable uint64_t m_ru_oublock = {};
+  mutable uint64_t m_ru_msgsnd = {};
+  mutable uint64_t m_ru_msgrcv = {};
+  mutable uint64_t m_ru_nsignals = {};
+  mutable uint64_t m_ru_nvcsw = {};
+  mutable uint64_t m_ru_nivcsw = {};
 };
 #pragma \
   db map type(std::chrono::nanoseconds) as(std::chrono::nanoseconds::rep) to((?).count ()) \
