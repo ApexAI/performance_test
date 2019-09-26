@@ -37,6 +37,7 @@ perfplot NAME_OF_LOG_FILE
 * `-DPERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED` Enable Connext DDS Micro support. Enabled by default.
 * `-DPERFORMANCE_TEST_FASTRTPS_ENABLED` Enables FastRTPS support. Enabled by default.
 * `-DPERFORMANCE_TEST_CYCLONEDDS_ENABLED` Enables CycloneDDS support. Enabled by default.
+* `-DPERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED` Enables ROS2 Waitset support. Disabled by default.
 
 > ROS 2 support is always enabled.
 
@@ -94,6 +95,3 @@ https://gitlab.apex.ai/ApexAI/grand_central/issues/957
 https://gitlab.apex.ai/ApexAI/grand_central/issues/1305
 https://gitlab.apex.ai/ApexAI/grand_central/issues/1382
 https://gitlab.apex.ai/ApexAI/grand_central/issues/1305
-
-
-

@@ -174,7 +174,5 @@ protected:
 private:
   std::shared_ptr<::rclcpp::Publisher<DataType, std::allocator<void>>> m_publisher;
 };
-
-
 }  // namespace performance_test
 #endif  // COMMUNICATION_ABSTRACTIONS__ROS2_COMMUNICATOR_HPP_
