@@ -51,7 +51,6 @@ public:
       m_subscription = this->m_node->template create_subscription<DataType>(
         Topic::topic_name() + this->m_ec.sub_topic_postfix(), *ros2QOSAdapter,
         [this](const typename DataType::SharedPtr data) {return this->callback(data);});
-
     }
     this->lock();
     m_executor.spin_once(std::chrono::milliseconds(100));

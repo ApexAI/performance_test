@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMMUNICATION_ABSTRACTIONS__ROS2_WAITSET_COMMUNICATOR_HPP
-#define COMMUNICATION_ABSTRACTIONS__ROS2_WAITSET_COMMUNICATOR_HPP
+#ifndef COMMUNICATION_ABSTRACTIONS__ROS2_WAITSET_COMMUNICATOR_HPP_
+#define COMMUNICATION_ABSTRACTIONS__ROS2_WAITSET_COMMUNICATOR_HPP_
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -49,7 +49,6 @@ public:
     if (!m_polling_subscription) {
       m_polling_subscription = this->m_node->template create_polling_subscription<DataType>(
         Topic::topic_name() + this->m_ec.sub_topic_postfix(), *ros2QOSAdapter);
-
     }
     this->lock();
     try {
@@ -63,7 +62,6 @@ public:
         }
       }
     } catch (const rclcpp::TimeoutError &) {
-
       std::cerr << "Waitset timed out without receiving a sample." << std::endl;
     }
     this->unlock();
@@ -76,4 +74,4 @@ private:
 
 }  // namespace performance_test
 
-#endif //COMMUNICATION_ABSTRACTIONS__ROS2_WAITSET_COMMUNICATOR_HPP
+#endif  // COMMUNICATION_ABSTRACTIONS__ROS2_WAITSET_COMMUNICATOR_HPP_

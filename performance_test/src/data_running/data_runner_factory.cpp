@@ -59,8 +59,7 @@ std::shared_ptr<DataRunnerBase> DataRunnerFactory::get(
         if (com_mean == CommunicationMean::ROS2) {
           ptr = std::make_shared<DataRunner<ROS2CallbackCommunicator<T>>>(run_type);
 #ifdef PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED
-        }
-        else if (com_mean == CommunicationMean::ROS2PollingSub) {
+        } else if (com_mean == CommunicationMean::ROS2PollingSub) {
           ptr = std::make_shared<DataRunner<ROS2WaitsetCommunicator<T>>>(run_type);
 #endif
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
