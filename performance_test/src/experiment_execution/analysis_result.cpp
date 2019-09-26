@@ -115,12 +115,15 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   if (pretty_print) {
     st += "\t\t";
   }
+#ifdef ODB_FOR_SQL_ENABLED
+  m_sys_tracker.setValues(m_sys_usage);
+#endif
 
   std::stringstream ss;
 
   ss << std::fixed;
   ss << std::chrono::duration_cast<std::chrono::duration<float>>(m_experiment_start).count() << st;
-  ss << std::chrono::duration_cast<std::chrono::duration<float>>(m_loop_start).count()<< st;
+  ss << std::chrono::duration_cast<std::chrono::duration<float>>(m_loop_start).count() << st;
   ss << std::setprecision(0);
   ss << m_num_samples_received << st;
   ss << m_num_samples_sent << st;
