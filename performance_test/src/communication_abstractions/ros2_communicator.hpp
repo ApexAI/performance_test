@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMMUNICATION_ABSTRACTIONS_ROS2_COMMUNICATOR_HPP
-#define COMMUNICATION_ABSTRACTIONS_ROS2_COMMUNICATOR_HPP
+#ifndef COMMUNICATION_ABSTRACTIONS__ROS2_COMMUNICATOR_HPP_
+#define COMMUNICATION_ABSTRACTIONS__ROS2_COMMUNICATOR_HPP_
 
 
 #include <rclcpp/rclcpp.hpp>
@@ -111,13 +111,12 @@ public:
       if (ros2QOSAdapter->get_rmw_qos_profile().durability ==
         rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_VOLATILE)
       {
-        ros2QOSAdapter->keep_last(std::size_t(10)); // Setting depth to 10 as a safety net.
+        ros2QOSAdapter->keep_last(std::size_t(10));  // Setting depth to 10 as a safety net.
       }
       // End of workaround.
 
       m_publisher = m_node->create_publisher<DataType>(
         Topic::topic_name() + m_ec.pub_topic_postfix(), *ros2QOSAdapter);
-
     }
     lock();
     data.time = time.count();
@@ -168,7 +167,6 @@ protected:
       m_prev_timestamp = data.time;
       update_lost_samples_counter(data.id);
       add_latency_to_statistics(data.time);
-
     }
     increment_received();
   }
@@ -179,4 +177,4 @@ private:
 
 
 }  // namespace performance_test
-#endif //COMMUNICATION_ABSTRACTIONS_ROS2_COMMUNICATOR_HPP
+#endif  // COMMUNICATION_ABSTRACTIONS__ROS2_COMMUNICATOR_HPP_

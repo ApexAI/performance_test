@@ -161,8 +161,8 @@ option(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED "Enable Polling Subscriptio
 when ApexOS is present, fails otherwise" OFF)
 
 if(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
-  add_definitions(-DPERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
-  set(sources ${sources}
+    add_definitions(-DPERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
+    set(sources ${sources}
       src/communication_abstractions/ros2_waitset_communicator.hpp
     )
 endif()
