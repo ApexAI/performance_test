@@ -46,11 +46,11 @@ public:
   /// Reads received data from ROS 2 using callbacks
   void update_subscription() override
   {
+    auto ros2QOSAdapter = this->m_ROS2QOSAdapter;
     if (!m_subscription) {
       m_subscription = this->m_node->template create_subscription<DataType>(
-        Topic::topic_name() + this->m_ec.sub_topic_postfix(),
-        [this](const typename DataType::SharedPtr data){return this->callback(data);},
-        this->m_ROS2QOSAdapter);
+        Topic::topic_name() + this->m_ec.sub_topic_postfix(), *ros2QOSAdapter,
+        [this](const typename DataType::SharedPtr data) {return this->callback(data);});
 
     }
     this->lock();
