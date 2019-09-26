@@ -47,9 +47,10 @@ public:
   /// Reads received data from ROS 2 using waitsets
   void update_subscription() override
   {
+    auto ros2QOSAdapter = this->m_ROS2QOSAdapter;
     if (!m_polling_subscription) {
       m_polling_subscription = this->m_node->template create_polling_subscription<DataType>(
-        Topic::topic_name() + this->m_ec.sub_topic_postfix(), this->m_ROS2QOSAdapter);
+        Topic::topic_name() + this->m_ec.sub_topic_postfix(), *ros2QOSAdapter);
 
     }
     this->lock();

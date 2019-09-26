@@ -42,35 +42,34 @@ public:
   : m_qos(qos)
   {}
   /// Gets a ROS 2 QOS profile derived from the stored abstract QOS.
-  inline rmw_qos_profile_t get() const
+  inline rclcpp::QoS get() const
   {
-    rmw_qos_profile_t ros_qos;
+    rclcpp::QoS ros_qos(m_qos.history_depth);
 
     if (m_qos.reliability == QOSAbstraction::Reliability::BEST_EFFORT) {
-      ros_qos.reliability = rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
+      ros_qos.best_effort();
     } else if (m_qos.reliability == QOSAbstraction::Reliability::RELIABLE) {
-      ros_qos.reliability = rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_RELIABLE;
+      ros_qos.reliable();
     } else {
       throw std::runtime_error("Unsupported QOS!");
     }
 
     if (m_qos.durability == QOSAbstraction::Durability::VOLATILE) {
-      ros_qos.durability = rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_VOLATILE;
+      ros_qos.durability_volatile();
     } else if (m_qos.durability == QOSAbstraction::Durability::TRANSIENT_LOCAL) {
-      ros_qos.durability = rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+      ros_qos.transient_local();
     } else {
       throw std::runtime_error("Unsupported QOS!");
     }
 
 
     if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_ALL) {
-      ros_qos.history = rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+      ros_qos.keep_all();
     } else if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_LAST) {
-      ros_qos.history = rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+      ros_qos.keep_last(m_qos.history_depth);
     } else {
       throw std::runtime_error("Unsupported QOS!");
     }
-    ros_qos.depth = m_qos.history_depth;
 
     return ros_qos;
   }
@@ -90,10 +89,9 @@ public:
   /// Constructor which takes a reference \param lock to the lock to use.
   explicit ROS2Communicator(SpinLock & lock)
   : Communicator(lock),
-    m_node(ResourceManager::get().ros2_node()),
-    m_publisher(nullptr)
+    m_node(ResourceManager::get().ros2_node())
   {
-    m_ROS2QOSAdapter = ROS2QOSAdapter(m_ec.qos()).get();
+    m_ROS2QOSAdapter = std::make_shared<rclcpp::QoS>(ROS2QOSAdapter(m_ec.qos()).get());
   }
 
   /**
@@ -110,16 +108,15 @@ public:
     if (!m_publisher) {
       auto ros2QOSAdapter = m_ROS2QOSAdapter;
       // Workaround for bug where RMW/FastRPS keeps history of volatile publisher.
-      if (ros2QOSAdapter.durability ==
+      if (ros2QOSAdapter->get_rmw_qos_profile().durability ==
         rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_VOLATILE)
       {
-        ros2QOSAdapter.history = rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-        ros2QOSAdapter.depth = std::size_t(10);  // Setting depth to 10 as a safety net.
+        ros2QOSAdapter->keep_last(std::size_t(10)); // Setting depth to 10 as a safety net.
       }
       // End of workaround.
 
       m_publisher = m_node->create_publisher<DataType>(
-        Topic::topic_name() + m_ec.pub_topic_postfix(), ros2QOSAdapter);
+        Topic::topic_name() + m_ec.pub_topic_postfix(), *ros2QOSAdapter);
 
     }
     lock();
@@ -139,10 +136,9 @@ public:
     return num_received_samples() * sizeof(DataType);
   }
 
-
 protected:
   std::shared_ptr<rclcpp::Node> m_node;
-  rmw_qos_profile_t m_ROS2QOSAdapter;
+  std::shared_ptr<rclcpp::QoS> m_ROS2QOSAdapter;
   /**
    * \brief Callback handler which handles the received data.
    *
@@ -157,11 +153,11 @@ protected:
     callback(*data);
   }
 
-  void callback(DataType& data)
+  void callback(DataType & data)
   {
     if (m_prev_timestamp >= data.time) {
       throw std::runtime_error(
-          "Data consistency violated. Received sample with not strictly older timestamp");
+              "Data consistency violated. Received sample with not strictly older timestamp");
     }
 
     if (m_ec.roundtrip_mode() == ExperimentConfiguration::RoundTripMode::RELAY) {
