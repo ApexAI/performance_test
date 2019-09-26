@@ -141,9 +141,13 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     if (vm["communication"].as<std::string>() == "ROS2") {
       m_com_mean = CommunicationMean::ROS2;
     } else if (vm["communication"].as<std::string>() == "ROS2PollingSub") {
+#ifdef PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED
       m_com_mean = CommunicationMean::ROS2PollingSub;
-    }
-    else if (vm["communication"].as<std::string>() == "FastRTPS") {
+#else
+      throw std::invalid_argument(
+              "You must compile with ApexOS to enable it as communication mean.");
+#endif
+    } else if (vm["communication"].as<std::string>() == "FastRTPS") {
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
       m_com_mean = CommunicationMean::FASTRTPS;
 #else

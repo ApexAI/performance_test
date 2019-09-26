@@ -137,7 +137,6 @@ set(sources
     src/communication_abstractions/resource_manager.hpp
     src/communication_abstractions/ros2_communicator.hpp
     src/communication_abstractions/ros2_callback_communicator.hpp
-    src/communication_abstractions/ros2_waitset_communicator.hpp
     src/experiment_configuration/topics.hpp
     src/data_running/data_runner.hpp
     src/data_running/data_runner_base.hpp
@@ -156,6 +155,17 @@ set(sources
     src/utilities/spin_lock.hpp
     src/utilities/statistics_tracker.hpp
 )
+
+#ROS2 Waitset
+option(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED "Enable Polling Subscription Plugin to be available only
+when ApexOS is present, fails otherwise" OFF)
+
+if(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
+  add_definitions(-DPERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
+  set(sources ${sources}
+      src/communication_abstractions/ros2_waitset_communicator.hpp
+    )
+endif()
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     set(sources ${sources}
