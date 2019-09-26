@@ -23,8 +23,6 @@
 #include "../experiment_configuration/topics.hpp"
 #include "../experiment_configuration/qos_abstraction.hpp"
 
-#include <apexcpp/apex_node.hpp>
-
 #include "ros2_communicator.hpp"
 #include "resource_manager.hpp"
 
