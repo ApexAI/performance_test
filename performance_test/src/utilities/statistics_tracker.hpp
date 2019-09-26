@@ -18,6 +18,7 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <iostream>
 #ifdef ODB_FOR_SQL_ENABLED
   #include <odb/core.hxx>
 #endif
@@ -83,6 +84,7 @@ public:
     }
     var_t = var_t / n_total;
     m_M2 = var_t * (n_total - 1.0);
+    m_variance = m_M2 / m_n;
   }
   /// Adds a sample to consider in the metrics.
   void add_sample(const double x)

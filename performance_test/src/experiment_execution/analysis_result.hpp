@@ -35,10 +35,53 @@ namespace performance_test
 /// Outstream operator for timeval to seconds (double).
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
 #ifdef ODB_FOR_SQL_ENABLED
+class RusageTracker
+{
+public:
+  void setValues(rusage sys_usage) const
+  {
+    m_ru_utime = sys_usage.ru_utime;
+    m_ru_stime = sys_usage.ru_stime;
+    m_ru_maxrss = sys_usage.ru_maxrss;
+    m_ru_ixrss = sys_usage.ru_ixrss;
+    m_ru_idrss = sys_usage.ru_idrss;
+    m_ru_isrss = sys_usage.ru_isrss;
+    m_ru_minflt = sys_usage.ru_minflt;
+    m_ru_majflt = sys_usage.ru_majflt;
+    m_ru_nswap = sys_usage.ru_nswap;
+    m_ru_inblock = sys_usage.ru_inblock;
+    m_ru_oublock = sys_usage.ru_oublock;
+    m_ru_msgsnd = sys_usage.ru_msgsnd;
+    m_ru_msgrcv = sys_usage.ru_msgrcv;
+    m_ru_nsignals = sys_usage.ru_nsignals;
+    m_ru_nvcsw = sys_usage.ru_nvcsw;
+    m_ru_nivcsw = sys_usage.ru_nivcsw;
+  }
+
+private:
+  friend class odb::access;
+  mutable struct timeval m_ru_utime = {};
+  mutable struct timeval m_ru_stime = {};
+  mutable long int m_ru_maxrss = {};
+  mutable long int m_ru_ixrss = {};
+  mutable long int m_ru_idrss = {};
+  mutable long int m_ru_isrss = {};
+  mutable long int m_ru_minflt = {};
+  mutable long int m_ru_majflt = {};
+  mutable long int m_ru_nswap = {};
+  mutable long int m_ru_inblock = {};
+  mutable long int m_ru_oublock = {};
+  mutable long int m_ru_msgsnd = {};
+  mutable long int m_ru_msgrcv = {};
+  mutable long int m_ru_nsignals = {};
+  mutable long int m_ru_nvcsw = {};
+  mutable long int m_ru_nivcsw = {};
+};
 #pragma \
   db map type(std::chrono::nanoseconds) as(std::chrono::nanoseconds::rep) to((?).count ()) \
   from(std::chrono::nanoseconds (?))
 #pragma db value(StatisticsTracker) definition
+#pragma db value(RusageTracker) definition
 #pragma db value(rusage) definition
 #pragma db value(timeval) definition
 
@@ -114,7 +157,10 @@ private:
   const StatisticsTracker m_latency;
   const StatisticsTracker m_pub_loop_time_reserve;
   const StatisticsTracker m_sub_loop_time_reserve;
-
+#ifdef ODB_FOR_SQL_ENABLED
+  RusageTracker m_sys_tracker;
+#pragma db transient
+#endif
   rusage m_sys_usage;
 };
 
