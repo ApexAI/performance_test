@@ -1,0 +1,31 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from performance_test/src/msg/Struct32k.msg
+// generated code does not contain a copyright notice
+
+#include "performance_test/msg/Struct4k.idl"
+
+module performance_test {
+  module msg {
+    struct Struct32k {
+      performance_test::msg::Struct4k struct4k0;
+
+      performance_test::msg::Struct4k struct4k1;
+
+      performance_test::msg::Struct4k struct4k2;
+
+      performance_test::msg::Struct4k struct4k3;
+
+      performance_test::msg::Struct4k struct4k4;
+
+      performance_test::msg::Struct4k struct4k5;
+
+      performance_test::msg::Struct4k struct4k6;
+
+      performance_test::msg::Struct4k struct4k7;
+
+      int64 time;
+
+      uint64 id;
+    };
+  };
+};

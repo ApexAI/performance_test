@@ -1,0 +1,17 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from performance_test/src/msg/Array4k.msg
+// generated code does not contain a copyright notice
+
+
+module performance_test {
+  module msg {
+    typedef octet octet__4096[4096];
+    struct Array4k {
+      octet__4096 array;
+
+      int64 time;
+
+      uint64 id;
+    };
+  };
+};
