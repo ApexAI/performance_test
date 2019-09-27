@@ -77,9 +77,16 @@ This will generate a file called `log_Array1k_19-09-2019_12-13-49.pdf`.
 # Save results to SQL database
 
 ## Requirements
-***ODB 2.5.0 (this is required for gcc 7.4.0):***
+***ODB 2.5.0***
+> Note: 2.5.0 is a beta version, but it is required if you are using Ubuntu 18.04 LTS and
+gcc 7.4.0, if you are using earlier ubuntu/gcc versions, proceed to the installation of ODB 2.4.0
+below.
+
 Follow the instructions [here](https://www.codesynthesis.com/products/odb/doc/install-build2.xhtml)
  to install build2 toolchain, odb compiler and runtime libraries.
+
+Required runtime libraries are: libodb, libodb-sqlite/libodb-pgsql/libodb-mysql (depending on which
+ database you want to use) and libodb-boost.
 
 Remember to install the correct gcc plugin, for example (for gcc 7):
 ```
@@ -90,8 +97,7 @@ Additionally, if you want to use MYSQL database, you will need to build a not ye
 so instead of executing:
 ```
 bpkg build libodb-mysql
-bpkg install libodb-mysq
-
+bpkg install libodb-mysql
 ```
 you will need to execute:
 ```
@@ -105,10 +111,13 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 ***ODB 2.4.0:***
 All the downloads can be found [here](https://www.codesynthesis.com/products/odb/download.xhtml).
-* Odb compiler ([Instructions](https://www.codesynthesis.com/products/odb/doc/install-unix.xhtml))
+* Odb compiler
 * Common Runtime Library: libodb-2.4.0
-* Database Runtime Library: libodb-sqlite-2.4.0
+* Database Runtime Library: libodb-sqlite-2.4.0/libodb-mysql-2.4.0/libodb-pgsql-2.4.0
 * Profile Libraries: libodb-boost-2.4.0, libodb-qt-2.4.0
+
+Follow the [instructions](https://www.codesynthesis.com/products/odb/doc/install-unix.xhtml) to
+install all the components.
 
 ## How to build and run
 ```
