@@ -26,7 +26,7 @@ def generate_figures(xaxis,
                      nivcsw_ydata,
                      ):
     """
-    Generate the figures for a perf_plot PDF
+    Generate the figures for a perf_plot PDF.
 
     :param xaxis: The time axis data for all of the plots
     """
@@ -79,9 +79,7 @@ def generate_figures(xaxis,
 
 
 def get_range(padding, *args):
-    """
-    Get a [min, max] for all of the data passed as *args.
-    """
+    """Get a [min, max] for all of the data passed as *args."""
     if not isinstance(padding, tuple):
         padding = (padding, padding)
 
