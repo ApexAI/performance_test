@@ -1,0 +1,47 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from performance_test/src/msg/Struct256.msg
+// generated code does not contain a copyright notice
+
+#include "performance_test/msg/Struct16.idl"
+
+module performance_test {
+  module msg {
+    struct Struct256 {
+      performance_test::msg::Struct16 struct160;
+
+      performance_test::msg::Struct16 struct161;
+
+      performance_test::msg::Struct16 struct162;
+
+      performance_test::msg::Struct16 struct163;
+
+      performance_test::msg::Struct16 struct164;
+
+      performance_test::msg::Struct16 struct165;
+
+      performance_test::msg::Struct16 struct166;
+
+      performance_test::msg::Struct16 struct167;
+
+      performance_test::msg::Struct16 struct168;
+
+      performance_test::msg::Struct16 struct169;
+
+      performance_test::msg::Struct16 struct16a;
+
+      performance_test::msg::Struct16 struct16b;
+
+      performance_test::msg::Struct16 struct16c;
+
+      performance_test::msg::Struct16 struct16d;
+
+      performance_test::msg::Struct16 struct16e;
+
+      performance_test::msg::Struct16 struct16f;
+
+      int64 time;
+
+      uint64 id;
+    };
+  };
+};

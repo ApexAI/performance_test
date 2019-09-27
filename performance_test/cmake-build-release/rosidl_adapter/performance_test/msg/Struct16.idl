@@ -1,0 +1,46 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from performance_test/src/msg/Struct16.msg
+// generated code does not contain a copyright notice
+
+
+module performance_test {
+  module msg {
+    struct Struct16 {
+      octet struct0;
+
+      octet struct1;
+
+      octet struct2;
+
+      octet struct3;
+
+      octet struct4;
+
+      octet struct5;
+
+      octet struct6;
+
+      octet struct7;
+
+      octet struct8;
+
+      octet struct9;
+
+      octet structa;
+
+      octet structb;
+
+      octet structc;
+
+      octet structd;
+
+      octet structe;
+
+      octet structf;
+
+      int64 time;
+
+      uint64 id;
+    };
+  };
+};
