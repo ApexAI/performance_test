@@ -80,9 +80,20 @@ AnalyzeRunner::AnalyzeRunner()
 #ifdef PERFORMANCE_TEST_ODB_SQLITE
   m_db = std::unique_ptr<odb::core::database>(new odb::sqlite::database(
         m_ec.db_name(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
+#endif
+#ifdef PERFORMANCE_TEST_ODB_MYSQL
+  m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(m_ec.db_user(),
+        m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
+#endif
+#ifdef PERFORMANCE_TEST_ODB_PGSQL
+  m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(m_ec.db_user(),
+        m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
+#endif
   {
+    #ifdef PERFORMANCE_TEST_ODB_SQLITE
     odb::core::connection_ptr c(m_db->connection());
     c->execute("PRAGMA foreign_keys=OFF");
+    #endif
     odb::core::transaction t(c->begin());
     try {
       m_db->query<ExperimentConfiguration>(false);
@@ -90,43 +101,10 @@ AnalyzeRunner::AnalyzeRunner()
       odb::core::schema_catalog::create_schema(*m_db);
     }
     t.commit();
+    #ifdef PERFORMANCE_TEST_ODB_SQLITE
     c->execute("PRAGMA foreign_keys=ON");
+    #endif
   }
-#endif
-#ifdef PERFORMANCE_TEST_ODB_MYSQL
-  m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(
-        m_ec.db_user(),
-        m_ec.db_password(),
-        m_ec.db_name(),
-        m_ec.db_host(),
-        m_ec.db_port()));
-  {
-    odb::core::transaction t(m_db->begin());
-    try {
-      m_db->query<ExperimentConfiguration>(false);
-    } catch (const odb::exception & e) {
-      odb::core::schema_catalog::create_schema(*m_db);
-    }
-    t.commit();
-  }
-#endif
-#ifdef PERFORMANCE_TEST_ODB_PGSQL
-  m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(
-        m_ec.db_user(),
-        m_ec.db_password(),
-        m_ec.db_name(),
-        m_ec.db_host(),
-        m_ec.db_port()));
-  {
-    odb::core::transaction t(m_db->begin());
-    try {
-      m_db->query<ExperimentConfiguration>(false);
-    } catch (const odb::exception & e) {
-      odb::core::schema_catalog::create_schema(*m_db);
-    }
-    t.commit();
-  }
-#endif
 #endif
 }
 
