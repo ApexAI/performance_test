@@ -156,9 +156,9 @@ set(sources
     src/utilities/statistics_tracker.hpp
 )
 
-#ROS2 Waitset
-option(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED "Enable Polling Subscription Plugin to be available only
-when ApexOS is present, fails otherwise" OFF)
+# ROS2 Waitset
+option(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED "Enable Polling Subscription Plugin to be
+available only when ApexOS is present, fails otherwise" OFF)
 
 if(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
     add_definitions(-DPERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)

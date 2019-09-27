@@ -59,8 +59,7 @@ public:
 
 private:
   rclcpp::executors::SingleThreadedExecutor m_executor;
-  std::shared_ptr<::rclcpp::Subscription<DataType, std::allocator<void>>>
-  m_subscription;
+  std::shared_ptr<::rclcpp::Subscription<DataType, std::allocator<void>>> m_subscription;
 };
 
 
