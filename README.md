@@ -54,6 +54,10 @@ pip3 install performance_test/helper_scripts/apex_performance_plotter
 
 This tool will convert performance test log files into PDFs containing graphs of the results.
 
+Note: Some of the dependencies of apex_performance_plotter (specifically pandas, at the time of writing) require python 3.6.
+It is possible to get apex_performance_plotter working with older dependencies that run with python 3.5, but that is beyond the
+scope of this document
+
 ## Example
 
 After building, a simple experiment can be run using the following.
