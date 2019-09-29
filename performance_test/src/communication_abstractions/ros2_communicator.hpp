@@ -39,8 +39,7 @@ public:
    * \param qos The abstract QOS to derive the settings from.
    */
   explicit ROS2QOSAdapter(const QOSAbstraction qos)
-  : m_qos(qos)
-  {}
+  : m_qos(qos) {}
   /// Gets a ROS 2 QOS profile derived from the stored abstract QOS.
   inline rclcpp::QoS get() const
   {
@@ -61,7 +60,6 @@ public:
     } else {
       throw std::runtime_error("Unsupported QOS!");
     }
-
 
     if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_ALL) {
       ros_qos.keep_all();
@@ -89,10 +87,8 @@ public:
   /// Constructor which takes a reference \param lock to the lock to use.
   explicit ROS2Communicator(SpinLock & lock)
   : Communicator(lock),
-    m_node(ResourceManager::get().ros2_node())
-  {
-    m_ROS2QOSAdapter = std::make_shared<rclcpp::QoS>(ROS2QOSAdapter(m_ec.qos()).get());
-  }
+    m_node(ResourceManager::get().ros2_node()),
+    m_ROS2QOSAdapter(ROS2QOSAdapter(m_ec.qos()).get()) {}
 
   /**
    * \brief Publishes the provided data.
@@ -108,15 +104,15 @@ public:
     if (!m_publisher) {
       auto ros2QOSAdapter = m_ROS2QOSAdapter;
       // Workaround for bug where RMW/FastRPS keeps history of volatile publisher.
-      if (ros2QOSAdapter->get_rmw_qos_profile().durability ==
+      if (ros2QOSAdapter.get_rmw_qos_profile().durability ==
         rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_VOLATILE)
       {
-        ros2QOSAdapter->keep_last(std::size_t(10));  // Setting depth to 10 as a safety net.
+        ros2QOSAdapter.keep_last(std::size_t(10));  // Setting depth to 10 as a safety net.
       }
       // End of workaround.
 
       m_publisher = m_node->create_publisher<DataType>(
-        Topic::topic_name() + m_ec.pub_topic_postfix(), *ros2QOSAdapter);
+        Topic::topic_name() + m_ec.pub_topic_postfix(), ros2QOSAdapter);
     }
     lock();
     data.time = time.count();
@@ -137,7 +133,7 @@ public:
 
 protected:
   std::shared_ptr<rclcpp::Node> m_node;
-  std::shared_ptr<rclcpp::QoS> m_ROS2QOSAdapter;
+  rclcpp::QoS m_ROS2QOSAdapter;
   /**
    * \brief Callback handler which handles the received data.
    *
@@ -172,7 +168,7 @@ protected:
   }
 
 private:
-  std::shared_ptr<::rclcpp::Publisher<DataType, std::allocator<void>>> m_publisher;
+  std::shared_ptr<::rclcpp::Publisher<DataType>> m_publisher;
 };
 }  // namespace performance_test
 #endif  // COMMUNICATION_ABSTRACTIONS__ROS2_COMMUNICATOR_HPP_

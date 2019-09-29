@@ -45,16 +45,15 @@ public:
   /// Reads received data from ROS 2 using waitsets
   void update_subscription() override
   {
-    auto ros2QOSAdapter = this->m_ROS2QOSAdapter;
     if (!m_polling_subscription) {
       m_polling_subscription = this->m_node->template create_polling_subscription<DataType>(
-        Topic::topic_name() + this->m_ec.sub_topic_postfix(), *ros2QOSAdapter);
+        Topic::topic_name() + this->m_ec.sub_topic_postfix(), this->m_ROS2QOSAdapter);
     }
-    this->lock();
     try {
       rclcpp::Waitset<> m_waitset {m_polling_subscription};
-      auto wait_ret = m_waitset.wait(std::chrono::milliseconds(100));
-      if (wait_ret.all()) {
+      const auto wait_ret = m_waitset.wait(std::chrono::milliseconds(100));
+      this->lock();
+      if (wait_ret.any()) {
         auto received_sample = m_polling_subscription->take();
         DataType tmp = received_sample.data();
         if (received_sample) {

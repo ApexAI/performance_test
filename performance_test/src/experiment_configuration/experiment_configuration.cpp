@@ -74,7 +74,8 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "Optionally specify a logfile.")("rate,r", po::value<uint32_t>()->default_value(1000),
     "The rate data should be published. Defaults to 1000 Hz. 0 means publish as fast as possible.")(
     "communication,c", po::value<std::string>()->required(),
-    "Communication plugin to use (ROS2, FastRTPS, ConnextDDSMicro, CycloneDDS, ROS2PollingSub)")(
+    "Communication plugin to use (ROS2, FastRTPS, ConnextDDSMicro, CycloneDDS, "
+    "ROS2PollingSubscription)")(
     "topic,t",
     po::value<std::string>()->required(),
     "Topic to use. Use --topic_list to get a list.")("topic_list",
@@ -143,10 +144,11 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
       m_com_mean = CommunicationMean::ROS2;
     } else if (vm["communication"].as<std::string>() == "ROS2PollingSub") {
 #ifdef PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED
-      m_com_mean = CommunicationMean::ROS2PollingSub;
+      m_com_mean = CommunicationMean::ROS2PollingSubscription;
 #else
       throw std::invalid_argument(
-              "You must compile with ApexOS to enable it as communication mean.");
+              "You must compile with PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED flag as ON to "
+              "enable it as communication mean.");
 #endif
     } else if (vm["communication"].as<std::string>() == "FastRTPS") {
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
