@@ -1,3 +1,0 @@
-ToolSet: 1.0 (local)Options: 
-
-Options:-DCMAKE_TOOLCHAIN_FILE=/opt/clion/apex_config/find_x86_64_toolchainfile.cmake
