@@ -18,7 +18,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <boost/uuid/uuid_io.hpp>
-#include <cstddef>
 #include <chrono>
 #include <sstream>
 #include <string>
@@ -114,8 +113,9 @@ public:
     const StatisticsTracker pub_loop_time_reserve,
     const StatisticsTracker sub_loop_time_reserve
   );
-
+#ifdef ODB_FOR_SQL_ENABLED
   AnalysisResult() {}
+#endif
   /**
    * \brief Returns a header for a CVS file containing the analysis result data as a string.
    * \param pretty_print If set, inserts additional tabs to format the output nicer.
