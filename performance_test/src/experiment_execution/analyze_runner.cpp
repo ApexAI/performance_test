@@ -80,14 +80,12 @@ AnalyzeRunner::AnalyzeRunner()
 #ifdef PERFORMANCE_TEST_ODB_SQLITE
   m_db = std::unique_ptr<odb::core::database>(new odb::sqlite::database(
         m_ec.db_name(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
-#endif
-#ifdef PERFORMANCE_TEST_ODB_MYSQL
-  m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(m_ec.db_user(),
-        m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
-#endif
-#ifdef PERFORMANCE_TEST_ODB_PGSQL
-  m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(m_ec.db_user(),
-        m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
+#elif PERFORMANCE_TEST_ODB_MYSQL
+  m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(
+        m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
+#elif PERFORMANCE_TEST_ODB_PGSQL
+  m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(
+        m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
 #endif
   {
     #ifdef PERFORMANCE_TEST_ODB_SQLITE

@@ -106,7 +106,7 @@ bpkg install libodb-mysql
 you will need to execute:
 ```
 bpkg build libodb-mysql@https://git.codesynthesis.com/odb/libodb-mysql.git#fix-bind-decl
-bpkg install libodb-mysq
+bpkg install libodb-mysql
 ```
 After installing all the libraries make sure to add `/usr/local/lib` to your PATH:
 ```
@@ -135,12 +135,18 @@ source install/setup.bash
 ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
 ```
 
-The default name of resulting database is "odb_test", you can change it by using `--db_name`
+The default name of the resulting database is "db_name", you can change it by using `--db_name`
 argument in `ros2 run`. For MySQL or PostgreSQL databases, you can also specify `--db_user`,
 `--db_password`, `--db_host` and `--db_port` to connect to your database.
 
-The defualt database is SQLite but if you want to use MySQL or PostgreSQL instead, use `-DPERFORMANCE_TEST_ODB_MYSQL=ON` or `-DPERFORMANCE_TEST_ODB_PGSQL=ON` and
+The default database is SQLite but if you want to use MySQL or PostgreSQL instead, use
+`-DPERFORMANCE_TEST_ODB_MYSQL=ON` or `-DPERFORMANCE_TEST_ODB_PGSQL=ON` and
 disable the SQLite by adding `-DPERFORMANCE_TEST_ODB_SQLITE=OFF` option.
+
+> All the necessary changes to add SQL database support to the performance_test tool were made by
+following instructions from [ODB platform](https://www.codesynthesis.com/products/odb/). Please
+refer to the [ODB manual](https://www.codesynthesis.com/products/odb/doc/odb-manual.pdf) for more information
+ and implementation details.
 
 # Batch run experiments (for advanced users)
 
