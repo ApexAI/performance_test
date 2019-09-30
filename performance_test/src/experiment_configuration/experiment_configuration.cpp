@@ -142,7 +142,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 
     if (vm["communication"].as<std::string>() == "ROS2") {
       m_com_mean = CommunicationMean::ROS2;
-    } else if (vm["communication"].as<std::string>() == "ROS2PollingSub") {
+    } else if (vm["communication"].as<std::string>() == "ROS2PollingSubscription") {
 #ifdef PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED
       m_com_mean = CommunicationMean::ROS2PollingSubscription;
 #else

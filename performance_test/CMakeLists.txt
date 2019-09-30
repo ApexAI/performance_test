@@ -158,7 +158,7 @@ set(sources
 
 # ROS2 Waitset
 option(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED "Option to enable Polling Subscription Plugin.
-  The plugin can only work if ApexOS is present,otherwise it will fail." OFF)
+  The plugin can only work if ApexOS is present, otherwise it will fail." OFF)
 
 if(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
     add_definitions(-DPERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)

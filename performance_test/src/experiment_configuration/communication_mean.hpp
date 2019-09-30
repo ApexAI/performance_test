@@ -45,7 +45,7 @@ inline std::ostream & operator<<(std::ostream & stream, const CommunicationMean 
     return stream << "ROS2";
 #ifdef PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED
   } else if (cm == CommunicationMean::ROS2PollingSubscription) {
-    return stream << "ROS2PollingSub";
+    return stream << "ROS2PollingSubscription";
 #endif
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   } else if (cm == CommunicationMean::FASTRTPS) {
