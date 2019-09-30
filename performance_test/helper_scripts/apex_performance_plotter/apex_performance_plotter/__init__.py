@@ -209,8 +209,10 @@ def render(template, filepath, skip_head=0, skip_tail=0):
 
 
 @click.command()
-@click.option('--skip-head', default=0, help='Number of head rows to skip.')
-@click.option('--skip-tail', default=0, help='Number of tail rows to skip.')
+@click.option('--skip-head', type=click.IntRange(0, float('inf')),
+              default=0, help='Number of head rows to skip.')
+@click.option('--skip-tail', type=click.IntRange(0, float('inf')),
+              default=0, help='Number of tail rows to skip.')
 @click.argument('filenames', type=click.Path(exists=True), nargs=-1, required=True)
 def plot_logfiles(skip_head, skip_tail, filenames):
     """CLI entrypoint for plotting multiple files."""
