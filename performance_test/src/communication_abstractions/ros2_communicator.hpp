@@ -122,6 +122,18 @@ public:
     m_publisher->publish(data);
   }
 
+  /**
+ * \brief Publishes the provided data.
+ *
+ *  This is an overloaded version of the publish function .
+ *  We need this because this is triggered by ROS2 executor thread callback
+ *  when the ExperimentConfiguration RoundTripMode is RELAY and the callback passes a
+ *  const ref for the incoming data. We have to create a copy of the data to be able to
+ *  update it inside the function before publishing.
+ *
+ * \param data The data to publish.
+ * \param time The time to fill into the data field.
+ */
   void publish(const DataType & data, const std::chrono::nanoseconds time)
   {
     DataType copy = data;
@@ -159,7 +171,7 @@ protected:
   {
     static_assert(std::is_same<DataType,
       typename std::remove_cv<typename std::remove_reference<T>::type>::type>::value,
-      "type mismatch");
+      "Parameter type passed to callback() does not match");
     if (m_prev_timestamp >= data.time) {
       throw std::runtime_error(
               "Data consistency violated. Received sample with not strictly older timestamp");

@@ -55,9 +55,8 @@ public:
       this->lock();
       if (wait_ret.any()) {
         auto received_sample = m_polling_subscription->take();
-        DataType tmp = received_sample.data();
         if (received_sample) {
-          this->template callback(tmp);
+          this->template callback(received_sample.data());
         }
       }
     } catch (const rclcpp::TimeoutError &) {
@@ -67,8 +66,7 @@ public:
   }
 
 private:
-  std::shared_ptr<::rclcpp::PollingSubscription<DataType, std::allocator<void>>>
-  m_polling_subscription;
+  std::shared_ptr<::rclcpp::PollingSubscription<DataType>> m_polling_subscription;
   std::unique_ptr<rclcpp::Waitset<>> m_waitset;
 };
 
