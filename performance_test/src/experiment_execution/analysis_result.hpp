@@ -17,7 +17,7 @@
 
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <boost/uuid/uuid_io.hpp>
+
 #include <chrono>
 #include <sstream>
 #include <string>
@@ -37,44 +37,38 @@ std::ostream & operator<<(std::ostream & stream, const timeval & e);
 class RusageTracker
 {
 public:
-  void setValues(rusage sys_usage) const
-  {
-    m_ru_utime = sys_usage.ru_utime;
-    m_ru_stime = sys_usage.ru_stime;
-    m_ru_maxrss = sys_usage.ru_maxrss;
-    m_ru_ixrss = sys_usage.ru_ixrss;
-    m_ru_idrss = sys_usage.ru_idrss;
-    m_ru_isrss = sys_usage.ru_isrss;
-    m_ru_minflt = sys_usage.ru_minflt;
-    m_ru_majflt = sys_usage.ru_majflt;
-    m_ru_nswap = sys_usage.ru_nswap;
-    m_ru_inblock = sys_usage.ru_inblock;
-    m_ru_oublock = sys_usage.ru_oublock;
-    m_ru_msgsnd = sys_usage.ru_msgsnd;
-    m_ru_msgrcv = sys_usage.ru_msgrcv;
-    m_ru_nsignals = sys_usage.ru_nsignals;
-    m_ru_nvcsw = sys_usage.ru_nvcsw;
-    m_ru_nivcsw = sys_usage.ru_nivcsw;
-  }
+  RusageTracker() {}
+
+  RusageTracker(const rusage & sys_usage)
+  : m_ru_utime(sys_usage.ru_utime.tv_sec * 1000000000 + sys_usage.ru_utime.tv_usec * 1000),
+    m_ru_stime(sys_usage.ru_stime.tv_sec * 1000000000 + sys_usage.ru_stime.tv_usec * 1000),
+    m_ru_maxrss(sys_usage.ru_maxrss), m_ru_ixrss(sys_usage.ru_ixrss),
+    m_ru_idrss(sys_usage.ru_idrss), m_ru_isrss(sys_usage.ru_isrss),
+    m_ru_minflt(sys_usage.ru_minflt), m_ru_majflt(sys_usage.ru_majflt),
+    m_ru_nswap(sys_usage.ru_nswap), m_ru_inblock(sys_usage.ru_inblock),
+    m_ru_oublock(sys_usage.ru_oublock), m_ru_msgsnd(sys_usage.ru_msgsnd),
+    m_ru_msgrcv(sys_usage.ru_msgrcv), m_ru_nsignals(sys_usage.ru_nsignals),
+    m_ru_nvcsw(sys_usage.ru_nvcsw), m_ru_nivcsw(sys_usage.ru_nivcsw)
+  {}
 
 private:
   friend class odb::access;
-  mutable struct timeval m_ru_utime = {};
-  mutable struct timeval m_ru_stime = {};
-  mutable uint64_t m_ru_maxrss = {};
-  mutable uint64_t m_ru_ixrss = {};
-  mutable uint64_t m_ru_idrss = {};
-  mutable uint64_t m_ru_isrss = {};
-  mutable uint64_t m_ru_minflt = {};
-  mutable uint64_t m_ru_majflt = {};
-  mutable uint64_t m_ru_nswap = {};
-  mutable uint64_t m_ru_inblock = {};
-  mutable uint64_t m_ru_oublock = {};
-  mutable uint64_t m_ru_msgsnd = {};
-  mutable uint64_t m_ru_msgrcv = {};
-  mutable uint64_t m_ru_nsignals = {};
-  mutable uint64_t m_ru_nvcsw = {};
-  mutable uint64_t m_ru_nivcsw = {};
+  std::chrono::nanoseconds m_ru_utime;
+  std::chrono::nanoseconds m_ru_stime;
+  uint64_t m_ru_maxrss;
+  uint64_t m_ru_ixrss;
+  uint64_t m_ru_idrss;
+  uint64_t m_ru_isrss;
+  uint64_t m_ru_minflt;
+  uint64_t m_ru_majflt;
+  uint64_t m_ru_nswap;
+  uint64_t m_ru_inblock;
+  uint64_t m_ru_oublock;
+  uint64_t m_ru_msgsnd;
+  uint64_t m_ru_msgrcv;
+  uint64_t m_ru_nsignals;
+  uint64_t m_ru_nvcsw;
+  uint64_t m_ru_nivcsw;
 };
 #pragma \
   db map type(std::chrono::nanoseconds) as(std::chrono::nanoseconds::rep) to((?).count ()) \
@@ -133,9 +127,9 @@ public:
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
 #ifdef ODB_FOR_SQL_ENABLED
-  void set_configuration_ptr(const ExperimentConfiguration * ec)
+  void set_configuration(const ExperimentConfiguration * ec)
   {
-    m_configuration_ptr = ec;
+    m_configuration = ec;
   }
 #endif
 
@@ -143,7 +137,7 @@ private:
 #ifdef ODB_FOR_SQL_ENABLED
   friend class odb::access;
 #pragma db not_null
-  const ExperimentConfiguration * m_configuration_ptr;
+  const ExperimentConfiguration * m_configuration;
 #pragma db id auto
   uint64_t m_id;
 #endif

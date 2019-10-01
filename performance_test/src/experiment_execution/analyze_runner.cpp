@@ -194,7 +194,7 @@ void AnalyzeRunner::analyze(
   m_ec.log(result->to_csv_string(true));
 
   #ifdef ODB_FOR_SQL_ENABLED
-  result->set_configuration_ptr(&m_ec);
+  result->set_configuration(&m_ec);
   m_ec.get_results().push_back(result);
 
   m_db->persist(result);

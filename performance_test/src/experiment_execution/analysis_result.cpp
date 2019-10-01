@@ -48,6 +48,7 @@ AnalysisResult::AnalysisResult(
   m_sub_loop_time_reserve(sub_loop_time_reserve)
 {
   const auto ret = getrusage(RUSAGE_SELF, &m_sys_usage);
+  m_sys_tracker = RusageTracker(m_sys_usage);
   if (ret != 0) {
     throw std::runtime_error("Could not get system resource usage.");
   }
@@ -115,9 +116,6 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   if (pretty_print) {
     st += "\t\t";
   }
-#ifdef ODB_FOR_SQL_ENABLED
-  m_sys_tracker.setValues(m_sys_usage);
-#endif
 
   std::stringstream ss;
 

@@ -228,7 +228,7 @@ private:
   RoundTripMode m_roundtrip_mode;
 
 #ifdef ODB_FOR_SQL_ENABLED
-  #pragma db value_not_null inverse(m_configuration_ptr)
+  #pragma db value_not_null inverse(m_configuration)
   mutable std::vector<std::shared_ptr<AnalysisResult>> m_results;
 
   #pragma db transient
