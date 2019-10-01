@@ -122,6 +122,12 @@ public:
     m_publisher->publish(data);
   }
 
+  void publish(const DataType & data, const std::chrono::nanoseconds time)
+  {
+    DataType copy = data;
+    publish(copy, time);
+  }
+
   /// Reads received data from ROS 2 using callbacks
   virtual void update_subscription() = 0;
 
@@ -148,8 +154,12 @@ protected:
     callback(*data);
   }
 
-  void callback(DataType & data)
+  template<class T>
+  void callback(T & data)
   {
+    static_assert(std::is_same<DataType,
+      typename std::remove_cv<typename std::remove_reference<T>::type>::type>::value,
+      "type mismatch");
     if (m_prev_timestamp >= data.time) {
       throw std::runtime_error(
               "Data consistency violated. Received sample with not strictly older timestamp");

@@ -48,10 +48,10 @@ public:
     if (!m_polling_subscription) {
       m_polling_subscription = this->m_node->template create_polling_subscription<DataType>(
         Topic::topic_name() + this->m_ec.sub_topic_postfix(), this->m_ROS2QOSAdapter);
+      m_waitset = std::make_unique<rclcpp::Waitset<>>(m_polling_subscription);
     }
     try {
-      rclcpp::Waitset<> m_waitset {m_polling_subscription};
-      const auto wait_ret = m_waitset.wait(std::chrono::milliseconds(100));
+      const auto wait_ret = m_waitset->wait(std::chrono::milliseconds(100));
       this->lock();
       if (wait_ret.any()) {
         auto received_sample = m_polling_subscription->take();
@@ -69,6 +69,7 @@ public:
 private:
   std::shared_ptr<::rclcpp::PollingSubscription<DataType, std::allocator<void>>>
   m_polling_subscription;
+  std::unique_ptr<rclcpp::Waitset<>> m_waitset;
 };
 
 }  // namespace performance_test
