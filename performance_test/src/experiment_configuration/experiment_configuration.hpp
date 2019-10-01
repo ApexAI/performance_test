@@ -89,6 +89,12 @@ public:
   /// \returns Returns the time the application should run until it terminates [s]. This will
   /// throw if the experiment configuration is not set up.
   uint64_t max_runtime() const;
+  /// \returns Returns the amount of iterations that will not be analyzed from the start.
+  /// This will throw if the experiment configuration is not set up.
+  uint64_t skip_start_iterations() const;
+  /// \returns Returns the amount of iterations that will not be analyzed from the end.
+  /// This will throw if the experiment configuration is not set up.
+  uint64_t skip_end_iterations() const;
   /// \returns Returns the configured number of publishers. This will throw if the experiment
   /// configuration is not set up.
   uint32_t number_of_publishers() const;
@@ -139,6 +145,8 @@ private:
     m_dds_domain_id(),
     m_rate(),
     m_max_runtime(),
+    m_skip_start_iterations(0),
+    m_skip_end_iterations(0),
     m_number_of_publishers(),
     m_number_of_subscribers(),
     m_check_memory(false),
@@ -171,6 +179,8 @@ private:
   std::string m_topic_name;
 
   uint64_t m_max_runtime;
+  uint64_t m_skip_start_iterations;
+  uint64_t m_skip_end_iterations;
 
   uint32_t m_number_of_publishers;
   uint32_t m_number_of_subscribers;

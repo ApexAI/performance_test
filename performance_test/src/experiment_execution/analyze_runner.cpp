@@ -58,6 +58,8 @@ AnalyzeRunner::AnalyzeRunner()
 
 void AnalyzeRunner::run() const
 {
+  const uint64_t skip_from = m_ec.max_runtime() - m_ec.skip_end_iterations() - 1;
+  uint64_t current_iteration = 0;
   m_ec.log("---EXPERIMENT-START---");
   m_ec.log(AnalysisResult::csv_header(true));
 
@@ -80,7 +82,14 @@ void AnalyzeRunner::run() const
     auto now = std::chrono::steady_clock::now();
     auto loop_diff_start = now - loop_start;
     auto experiment_diff_start = now - experiment_start;
+    if (current_iteration < m_ec.skip_start_iterations() ||
+      (m_ec.max_runtime() > 0 && current_iteration > skip_from))
+    {
+      ++current_iteration;
+      continue;
+    }
     analyze(loop_diff_start, experiment_diff_start);
+    ++current_iteration;
   }
 }
 

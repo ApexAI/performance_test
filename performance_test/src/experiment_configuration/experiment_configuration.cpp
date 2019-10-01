@@ -51,6 +51,8 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
            "\nPublishing rate: " << e.rate() <<
            "\nTopic name: " << e.topic_name() <<
            "\nMaximum runtime (sec): " << e.max_runtime() <<
+           "\nStart iterations skipped: " << e.skip_start_iterations() <<
+           "\nEnd iterations skipped: " << e.skip_end_iterations() <<
            "\nNumber of publishers: " << e.number_of_publishers() <<
            "\nNumber of subscribers:" << e.number_of_subscribers() <<
            "\nMemory check enabled: " << e.check_memory() <<
@@ -87,6 +89,11 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "Disables asyc. pub/sub.")("max_runtime",
     po::value<uint64_t>()->default_value(0),
     "Maximum number of seconds to run before exiting. Default (0) is to run forever.")(
+    "skip_start_iterations",
+    po::value<uint64_t>()->default_value(0),
+    "Skips a n amount of iterations for plotting from the beggining of the test")(
+    "skip_end_iterations", po::value<uint64_t>()->default_value(0),
+    "Skips a n amount of iterations for plotting from the end of the test")(
     "num_pub_threads,p", po::value<uint32_t>()->default_value(1),
     "Maximum number of publisher threads.")("num_sub_threads,s",
     po::value<uint32_t>()->default_value(1),
@@ -196,6 +203,20 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     }
 
     m_max_runtime = vm["max_runtime"].as<uint64_t>();
+    if (vm.count("skip_start_iterations")) {
+      m_skip_start_iterations = vm["skip_start_iterations"].as<uint64_t>();
+    }
+    if (vm.count("skip_end_iterations")) {
+      if (m_max_runtime == 0) {
+        m_skip_end_iterations = 0;
+      } else {
+        m_skip_end_iterations = vm["skip_end_iterations"].as<uint64_t>();
+      }
+    }
+
+    if (m_skip_start_iterations + m_skip_end_iterations >= m_max_runtime && m_max_runtime > 0) {
+      throw std::invalid_argument("Skipping all iterations is not supported.");
+    }
 
     m_number_of_publishers = vm["num_pub_threads"].as<uint32_t>();
     m_number_of_subscribers = vm["num_sub_threads"].as<uint32_t>();
@@ -321,6 +342,18 @@ uint64_t ExperimentConfiguration::max_runtime() const
 {
   check_setup();
   return m_max_runtime;
+}
+
+uint64_t ExperimentConfiguration::skip_start_iterations() const
+{
+  check_setup();
+  return m_skip_start_iterations;
+}
+
+uint64_t ExperimentConfiguration::skip_end_iterations() const
+{
+  check_setup();
+  return m_skip_end_iterations;
 }
 
 uint32_t ExperimentConfiguration::number_of_publishers() const
