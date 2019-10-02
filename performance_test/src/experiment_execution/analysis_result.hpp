@@ -23,7 +23,7 @@
 #include <string>
 
 #include "../utilities/statistics_tracker.hpp"
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #include <odb/core.hxx>
   #include "experiment_configuration.hpp"
 #endif
@@ -33,15 +33,17 @@ namespace performance_test
 
 /// Outstream operator for timeval to seconds (double).
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
 class RusageTracker
 {
 public:
   RusageTracker() {}
 
-  RusageTracker(const rusage & sys_usage)
-  : m_ru_utime(sys_usage.ru_utime.tv_sec * 1000000000 + sys_usage.ru_utime.tv_usec * 1000),
-    m_ru_stime(sys_usage.ru_stime.tv_sec * 1000000000 + sys_usage.ru_stime.tv_usec * 1000),
+  explicit RusageTracker(const rusage & sys_usage)
+  : m_ru_utime(std::chrono::seconds(sys_usage.ru_utime.tv_sec) +
+      std::chrono::microseconds(sys_usage.ru_utime.tv_usec)),
+    m_ru_stime(std::chrono::seconds(sys_usage.ru_stime.tv_sec) +
+      std::chrono::microseconds(sys_usage.ru_stime.tv_usec)),
     m_ru_maxrss(sys_usage.ru_maxrss), m_ru_ixrss(sys_usage.ru_ixrss),
     m_ru_idrss(sys_usage.ru_idrss), m_ru_isrss(sys_usage.ru_isrss),
     m_ru_minflt(sys_usage.ru_minflt), m_ru_majflt(sys_usage.ru_majflt),
@@ -107,7 +109,7 @@ public:
     const StatisticsTracker pub_loop_time_reserve,
     const StatisticsTracker sub_loop_time_reserve
   );
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   AnalysisResult() {}
 #endif
   /**
@@ -126,7 +128,7 @@ public:
    */
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   void set_configuration(const ExperimentConfiguration * ec)
   {
     m_configuration = ec;
@@ -134,7 +136,7 @@ public:
 #endif
 
 private:
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   friend class odb::access;
 #pragma db not_null
   const ExperimentConfiguration * m_configuration;
@@ -151,7 +153,7 @@ private:
   const StatisticsTracker m_latency;
   const StatisticsTracker m_pub_loop_time_reserve;
   const StatisticsTracker m_sub_loop_time_reserve;
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   RusageTracker m_sys_tracker;
 #pragma db transient
 #endif

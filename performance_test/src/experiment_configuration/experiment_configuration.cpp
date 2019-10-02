@@ -107,7 +107,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "with_security", "Enables the security with ROS2")("roundtrip_mode",
     po::value<std::string>()->default_value("None"),
     "Selects the round trip mode (None, Main, Relay).")
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   ("db_name", po::value<std::string>()->default_value("db_name"),
   "Name of the SQL database.")
 #if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
@@ -284,7 +284,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
         throw std::invalid_argument("Invalid roundtrip mode: " + mode);
       }
     }
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
     if (vm.count("db_name")) {
       m_db_name = vm["db_name"].as<std::string>();
     }
@@ -348,7 +348,7 @@ std::string ExperimentConfiguration::topic_name() const
   check_setup();
   return m_topic_name;
 }
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
 std::string ExperimentConfiguration::db_name() const
 {
   check_setup();

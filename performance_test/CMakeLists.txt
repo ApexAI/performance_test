@@ -36,10 +36,10 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
 # Use ODB support to create SQL database
-option(ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
+option(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
-if(ODB_FOR_SQL_ENABLED)
-  add_definitions(-DODB_FOR_SQL_ENABLED)
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
+  add_definitions(-DPERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   option(PERFORMANCE_TEST_ODB_SQLITE "Select DB type" ON)
   option(PERFORMANCE_TEST_ODB_MYSQL "Select DB type" OFF)
   option(PERFORMANCE_TEST_ODB_PGSQL "Select DB type" OFF)
@@ -116,7 +116,7 @@ if(CycloneDDS_FOUND)
   include_directories(${CYCLONEDDS_IDL_INCLUDE_DIR})
 endif()
 
-if(ODB_FOR_SQL_ENABLED)
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
   find_package(ODB REQUIRED COMPONENTS sqlite OPTIONAL_COMPONENTS mysql pgsql)
   include(${ODB_USE_FILE})
@@ -164,11 +164,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
-if(ODB_FOR_SQL_ENABLED)
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_HEADERS} DB "${DB_TYPE}"
       GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA SCHEMA_FORMAT embedded INCLUDE
       ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
-      STANDARD c++11 PROFILE boost/uuid X_CPP_OPTION -DODB_FOR_SQL_ENABLED)
+      STANDARD c++11 PROFILE boost/uuid X_CPP_OPTION -DPERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
 endif()
 
 set(sources
@@ -206,7 +206,7 @@ if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
     )
 endif()
 
-if(ODB_FOR_SQL_ENABLED)
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
     include_directories(${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
@@ -228,7 +228,7 @@ target_link_libraries(${EXE_NAME}
     ${Boost_LIBRARIES}
     ${OPTIONAL_LIBRARIES})
 
-if(ODB_FOR_SQL_ENABLED)
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   target_link_libraries(${EXE_NAME} ${ODB_LIBRARIES})
   target_include_directories(${EXE_NAME}
       PRIVATE

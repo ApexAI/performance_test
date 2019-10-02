@@ -19,7 +19,7 @@
 #include <limits>
 #include <cmath>
 #include <iostream>
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #include <odb/core.hxx>
 #endif
 
@@ -140,7 +140,7 @@ public:
   }
 
 private:
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   friend class odb::access;
 
 #endif

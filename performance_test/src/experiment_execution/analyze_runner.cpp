@@ -24,7 +24,7 @@
 
 #include "analysis_result.hpp"
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #include <odb/database.hxx>
   #include <memory>
   #ifdef PERFORMANCE_TEST_ODB_SQLITE
@@ -50,7 +50,7 @@ namespace performance_test
 AnalyzeRunner::AnalyzeRunner()
 : m_ec(ExperimentConfiguration::get()),
   m_is_first_entry(true)
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   , m_db()
 #endif
 {
@@ -76,7 +76,7 @@ AnalyzeRunner::AnalyzeRunner()
       RunType::SUBSCRIBER));
   }
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
 #ifdef PERFORMANCE_TEST_ODB_SQLITE
   m_db = std::unique_ptr<odb::core::database>(new odb::sqlite::database(
         m_ec.db_name(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
@@ -89,6 +89,8 @@ AnalyzeRunner::AnalyzeRunner()
 #endif
   {
     #ifdef PERFORMANCE_TEST_ODB_SQLITE
+    // Due to bugs in SQLite foreign key support for DDL statements,
+    // we need to temporarily disable foreign keys while creating the database schema.
     odb::core::connection_ptr c(m_db->connection());
     c->execute("PRAGMA foreign_keys=OFF");
     #endif
@@ -113,7 +115,7 @@ void AnalyzeRunner::run() const
 
   const auto experiment_start = std::chrono::steady_clock::now();
 
-  #ifdef ODB_FOR_SQL_ENABLED
+  #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   odb::core::transaction t(m_db->begin());
   #endif
 
@@ -137,7 +139,7 @@ void AnalyzeRunner::run() const
     analyze(loop_diff_start, experiment_diff_start);
   }
 
-  #ifdef ODB_FOR_SQL_ENABLED
+  #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   m_db->persist(m_ec);
   t.commit();
   #endif
@@ -193,7 +195,7 @@ void AnalyzeRunner::analyze(
 
   m_ec.log(result->to_csv_string(true));
 
-  #ifdef ODB_FOR_SQL_ENABLED
+  #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   result->set_configuration(&m_ec);
   m_ec.get_results().push_back(result);
 

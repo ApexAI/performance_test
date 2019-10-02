@@ -48,7 +48,9 @@ AnalysisResult::AnalysisResult(
   m_sub_loop_time_reserve(sub_loop_time_reserve)
 {
   const auto ret = getrusage(RUSAGE_SELF, &m_sys_usage);
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   m_sys_tracker = RusageTracker(m_sys_usage);
+#endif
   if (ret != 0) {
     throw std::runtime_error("Could not get system resource usage.");
   }

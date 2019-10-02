@@ -27,7 +27,7 @@
 #include "communication_mean.hpp"
 #include "../utilities/rt_enabler.hpp"
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #include <odb/core.hxx>
 #endif
 
@@ -40,7 +40,7 @@ namespace performance_test
  * This experiment configuration could be created from various sources. At the moment, only
  * configuration by command line arguments are supported.
  */
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
 class AnalysisResult;
 
   #pragma db value(QOSAbstraction) definition
@@ -143,7 +143,7 @@ public:
   /// \return Returns true if the user requested the application to exit.
   bool exit_requested() const;
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   std::string db_name() const;
 #if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
   std::string db_user() const;
@@ -176,7 +176,7 @@ private:
     m_roundtrip_mode(RoundTripMode::NONE)
   {}
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   friend class odb::access;
 #endif
 
@@ -188,21 +188,21 @@ private:
   void open_file();
 
   // Using the GUID of the experiment as ID.
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #pragma db id
 #endif
   boost::uuids::uuid m_id;
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #pragma db transient
 #endif
   bool m_is_setup;
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #pragma db transient
 #endif
   std::string m_logfile;
   std::string m_final_logfile_name;
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #pragma db transient
 #endif
   mutable std::ofstream m_os;
@@ -227,7 +227,7 @@ private:
 
   RoundTripMode m_roundtrip_mode;
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #pragma db value_not_null inverse(m_configuration)
   mutable std::vector<std::shared_ptr<AnalysisResult>> m_results;
 
@@ -254,7 +254,7 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration::
 std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration & e);
 }  // namespace performance_test
 
-#ifdef ODB_FOR_SQL_ENABLED
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
 #include "analysis_result.hpp"
 #endif
 #endif  // EXPERIMENT_CONFIGURATION__EXPERIMENT_CONFIGURATION_HPP_
