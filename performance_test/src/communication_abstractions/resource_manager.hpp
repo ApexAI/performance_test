@@ -33,15 +33,17 @@
 #endif
 
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
-  #include <dds/DCPS/Marked_Default_Qos.h>
-  #include <dds/DdsDcpsTopicC.h>
-  #include <dds/DdsDcpsPublicationC.h>
-  #include <dds/DdsDcpsSubscriptionC.h>
-
-  #include <dds/DCPS/Service_Participant.h>
-  #include <dds/DCPS/transport/framework/TransportRegistry.h>
-  #include <dds/DCPS/transport/rtps_udp/RtpsUdpInst_rch.h>
-  #include <dds/DCPS/transport/rtps_udp/RtpsUdpInst.h>
+    #include <dds/DdsDcpsInfrastructureC.h>
+    #include <dds/DdsDcpsPublicationC.h>
+    #include <dds/DdsDcpsSubscriptionC.h>
+    #include <dds/DCPS/Marked_Default_Qos.h>
+    #include <dds/DCPS/Service_Participant.h>
+    #include <dds/DCPS/WaitSet.h>
+    #include "dds/DCPS/StaticIncludes.h"
+    #include <dds/DCPS/RTPS/RtpsDiscovery.h>
+    #include <dds/DCPS/transport/framework/TransportRegistry.h>
+    #include <dds/DCPS/transport/rtps_udp/RtpsUdpInst_rch.h>
+    #include <dds/DCPS/transport/rtps_udp/RtpsUdpInst.h>
 #endif
 
 #include <cstdlib>

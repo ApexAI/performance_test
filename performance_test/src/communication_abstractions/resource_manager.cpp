@@ -17,6 +17,11 @@
 #include <memory>
 #include <string>
 
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+using namespace OpenDDS::RTPS;
+using namespace OpenDDS::DCPS;
+#endif
+
 namespace performance_test
 {
 
@@ -274,6 +279,7 @@ ResourceManager::opendds_participant() const
   std::lock_guard<std::mutex> lock(m_global_mutex);
   
   if (CORBA::is_nil(m_opendds_participant)) {
+#if 0
      TheServiceParticipant->set_default_discovery(::OpenDDS::DCPS::Discovery::DEFAULT_RTPS);
      const std::string config_name = "PerfTestConfig";
      OpenDDS::DCPS::TransportConfig_rch config = TheTransportRegistry->create_config(config_name);
@@ -297,6 +303,35 @@ ResourceManager::opendds_participant() const
      //OpenDDS domain participant qos is realy weird, just octest sequences
      //for now let's create domain participant with default qos
      m_opendds_participant = participant_factory->create_participant(m_ec.dds_domain_id(),PARTICIPANT_QOS_DEFAULT,0,OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+     printf("Hello !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+#else
+    DDS::DomainParticipantFactory_var dpf = TheParticipantFactory;
+
+    TransportConfig_rch config = TransportRegistry::instance()->create_config("ApexAiConfig");
+    TransportInst_rch inst = TransportRegistry::instance()->create_inst("rtps_tran","rtps_udp");
+ 
+    RtpsUdpInst_rch rui = static_rchandle_cast<RtpsUdpInst>(inst);
+    rui->handshake_timeout_ = 1;
+
+    config->instances_.push_back(inst);
+    TransportRegistry::instance()->global_config(config);
+
+    int domain = 0;
+    bool multicast = true;
+    unsigned int resend = 1;
+    std::string partition, governance, permissions;
+    int defaultSize = 0;
+
+    RtpsDiscovery_rch disc = make_rch<RtpsDiscovery>("RtpsDiscovery");
+    rui->use_multicast_ = true;
+
+    TheServiceParticipant->add_discovery(static_rchandle_cast<Discovery>(disc));
+    TheServiceParticipant->set_repo_domain(domain, disc->key());
+    DDS::DomainParticipantQos dp_qos;
+    dpf->get_default_participant_qos(dp_qos);
+    m_opendds_participant = dpf->create_participant(m_ec.dds_domain_id(),PARTICIPANT_QOS_DEFAULT,0,DEFAULT_STATUS_MASK);
+
+#endif
   }
   return m_opendds_participant;
 }
