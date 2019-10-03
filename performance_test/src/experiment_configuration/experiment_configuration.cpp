@@ -13,10 +13,8 @@
 // limitations under the License.
 
 #include "experiment_configuration.hpp"
-#include "performance_test/version.h"
 
 #include <boost/program_options.hpp>
-
 #include <rclcpp/rclcpp.hpp>
 
 #include <iostream>
@@ -25,6 +23,8 @@
 #include <string>
 
 #include "topics.hpp"
+
+#include "performance_test/version.h"
 
 namespace performance_test
 {
