@@ -22,20 +22,21 @@ function(set_compile_options target)
         add_definitions(-D_CRT_SECURE_NO_WARNINGS)
         add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
     else()
-        target_compile_options(${target} PRIVATE  -Wall
+        target_compile_options(${target} PRIVATE  
+                #-Wall
                 -Wextra
                 #-Wshadow             # causes issues with ROS2 headers
                 #-Wnon-virtual-dtor   # causes issues with ROS2 headers
                 -pedantic
                 -Wcast-align
-                -Wunused
+                #-Wunused
                 -Woverloaded-virtual
-                -Wconversion
-                -Wsign-conversion
+                #-Wconversion
+                #-Wsign-conversion
                 -Wlogical-op
-                -Wuseless-cast
+                #-Wuseless-cast
                 -Wdouble-promotion
-                -Wold-style-cast
+                #-Wold-style-cast
                 #-Wnull-dereference    # gcc6
                 #-Wduplicated-branches # gcc7
                 #-Wduplicated-cond     # gcc6
