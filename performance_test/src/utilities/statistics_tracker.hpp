@@ -18,6 +18,10 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <iostream>
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  #include <odb/core.hxx>
+#endif
 
 namespace performance_test
 {
@@ -80,6 +84,7 @@ public:
     }
     var_t = var_t / n_total;
     m_M2 = var_t * (n_total - 1.0);
+    m_variance = m_M2 / m_n;
   }
   /// Adds a sample to consider in the metrics.
   void add_sample(const double x)
@@ -102,6 +107,7 @@ public:
     const auto term1 = delta * delta_n * n1;
     m_mean = m_mean + delta_n;
     m_M2 = m_M2 + term1;
+    m_variance = m_M2 / m_n;
   }
   /// The number of all samples added.
   double n() const
@@ -130,15 +136,20 @@ public:
   /// The variance over all samples added.
   double variance() const
   {
-    return m_M2 / m_n;
+    return m_variance;
   }
 
 private:
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  friend class odb::access;
+
+#endif
   double m_min;
   double m_max;
   double m_n;
   double m_mean;
   double m_M2;
+  double m_variance;
 };
 
 }  // namespace performance_test

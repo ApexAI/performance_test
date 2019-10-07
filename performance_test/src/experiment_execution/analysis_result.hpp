@@ -23,14 +23,66 @@
 #include <string>
 
 #include "../utilities/statistics_tracker.hpp"
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  #include <odb/core.hxx>
+  #include "experiment_configuration.hpp"
+#endif
 
 namespace performance_test
 {
 
 /// Outstream operator for timeval to seconds (double).
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+class RusageTracker
+{
+public:
+  RusageTracker() {}
+
+  explicit RusageTracker(const rusage & sys_usage)
+  : m_ru_utime(std::chrono::seconds(sys_usage.ru_utime.tv_sec) +
+      std::chrono::microseconds(sys_usage.ru_utime.tv_usec)),
+    m_ru_stime(std::chrono::seconds(sys_usage.ru_stime.tv_sec) +
+      std::chrono::microseconds(sys_usage.ru_stime.tv_usec)),
+    m_ru_maxrss(sys_usage.ru_maxrss), m_ru_ixrss(sys_usage.ru_ixrss),
+    m_ru_idrss(sys_usage.ru_idrss), m_ru_isrss(sys_usage.ru_isrss),
+    m_ru_minflt(sys_usage.ru_minflt), m_ru_majflt(sys_usage.ru_majflt),
+    m_ru_nswap(sys_usage.ru_nswap), m_ru_inblock(sys_usage.ru_inblock),
+    m_ru_oublock(sys_usage.ru_oublock), m_ru_msgsnd(sys_usage.ru_msgsnd),
+    m_ru_msgrcv(sys_usage.ru_msgrcv), m_ru_nsignals(sys_usage.ru_nsignals),
+    m_ru_nvcsw(sys_usage.ru_nvcsw), m_ru_nivcsw(sys_usage.ru_nivcsw)
+  {}
+
+private:
+  friend class odb::access;
+  std::chrono::nanoseconds m_ru_utime;
+  std::chrono::nanoseconds m_ru_stime;
+  uint64_t m_ru_maxrss;
+  uint64_t m_ru_ixrss;
+  uint64_t m_ru_idrss;
+  uint64_t m_ru_isrss;
+  uint64_t m_ru_minflt;
+  uint64_t m_ru_majflt;
+  uint64_t m_ru_nswap;
+  uint64_t m_ru_inblock;
+  uint64_t m_ru_oublock;
+  uint64_t m_ru_msgsnd;
+  uint64_t m_ru_msgrcv;
+  uint64_t m_ru_nsignals;
+  uint64_t m_ru_nvcsw;
+  uint64_t m_ru_nivcsw;
+};
+#pragma \
+  db map type(std::chrono::nanoseconds) as(std::chrono::nanoseconds::rep) to((?).count ()) \
+  from(std::chrono::nanoseconds (?))
+#pragma db value(StatisticsTracker) definition
+#pragma db value(RusageTracker) definition
+#pragma db value(rusage) definition
+#pragma db value(timeval) definition
 
 /// Represents the results of an experiment iteration.
+#pragma db object pointer(std::shared_ptr)
+#endif
 class AnalysisResult
 {
 public:
@@ -47,8 +99,8 @@ public:
    * \param sub_loop_time_reserve Loop time statistics of the subscriber threads.
    */
   AnalysisResult(
-    const std::chrono::duration<double> experiment_start,
-    const std::chrono::duration<double> loop_start,
+    const std::chrono::nanoseconds experiment_start,
+    const std::chrono::nanoseconds loop_start,
     const uint64_t num_samples_received,
     const uint64_t num_samples_sent,
     const uint64_t num_samples_lost,
@@ -57,7 +109,9 @@ public:
     const StatisticsTracker pub_loop_time_reserve,
     const StatisticsTracker sub_loop_time_reserve
   );
-
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  AnalysisResult() {}
+#endif
   /**
    * \brief Returns a header for a CVS file containing the analysis result data as a string.
    * \param pretty_print If set, inserts additional tabs to format the output nicer.
@@ -74,18 +128,35 @@ public:
    */
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  void set_configuration(const ExperimentConfiguration * ec)
+  {
+    m_configuration = ec;
+  }
+#endif
+
 private:
-  const std::chrono::duration<double> m_experiment_start;
-  const std::chrono::duration<double> m_loop_start;
-  const uint64_t m_num_samples_received;
-  const uint64_t m_num_samples_sent;
-  const uint64_t m_num_samples_lost;
-  const std::size_t m_total_data_received;
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  friend class odb::access;
+#pragma db not_null
+  const ExperimentConfiguration * m_configuration;
+#pragma db id auto
+  uint64_t m_id;
+#endif
+  const std::chrono::nanoseconds m_experiment_start = {};
+  const std::chrono::nanoseconds m_loop_start = {};
+  const uint64_t m_num_samples_received = {};
+  const uint64_t m_num_samples_sent = {};
+  const uint64_t m_num_samples_lost = {};
+  const std::size_t m_total_data_received = {};
 
   const StatisticsTracker m_latency;
   const StatisticsTracker m_pub_loop_time_reserve;
   const StatisticsTracker m_sub_loop_time_reserve;
-
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  RusageTracker m_sys_tracker;
+#pragma db transient
+#endif
   rusage m_sys_usage;
 };
 
