@@ -88,22 +88,13 @@ AnalyzeRunner::AnalyzeRunner()
         m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
 #endif
   {
-    #ifdef PERFORMANCE_TEST_ODB_SQLITE
-    // Due to bugs in SQLite foreign key support for DDL statements,
-    // we need to temporarily disable foreign keys while creating the database schema.
-    odb::core::connection_ptr c(m_db->connection());
-    c->execute("PRAGMA foreign_keys=OFF");
-    #endif
-    odb::core::transaction t(c->begin());
+    odb::core::transaction t(m_db->begin());
     try {
       m_db->query<ExperimentConfiguration>(false);
     } catch (const odb::exception & e) {
       odb::core::schema_catalog::create_schema(*m_db);
     }
     t.commit();
-    #ifdef PERFORMANCE_TEST_ODB_SQLITE
-    c->execute("PRAGMA foreign_keys=ON");
-    #endif
   }
 #endif
 }
