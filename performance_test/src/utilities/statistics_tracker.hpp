@@ -34,7 +34,8 @@ public:
     m_max(std::numeric_limits<double>::lowest()),
     m_n(0.0),
     m_mean(0.0),
-    m_M2(0.0)
+    m_M2(0.0),
+    m_variance(0.0)
   {
     static_assert(std::numeric_limits<double>::is_iec559, "Non IEEE754 are not supported.");
   }
@@ -47,7 +48,8 @@ public:
     m_max(std::numeric_limits<double>::lowest()),
     m_n(0.0),
     m_mean(0.0),
-    m_M2(0.0)
+    m_M2(0.0),
+    m_variance(0.0)
   {
     if (st_vec.empty()) {
       return;
@@ -59,6 +61,7 @@ public:
       m_n = a.m_n;
       m_mean = a.m_mean;
       m_M2 = a.m_M2;
+      m_variance = m_M2 / m_n;
       return;
     }
     double mean_t = 0.0, n_total = 0.0;
