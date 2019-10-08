@@ -15,7 +15,6 @@
 #include "experiment_configuration.hpp"
 
 #include <boost/program_options.hpp>
-
 #include <rclcpp/rclcpp.hpp>
 
 #include <iostream>
@@ -24,6 +23,8 @@
 #include <string>
 
 #include "topics.hpp"
+
+#include "performance_test/version.h"
 
 namespace performance_test
 {
@@ -44,6 +45,7 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
   if (e.is_setup()) {
     return stream <<
            "Experiment id: " << e.id() <<
+           "\nperf_test version: " << version <<
            "\nLogfile name: " << e.logfile_name() <<
            "\nCommunication mean: " << e.com_mean() <<
            "\nDDS domain id: " << e.dds_domain_id() <<
@@ -135,6 +137,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     }
 
     if (vm.count("help")) {
+      std::cout << "Version: " << version << "\n";
       std::cout << desc << "\n";
       exit(0);
     }

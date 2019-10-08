@@ -100,7 +100,7 @@ def create_layout(header, dataframe):
         'Logfile name', 'Experiment id', 'Communication mean', 'Publishing rate',
         'Topic name', 'Number of publishers', 'Number of subscribers', 'Maximum runtime (sec)',
         'DDS domain id', 'QOS', 'Use ros SHM', 'Use single participant', 'Not using waitset',
-        'Not using Connext DDS Micro INTRA',
+        'Not using Connext DDS Micro INTRA', 'perf_test version',
     }
 
     header.update(dict('QOS {}'.format(x).split(': ')
@@ -140,6 +140,7 @@ def create_layout(header, dataframe):
         ),
         'categories': [
             {'name': 'test setup', 'items': [
+                create_kv(header, 'perf_test version'),
                 create_kv(header, 'Publishing rate'),
                 create_kv(header, 'Topic name'),
                 create_kv(header, 'Number of publishers'),
@@ -150,10 +151,6 @@ def create_layout(header, dataframe):
                 create_kv(header, 'Use single participant', boolish=True),
                 create_kv(header, 'Not using waitset', boolish=True),
                 create_kv(header, 'Not using Connext DDS Micro INTRA', boolish=True),
-                create_kv(header, 'QOS Reliability'),
-                create_kv(header, 'QOS Durability'),
-                create_kv(header, 'QOS History kind'),
-                create_kv(header, 'QOS History depth'),
             ]},
             {'name': 'average results', 'items': [
                 {'key': 'Experiment Status', 'value': 'success' if xaxis else 'failed'},
@@ -161,7 +158,7 @@ def create_layout(header, dataframe):
                   if key != 'T_experiment' and not key.startswith('ru_')],
             ]},
             {'name': 'environment', 'items': [
-                *[create_kv(header, key) for key in set(header.keys()) - header_fields],
+                *[create_kv(header, key) for key in sorted(set(header.keys()) - header_fields)],
             ]},
         ],
     }

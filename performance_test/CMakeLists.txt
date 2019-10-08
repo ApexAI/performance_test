@@ -231,6 +231,14 @@ add_executable(${EXE_NAME} ${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAM
 
 set_compile_options(${EXE_NAME})
 
+# Try to bake the githash into the perf_test EXE:
+execute_process(
+  COMMAND ./version_check.bash
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE PERF_TEST_VERSION
+)
+add_definitions(-DPERFORMANCE_TEST_VERSION="${PERF_TEST_VERSION}")
+
 rosidl_target_interfaces(${EXE_NAME} ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 ament_target_dependencies(${EXE_NAME}
