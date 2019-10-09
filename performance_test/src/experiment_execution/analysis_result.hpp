@@ -17,6 +17,8 @@
 
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/times.h>
+#include <unistd.h>
 
 #include <chrono>
 #include <sstream>
@@ -30,6 +32,16 @@
 
 namespace performance_test
 {
+
+template<typename T>
+static inline T ensure_not_negative(const T val)
+{
+  if (std::signbit(val)) {
+    throw std::runtime_error("Negative value");
+  }
+  return val;
+}
+
 
 /// Outstream operator for timeval to seconds (double).
 std::ostream & operator<<(std::ostream & stream, const timeval & e);
@@ -83,6 +95,55 @@ private:
 /// Represents the results of an experiment iteration.
 #pragma db object pointer(std::shared_ptr)
 #endif
+
+class CPUsageTracker
+{
+
+private:
+  uint32_t m_cpu_cores;
+
+public:
+  CPUsageTracker();
+
+
+  enum class CpuTimeState : uint8_t
+  {
+    ///< Field for time spent in user mode
+    CS_USER = 0U,
+    ///< Field for time spent in user mode with low priority ("nice")
+    CS_NICE = 1U,
+    ///< Field for time spent in system mode
+    CS_SYSTEM = 2U,
+    ///< Field for time spent in idle task
+    CS_IDLE = 3U,
+    ///< Field for time waiting for I/O to complete
+    CS_IOWAIT = 4U,
+    ///< Field for time spent in servicing interrupts
+    CS_IRQ = 5U,
+    ///< Field for time spent in servicing soft irq's
+    CS_SOFTIRQ = 6U,
+    ///< Field for time spent in other OS (stolen time)
+    CS_STEAL = 7U,
+    ///< Field for time spent for running virtual CPU for guest OS
+    CS_GUEST = 8U,
+    ///< Field for time spent for running virtual CPU with nice prio for guest OS
+    CS_GUEST_NICE = 9U,
+    ///< number of states
+    CPU_TIME_STATES_NUM = 10U
+  };  // enum CpuTimeState
+
+  typedef struct cpu_info
+  {
+    std::string cpu_label;
+    size_t cpu_time_array[static_cast<uint8_t>(CpuTimeState::CPU_TIME_STATES_NUM)];
+  } cpu_info_obj;
+
+  int64_t normalized_cpu_total_time = 0;
+
+  int64_t read_cpu_times(std::vector<cpu_info> & entries);
+
+};
+
 class AnalysisResult
 {
 public:
@@ -158,6 +219,8 @@ private:
 #pragma db transient
 #endif
   rusage m_sys_usage;
+  tms m_process_times;
+
 };
 
 }  // namespace performance_test
