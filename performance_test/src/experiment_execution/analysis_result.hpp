@@ -23,6 +23,8 @@
 #include <string>
 
 #include "../utilities/statistics_tracker.hpp"
+#include "../utilities/cpu_usage_tracker.hpp"
+
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #include <odb/core.hxx>
   #include "experiment_configuration.hpp"
@@ -107,7 +109,8 @@ public:
     const std::size_t total_data_received,
     const StatisticsTracker latency,
     const StatisticsTracker pub_loop_time_reserve,
-    const StatisticsTracker sub_loop_time_reserve
+    const StatisticsTracker sub_loop_time_reserve,
+    const CpuInfo cpu_info
   );
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   AnalysisResult() {}
@@ -158,6 +161,7 @@ private:
 #pragma db transient
 #endif
   rusage m_sys_usage;
+  const CpuInfo m_cpu_info;
 };
 
 }  // namespace performance_test

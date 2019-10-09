@@ -117,6 +117,7 @@ def create_layout(header, dataframe):
     y21 = dataframe['ru_minflt'].tolist()
     y22 = dataframe['ru_majflt'].tolist()
     y23 = dataframe['ru_nivcsw'].tolist()
+    y24 = dataframe['cpu_usage (%)'].tolist()
 
     means = dataframe.mean().round(4)
 
@@ -136,7 +137,8 @@ def create_layout(header, dataframe):
             yr11,
             y21,
             y22,
-            y23
+            y23,
+            y24
         ),
         'categories': [
             {'name': 'test setup', 'items': [
