@@ -70,7 +70,7 @@ endif()
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
     add_subdirectory(src/idlgen/opendds)
     message("PARENT ACE_ROOT = " ${PARENT_ACE_ROOT})
-    include_directories(${OPENDDS_IDL_INCLUDE_DIR} ${PARENT_DDS_ROOT} ${PARENT_ACE_ROOT} ${PARENT_MPC_ROOT} ${PARENT_TAO_ROOT})
+    include_directories(${OPENDDS_IDL_INCLUDE_DIR} ${PARENT_DDS_ROOT_INCLUDE})
 endif()
 
 # This is a workaround for broken include paths on some systems.
@@ -199,17 +199,17 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
 if (PERFORMANCE_TEST_OPENDDS_ENABLED)
-    set(DDS_DYN_LIBS ${PARENT_ACE_ROOT}/lib/libACE.so 
-                     ${PARENT_ACE_ROOT}/lib/libTAO.so
-                     ${PARENT_DDS_ROOT}/lib/libOpenDDS_Dcps.so
-                     ${PARENT_DDS_ROOT}/lib/libOpenDDS_Rtps.so
-                     ${PARENT_DDS_ROOT}/lib/libOpenDDS_Rtps_Udp.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_PortableServer.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_PortableServer.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_PI.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_CodecFactory.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_AnyTypeCode.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_BiDirGIOP.so
+    set(DDS_DYN_LIBS ${PARENT_DDS_ROOT_LIBS}/libACE.so 
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO.so
+                     ${PARENT_DDS_ROOT_LIBS}/libOpenDDS_Dcps.so
+                     ${PARENT_DDS_ROOT_LIBS}/libOpenDDS_Rtps.so
+                     ${PARENT_DDS_ROOT_LIBS}/libOpenDDS_Rtps_Udp.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_PortableServer.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_PortableServer.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_PI.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_CodecFactory.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_AnyTypeCode.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_BiDirGIOP.so
                      )
 
     target_link_libraries(${EXE_NAME} opendds_idl ${DDS_DYN_LIBS})
