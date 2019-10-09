@@ -14,10 +14,10 @@
 
 set(SOURCE_EXTENSION cpp)
 
-set(DDS_ROOT $ENV{HOME}/OpenDDS-3.13.2)
-set(ACE_ROOT ${DDS_ROOT}/ACE_wrappers)
-set(MPC_ROOT ${DDS_ROOT}/ACE_wrappers/MPC)
-set(TAO_ROOT ${DDS_ROOT}/ACE_wrappers/TAO)
+set(DDS_ROOT /opt/opendds/share/dds)
+set(ACE_ROOT ${DDS_ROOT}/../ace)
+set(MPC_ROOT ${DDS_ROOT}/MPC)
+set(TAO_ROOT ${DDS_ROOT}/../tao)
 
 set(TAO_IDL DDS_ROOT=${DDS_ROOT} ACE_ROOT=${ACE_ROOT} TAO_ROOT=${TAO_ROOT} MPC_ROOT=${MPC_ROOT} LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):${ACE_ROOT}/lib:${DDS_ROOT}/lib ${ACE_ROOT}/bin/tao_idl)
 set(OPENDDS_IDL DDS_ROOT=${DDS_ROOT} ACE_ROOT=${ACE_ROOT} TAO_ROOT=${TAO_ROOT} MPC_ROOT=${MPC_ROOT} LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):${ACE_ROOT}/lib:${DDS_ROOT}/lib ${DDS_ROOT}/bin/opendds_idl)
@@ -58,7 +58,7 @@ set(MICRO_C_LIBS rti_me_rhsm${RTI_LIB_SUFFIX_STATIC}
 
 
 link_directories(${DDS_ROOT}/lib ${ACE_ROOT}/lib)
-include_directories(${IDL_GEN_ROOT} ${DDS_ROOT} ${ACE_ROOT} ${TAO_ROOT})
+include_directories(${IDL_GEN_ROOT} ${DDS_ROOT}/../../include/)
 
 foreach(idl ${IDL_SOURCE_C})
   get_filename_component(filename ${idl} NAME)
@@ -92,8 +92,10 @@ foreach(idl ${IDL_SOURCE_C})
           DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
           COMMENT "Regeneration type support plugin from ${idl}")
 
+  message ("${DDS_ROOT}/../../include/dds" = ${DDS_ROOT}/../../include/dds)
+
   add_custom_command(OUTPUT ${IDL_GEN_ROOT}/${basename}TypeSupport.idl ${TAO_IDL_GEN_CPP_SECOND_STAGE} ${TAO_IDL_GEN_H_SECOND_STAGE}
-          COMMAND ${TAO_IDL} -o ${IDL_GEN_ROOT}/. -I${CMAKE_CURRENT_SOURCE_DIR}/.. -I${TAO_ROOT} -I${DDS_ROOT} ${IDL_GEN_ROOT}/${basename}TypeSupport.idl
+          COMMAND ${TAO_IDL} -o ${IDL_GEN_ROOT}/. -I${CMAKE_CURRENT_SOURCE_DIR}/.. -I${DDS_ROOT}/../../include/tao -I${DDS_ROOT}/../../include/ ${IDL_GEN_ROOT}/${basename}TypeSupport.idl
           DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
           COMMENT "Regeneration type support plugin from ${idl}")
 
@@ -109,7 +111,5 @@ add_library(opendds_idl
         ${IDL_GEN_H_LIST} ${IDL_GEN_C_LIST})
 set_compile_options(opendds_idl)
 set(OPENDDS_IDL_INCLUDE_DIR ${IDL_GEN_ROOT}/.. PARENT_SCOPE)
-set(PARENT_DDS_ROOT ${DDS_ROOT} PARENT_SCOPE)
-set(PARENT_ACE_ROOT ${ACE_ROOT} PARENT_SCOPE)
-set(PARENT_MPC_ROOT ${MPC_ROOT} PARENT_SCOPE)
-set(PARENT_TAO_ROOT ${TAO_ROOT} PARENT_SCOPE)
+set(PARENT_DDS_ROOT_INCLUDE ${DDS_ROOT}/../../include PARENT_SCOPE)
+set(PARENT_DDS_ROOT_LIBS ${DDS_ROOT}/../../lib PARENT_SCOPE)

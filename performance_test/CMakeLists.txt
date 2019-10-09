@@ -40,7 +40,7 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
-<<<<<<< HEAD
+
 # Use ODB support to create SQL database
 option(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
@@ -62,8 +62,7 @@ if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
     set(DB_TYPE pgsql)
   endif()
 endif()
-=======
->>>>>>> IDL generation for OpenDDS.
+
 
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
@@ -94,7 +93,7 @@ endif()
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
     add_subdirectory(src/idlgen/opendds)
     message("PARENT ACE_ROOT = " ${PARENT_ACE_ROOT})
-    include_directories(${OPENDDS_IDL_INCLUDE_DIR} ${PARENT_DDS_ROOT} ${PARENT_ACE_ROOT} ${PARENT_MPC_ROOT} ${PARENT_TAO_ROOT})
+    include_directories(${OPENDDS_IDL_INCLUDE_DIR} ${PARENT_DDS_ROOT_INCLUDE})
 endif()
 
 # This is a workaround for broken include paths on some systems.
@@ -115,7 +114,6 @@ if(${micro_dds_cmake_module_FOUND_AMENT_PACKAGE})
     endif()
 endif()
 
-<<<<<<< HEAD
 # CycloneDDS
 option(PERFORMANCE_TEST_FORCE_CYCLONEDDS "Require Cyclone DDS to be available, fail otherwise" OFF)
 
@@ -158,7 +156,7 @@ if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
         #ament_export_definitions(${MicroDDS_DEFINITIONS})
     endif()
 endif()
-=======
+
 #find_package(opendds_cmake_module QUIET REQUIRED)
 #if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
 #    find_package(OpenDDS MODULE REQUIRED)
@@ -172,7 +170,7 @@ endif()
 #        #ament_export_definitions(${MicroDDS_DEFINITIONS})
 #    endif()
 #endif()
->>>>>>> IDL generation for OpenDDS.
+
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
@@ -258,9 +256,6 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     )
 endif()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
     set(sources ${sources}
         src/communication_abstractions/cyclonedds_communicator.hpp
@@ -272,18 +267,14 @@ if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
         ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
         ${ODB_INCLUDE_DIRS})
-=======
-if (PERFORMANCE_TEST_OPENDDS_ENABLED)
-=======
+endif()
+
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
->>>>>>> initial opendds port, more to come later
-=======
-if(PERFORMANCE_TEST_OPENDDS_ENABLED)
->>>>>>> openDDS integration by I
+
     set(sources ${sources}
             src/communication_abstractions/opendds_communicator.hpp
             )
->>>>>>> IDL generation for OpenDDS.
+
 endif()
 
 set(EXE_NAME perf_test)
@@ -339,21 +330,14 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
       fastcdr)
 endif()
 
-<<<<<<< HEAD
 if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
   target_link_libraries(${EXE_NAME}
       cyclonedds_idl
       CycloneDDS::ddsc)
-=======
+endif()
 if (PERFORMANCE_TEST_OPENDDS_ENABLED)
-<<<<<<< HEAD
-<<<<<<< HEAD
     target_link_libraries(${EXE_NAME} opendds_idl)
->>>>>>> IDL generation for OpenDDS.
-=======
-=======
->>>>>>> openDDS integration by I
-    set(DDS_DYN_LIBS ${PARENT_ACE_ROOT}/lib/libACE.so 
+    set(DDS_DYN_LIBS ${PARENT_ACE_ROOT}/lib/libACE.so
                      ${PARENT_ACE_ROOT}/lib/libTAO.so
                      ${PARENT_DDS_ROOT}/lib/libOpenDDS_Dcps.so
                      ${PARENT_DDS_ROOT}/lib/libOpenDDS_Rtps.so
@@ -364,14 +348,20 @@ if (PERFORMANCE_TEST_OPENDDS_ENABLED)
                      ${PARENT_ACE_ROOT}/lib/libTAO_CodecFactory.so
                      ${PARENT_ACE_ROOT}/lib/libTAO_AnyTypeCode.so
                      ${PARENT_ACE_ROOT}/lib/libTAO_BiDirGIOP.so
-                     )
+
+    set(DDS_DYN_LIBS ${PARENT_DDS_ROOT_LIBS}/libACE.so 
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO.so
+                     ${PARENT_DDS_ROOT_LIBS}/libOpenDDS_Dcps.so
+                     ${PARENT_DDS_ROOT_LIBS}/libOpenDDS_Rtps.so
+                     ${PARENT_DDS_ROOT_LIBS}/libOpenDDS_Rtps_Udp.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_PortableServer.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_PortableServer.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_PI.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_CodecFactory.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_AnyTypeCode.so
+                     ${PARENT_DDS_ROOT_LIBS}/libTAO_BiDirGIOP.so)
 
     target_link_libraries(${EXE_NAME} opendds_idl ${DDS_DYN_LIBS})
-
-<<<<<<< HEAD
->>>>>>> initial opendds port, more to come later
-=======
->>>>>>> openDDS integration by I
 endif()
 
 if(BUILD_TESTING)
