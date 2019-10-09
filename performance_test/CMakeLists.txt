@@ -193,6 +193,7 @@ set(sources
     src/utilities/rt_enabler.hpp
     src/utilities/spin_lock.hpp
     src/utilities/statistics_tracker.hpp
+    src/utilities/cpu_usage_tracker.hpp
 )
 
 # ROS2 Waitset

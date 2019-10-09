@@ -99,7 +99,7 @@ AnalyzeRunner::AnalyzeRunner()
 #endif
 }
 
-void AnalyzeRunner::run() const
+void AnalyzeRunner::run()
 {
   m_ec.log("---EXPERIMENT-START---");
   m_ec.log(AnalysisResult::csv_header(true));
@@ -138,7 +138,7 @@ void AnalyzeRunner::run() const
 
 void AnalyzeRunner::analyze(
   const std::chrono::nanoseconds loop_diff_start,
-  const std::chrono::nanoseconds experiment_diff_start) const
+  const std::chrono::nanoseconds experiment_diff_start)
 {
   std::vector<StatisticsTracker> latency_vec(m_sub_runners.size());
   std::transform(m_sub_runners.begin(), m_sub_runners.end(), latency_vec.begin(),
@@ -181,7 +181,8 @@ void AnalyzeRunner::analyze(
     sum_data_received,
     StatisticsTracker(latency_vec),
     StatisticsTracker(ltr_pub_vec),
-    StatisticsTracker(ltr_sub_vec)
+    StatisticsTracker(ltr_sub_vec),
+    cpu_usage_tracker.get_cpu_usage()
   );
 
   m_ec.log(result->to_csv_string(true));
