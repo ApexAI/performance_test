@@ -3,34 +3,16 @@ stages:
   - test
   - deploy
 
-before_script:
-  - source /opt/ros/dashing/setup.bash
-  - apt-get update
-  - '
-    apt-get install -y
-        ros-dashing-osrf-testing-tools-cpp
-        default-jre
-    '
-  - pip3 install -U colcon-common-extensions pytest
-
 build_cross_image:
-  stage: build
-  image: osrf/ros:dashing-desktop
+  stage: deploy
+  image: docker
+  services:
+    - docker:dind
   script:
     - '
       apt-get update && apt-get install -y
           qemu-user-static
-          apt-transport-https
-          ca-certificates
-          curl
-          software-properties-common
       '
-    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-    - '
-      add-apt-repository
-          "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-      '
-    - apt-get install -y docker-ce
     - docker build --build-arg PERFORMANCE_TEST_DOCKER_ARCH=arm64v8 --build-arg PERFORMANCE_TEST_TARGET_ARCH=aarch64 -t performance_test_cross -f tools/Dockerimage.crossbuild .
     - docker run -t -v `pwd`:`pwd` -w `pwd` \
           --rm performance_test_cross \
@@ -40,6 +22,14 @@ build:
   stage: build
   image: osrf/ros:dashing-desktop
   script:
+    - source /opt/ros/dashing/setup.bash
+    - apt-get update
+    - '
+      apt-get install -y
+          ros-dashing-osrf-testing-tools-cpp
+          default-jre
+      '
+    - pip3 install -U colcon-common-extensions pytest
     - mkdir -p /opt/performance_test
     - '
       colcon build
