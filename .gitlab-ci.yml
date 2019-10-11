@@ -4,18 +4,18 @@ stages:
   - deploy
 
 before_script:
-  - source /opt/ros/crystal/setup.bash
+  - source /opt/ros/dashing/setup.bash
   - apt-get update
   - '
     apt-get install -y
-        ros-crystal-osrf-testing-tools-cpp
+        ros-dashing-osrf-testing-tools-cpp
         default-jre
     '
   - pip3 install -U colcon-common-extensions pytest
 
 build:
   stage: build
-  image: osrf/ros:crystal-desktop
+  image: osrf/ros:dashing-desktop
   script:
     - mkdir -p /opt/performance_test
     - '
@@ -39,7 +39,7 @@ build:
 
 test:
   stage: test
-  image: osrf/ros:crystal-desktop
+  image: osrf/ros:dashing-desktop
   dependencies:
     - build
   script:
