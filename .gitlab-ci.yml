@@ -4,7 +4,7 @@ stages:
   - deploy
 
 build_cross_image:
-  stage: deploy
+  stage: build
   image: docker
   services:
     - docker:dind
