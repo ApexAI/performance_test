@@ -19,6 +19,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <sys/times.h>
+
 namespace performance_test
 {
 
@@ -62,66 +64,24 @@ AnalysisResult::AnalysisResult(
                              + std::to_string(m_latency.n()));*/
   }
 
-  //get process cpu times from http://man7.org/linux/man-pages/man2/times.2.html
-  auto retval = times(&m_process_times);
+  // get process cpu times from http://man7.org/linux/man-pages/man2/times.2.html
+  auto retval = times(&m_cpu_usage_tracker.m_process_times);
   if (retval == -1) {
     throw std::runtime_error("Could not get process CPU times.");
   }
 
+  // get total CPU times from http://man7.org/linux/man-pages/man5/proc.5.html
+  m_cpu_usage_tracker.read_cpu_times(m_cpu_usage_tracker.entries);
 
+  //compute total process time
+  const int64_t p_active_time = m_cpu_usage_tracker.m_process_times.tms_cstime +
+    m_cpu_usage_tracker.m_process_times.tms_cutime + m_cpu_usage_tracker.m_process_times.tms_stime +
+    m_cpu_usage_tracker.m_process_times.tms_utime;
+
+  // compute process CPU load
+  m_cpu_usage_tracker.get_load(p_active_time, m_cpu_usage_tracker.m_cpu_total_time);
 }
 
-int64_t CPUsageTracker::read_cpu_times(std::vector<cpu_info> & entries)
-{
-  std::ifstream fileStat("/proc/stat");
-  std::string line;
-  int64_t cpu_total_time = 0;
-
-  const std::string cpu_string("cpu");
-  const std::size_t cpu_string_len = cpu_string.size();
-
-  while (std::getline(fileStat, line)) {
-    // cpu stats line found
-    if (!line.compare(0, cpu_string_len, cpu_string)) {
-      std::istringstream ss(line);
-
-      // store entry
-      entries.emplace_back(cpu_info_obj());
-      cpu_info_obj & entry = entries.back();
-
-      // read cpu label
-      ss >> entry.cpu_label;
-
-      //count the number of cpu cores
-      if (entry.cpu_label.size() > cpu_string_len) {
-        ++m_cpu_cores;
-      }
-
-      // read times
-      for (uint8_t i = 0U; i < static_cast<uint8_t>(CpuTimeState::CPU_TIME_STATES_NUM); ++i) {
-        ss >> entry.cpu_time_array[i];
-      }
-    }
-  }
-
-  // compute cpu total time
-  // Guest and Guest_nice are not included in the total time calculation since, they are
-  // already accounted in user and nice.
-
-  cpu_total_time = (entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_USER)] +
-    entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_NICE)] +
-    entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_SYSTEM)] +
-    entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_IDLE)] +
-    entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_IOWAIT)] +
-    entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_IRQ)] +
-    entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_SOFTIRQ)] +
-    entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_STEAL)]);
-
-  normalized_cpu_total_time = cpu_total_time / m_cpu_cores;
-
-  return normalized_cpu_total_time;
-
-}
 
 std::string AnalysisResult::csv_header(const bool pretty_print, std::string st)
 {
@@ -170,6 +130,8 @@ std::string AnalysisResult::csv_header(const bool pretty_print, std::string st)
   ss << "ru_nsignals" << st;
   ss << "ru_nvcsw" << st;
   ss << "ru_nivcsw" << st;
+
+  ss << "cpu_usage (%)" << st;
 
   return ss.str();
 }
@@ -233,6 +195,7 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   ss << m_sys_usage.ru_nvcsw << st;
   ss << m_sys_usage.ru_nivcsw << st;
 
+  ss << m_cpu_usage_tracker.m_cpu_load << st;
 
   return ss.str();
 }
