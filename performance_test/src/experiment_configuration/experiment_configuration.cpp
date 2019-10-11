@@ -16,6 +16,7 @@
 
 #include <boost/program_options.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <rmw/rmw.h>
 
 #include <iostream>
 #include <iomanip>
@@ -48,6 +49,7 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
            "\nperf_test version: " << version <<
            "\nLogfile name: " << e.logfile_name() <<
            "\nCommunication mean: " << e.com_mean() <<
+           "\nRMW Implementation: " << rmw_get_implementation_identifier() <<
            "\nDDS domain id: " << e.dds_domain_id() <<
            "\nQOS: " << e.qos() <<
            "\nPublishing rate: " << e.rate() <<
