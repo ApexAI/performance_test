@@ -15,7 +15,7 @@ before_script:
 
 build_cross_image:
   stage: build
-  image: ubuntu:bionic
+  image: osrf/ros:dashing-desktop
   script:
     - apt-get update && apt-get install -y --no-install-recommends qemu-user-static
     - docker build --build-arg PERFORMANCE_TEST_DOCKER_ARCH=arm64v8 --build-arg PERFORMANCE_TEST_TARGET_ARCH=aarch64 -t performance_test_cross -f tools/Dockerimage.crossbuild .
