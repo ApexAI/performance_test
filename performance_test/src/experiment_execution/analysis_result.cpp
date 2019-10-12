@@ -14,12 +14,12 @@
 
 #include "analysis_result.hpp"
 
+#include <sys/times.h>
+
 #include <iomanip>
 #include <string>
 #include <iostream>
 #include <fstream>
-
-#include <sys/times.h>
 
 namespace performance_test
 {
@@ -65,21 +65,21 @@ AnalysisResult::AnalysisResult(
   }
 
   // get process cpu times from http://man7.org/linux/man-pages/man2/times.2.html
-  auto retval = times(&m_cpu_usage_tracker.m_process_times);
+  auto retval = times(&m_cpu_usage_tracker.process_cpu_times());
   if (retval == -1) {
     throw std::runtime_error("Could not get process CPU times.");
   }
 
   // get total CPU times from http://man7.org/linux/man-pages/man5/proc.5.html
-  m_cpu_usage_tracker.read_cpu_times(m_cpu_usage_tracker.entries);
+  m_cpu_usage_tracker.read_cpu_times();
 
-  //compute total process time
-  const int64_t p_active_time = m_cpu_usage_tracker.m_process_times.tms_cstime +
-    m_cpu_usage_tracker.m_process_times.tms_cutime + m_cpu_usage_tracker.m_process_times.tms_stime +
-    m_cpu_usage_tracker.m_process_times.tms_utime;
+  // compute total process time
+  const int64_t p_active_time = m_cpu_usage_tracker.process_cpu_times().tms_cstime +
+    m_cpu_usage_tracker.process_cpu_times().tms_cutime + m_cpu_usage_tracker.process_cpu_times()
+    .tms_stime + m_cpu_usage_tracker.process_cpu_times().tms_utime;
 
   // compute process CPU load
-  m_cpu_usage_tracker.get_load(p_active_time, m_cpu_usage_tracker.m_cpu_total_time);
+  m_cpu_usage_tracker.get_load(p_active_time, m_cpu_usage_tracker.cpu_total_time());
 }
 
 
@@ -195,7 +195,7 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   ss << m_sys_usage.ru_nvcsw << st;
   ss << m_sys_usage.ru_nivcsw << st;
 
-  ss << m_cpu_usage_tracker.m_cpu_load << st;
+  ss << m_cpu_usage_tracker.cpu_load() << st;
 
   return ss.str();
 }
