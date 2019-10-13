@@ -14,9 +14,11 @@ build_cross_image:
           qemu-user-static
       '
     - docker build --build-arg PERFORMANCE_TEST_DOCKER_ARCH=arm64v8 --build-arg PERFORMANCE_TEST_TARGET_ARCH=aarch64 -t performance_test_cross -f tools/Dockerimage.crossbuild .
-    - docker run -t -v `pwd`:`pwd` -w `pwd` \
-          --rm performance_test_cross \
+    - '
+      docker run -t -v `pwd`:`pwd` -w `pwd`
+          --rm performance_test_cross
           sh -c "colcon build --merge-install --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/tools/toolchain.cmake -DBUILD_TESTING=OFF"
+      '
 
 build:
   stage: build
