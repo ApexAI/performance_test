@@ -279,33 +279,7 @@ ResourceManager::opendds_participant() const
   std::lock_guard<std::mutex> lock(m_global_mutex);
   
   if (CORBA::is_nil(m_opendds_participant)) {
-#if 0
-     TheServiceParticipant->set_default_discovery(::OpenDDS::DCPS::Discovery::DEFAULT_RTPS);
-     const std::string config_name = "PerfTestConfig";
-     OpenDDS::DCPS::TransportConfig_rch config = TheTransportRegistry->create_config(config_name);
-     OpenDDS::DCPS::TransportInst_rch trans_inst = TheTransportRegistry->create_inst(config_name, "rtps_udp");
-     OpenDDS::DCPS::RtpsUdpInst_rch udp_rtps_inst = OpenDDS::DCPS::dynamic_rchandle_cast<OpenDDS::DCPS::RtpsUdpInst>(trans_inst);
-     
-     udp_rtps_inst->local_address("127.0.0.1:");
-     udp_rtps_inst->multicast_interface_ = "lo";
-
-     config->instances_.push_back(trans_inst);
-     TheTransportRegistry->global_config(config);
-
-     ACE::init();
-     DDS::DomainParticipantFactory_var participant_factory = TheServiceParticipant->TheParticipantFactory;
-
-     ::DDS::DomainParticipantFactoryQos factory_qos;
-     participant_factory->get_qos (factory_qos);
-     factory_qos.entity_factory.autoenable_created_entities=false;
-     participant_factory->set_qos(factory_qos);
-
-     //OpenDDS domain participant qos is realy weird, just octest sequences
-     //for now let's create domain participant with default qos
-     m_opendds_participant = participant_factory->create_participant(m_ec.dds_domain_id(),PARTICIPANT_QOS_DEFAULT,0,OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-     printf("Hello !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-#else
-    DDS::DomainParticipantFactory_var dpf = TheParticipantFactory;
+   DDS::DomainParticipantFactory_var dpf = TheParticipantFactory;
 
     TransportConfig_rch config = TransportRegistry::instance()->create_config("ApexAiConfig");
     TransportInst_rch inst = TransportRegistry::instance()->create_inst("rtps_tran","rtps_udp");
@@ -324,14 +298,15 @@ ResourceManager::opendds_participant() const
 
     RtpsDiscovery_rch disc = make_rch<RtpsDiscovery>("RtpsDiscovery");
     rui->use_multicast_ = true;
+    rui->local_address("127.0.0.1:");
+    rui->multicast_interface_="lo";
+    disc->sedp_multicast(true);
 
     TheServiceParticipant->add_discovery(static_rchandle_cast<Discovery>(disc));
     TheServiceParticipant->set_repo_domain(domain, disc->key());
     DDS::DomainParticipantQos dp_qos;
     dpf->get_default_participant_qos(dp_qos);
     m_opendds_participant = dpf->create_participant(m_ec.dds_domain_id(),PARTICIPANT_QOS_DEFAULT,0,DEFAULT_STATUS_MASK);
-
-#endif
   }
   return m_opendds_participant;
 }
