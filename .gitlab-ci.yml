@@ -32,6 +32,15 @@ build:
           default-jre
       '
     - pip3 install -U colcon-common-extensions pytest
+    - git clone https://github.com/eclipse-cyclonedds/cyclonedds.git
+    - cd cyclonedds
+    - git checkout 4e805597631ed0dcbdc0eecfe9d532cb75180ae7 # Head as of 20190725
+    - mkdir -p build
+    - cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=/opt/cyclonedds ../src
+    - cmake --build .
+    - sudo cmake --build . --target install
+    - find /opt/cyclonedds
     - mkdir -p /opt/performance_test
     - '
       colcon build
@@ -39,6 +48,7 @@ build:
           --merge-install
           --cmake-args
             -DCMAKE_BUILD_TYPE=Release
+            -DPERFORMANCE_TEST_FORCE_CYCLONEDDS=BOOL:ON
           --base-path performance_test
       '
     - cp LICENSE /opt/performance_test
