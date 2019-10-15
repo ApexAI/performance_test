@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMMUNICATION_ABSTRACTIONS__CONNEXT_DDS_MICRO_COMMUNICATOR_HPP_
-#define COMMUNICATION_ABSTRACTIONS__CONNEXT_DDS_MICRO_COMMUNICATOR_HPP_
+#ifndef COMMUNICATION_ABSTRACTIONS__OPENDDS_COMMUNICATOR_HPP_
+#define COMMUNICATION_ABSTRACTIONS__OPENDDS_COMMUNICATOR_HPP_
 
 #include <dds/DCPS/Marked_Default_Qos.h>
 #include <dds/DCPS/WaitSet.h>
@@ -21,13 +21,11 @@
 #include "communicator.hpp"
 #include "resource_manager.hpp"
 
-using namespace std;
-
 namespace performance_test
 {
 
 /**
- * \brief Translates abstract QOS settings to specific QOS settings for Connext DDS Micro data writers and readers.
+ * \brief Translates abstract QOS settings to specific QOS settings for OpenDDS data writers and readers.
  *
  * The reason that this class is constructed like this is that one usually gets a partially specified QOS from the topic
  * or similar higher level entity and just changes some settings from these.
@@ -102,8 +100,6 @@ public:
     }
 
     if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_ALL) {
-      // TODO(andreas.pasternak): Crash on keep all qos.
-      // qos.history.kind = DDS_KEEP_ALL_HISTORY_QOS;
       qos.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
     } else if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_LAST) {
       qos.history.kind = DDS::KEEP_LAST_HISTORY_QOS;
@@ -219,10 +215,6 @@ public:
       dr_qos.resource_limits.max_samples_per_instance = 32;
       /* if there are more remote writers, you need to increase these limits */
       
-      //These are not available in OpenDDS, RTI tricks
-      //dr_qos.reader_resource_limits.max_remote_writers = 10;
-      //dr_qos.reader_resource_limits.max_remote_writers_per_instance = 10;
-
       OpenDdsQOSAdapter qos_adapter(m_ec.qos());
       qos_adapter.apply_dr(dr_qos);
 
@@ -283,7 +275,7 @@ public:
       unlock();
 
       if (m_ec.roundtrip_mode() == ExperimentConfiguration::RoundTripMode::RELAY) {
-        throw std::runtime_error("Round trip mode is not implemented for Connext DDS Micro!");
+        throw std::runtime_error("Round trip mode is not implemented for OpenDDS!");
       }
 
       m_typed_datareader->return_loan(m_data_seq,
