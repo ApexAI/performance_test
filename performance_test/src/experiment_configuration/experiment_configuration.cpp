@@ -464,7 +464,6 @@ std::string ExperimentConfiguration::rmw_implementation() const
 
 std::string ExperimentConfiguration::perf_test_version() const
 {
-  check_setup();
   return m_perf_test_version;
 }
 
