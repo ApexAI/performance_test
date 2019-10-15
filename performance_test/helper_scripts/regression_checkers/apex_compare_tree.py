@@ -112,7 +112,7 @@ if __name__ == '__main__':
             target_file = target_files_list[i]
 
             # Create comparisson instance
-            comparision = ApexComparison.ApexComparision(
+            comparison = ApexComparison.ApexComparison(
                 logger,
                 ref_file,
                 target_file,
@@ -123,7 +123,7 @@ if __name__ == '__main__':
                 jitter_threshold=jitter_threshold,
                 print_enable=print_results
             )
-            if comparision.compare() is False:
+            if comparison.compare() is False:
                 exit_value = 1  # An exit value of 1 signifies failure
         except Exception as e:
             logger.warning('Exception occurred: {}'.format(e))
