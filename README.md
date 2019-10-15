@@ -3,10 +3,10 @@
 
 # Introduction
 
-**Version Support:** ROS2 Crystal, Fast-RTPS 1.7.0
+**Version Support:** ROS2 Dashing, Fast-RTPS 1.8.0
 
 This test allows you to test performance and latency of various communication means
-like ROS 2, FastRTPS and Connext DDS Micro.
+like ROS 2, ROS 2 Waitset, FastRTPS, Connext DDS Micro and Eclipse Cyclone DDS.
 
 It can be extended to other communication frameworks easily.
 
@@ -17,6 +17,12 @@ A detailed description can be found here: [Design Article](performance_test/desi
 ## Building and running performance test
 
 ROS 2: https://github.com/ros2/ros2/wiki/Installation
+
+Additional dependencies are Java and others declared in the `package.xml` file 
+```
+sudo apt-get install default-jre
+rosdep install -y --from performance_test --ignore-src
+```
 
 ## Generating graphical plots
 
@@ -40,23 +46,41 @@ ros2 run performance_test perf_test --help
 ```
 # Plot results
 
+To plot the results, you will need to install the perfplot tool from the apex_performance_plotter python module.
+
+```bash
+pip3 install performance_test/helper_scripts/apex_performance_plotter
+```
+
+This tool will convert performance test log files into PDFs containing graphs of the results.
+
+Note: Some of the dependencies of apex_performance_plotter (specifically pandas, at the time of writing) require python 3.6.
+It is possible to get apex_performance_plotter working with older dependencies that run with python 3.5, but that is beyond the
+scope of this document
+
+## Example
+
 After building, a simple experiment can be run using the following.
 
 Before you start please create a directory for the output.
+
 ```
 mkdir experiment
 cd experiment
-```
-
-then run the test.
-```
-ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 10
+ros2 run performance_test perf_test -c ROS2 -l log -t Array1k --max_runtime 30
 ```
 
 The generated log-files can then be plotted into a PDF file using:
+
 ```
-ros2 run performance_test performance_test_file_reader.py .
+perfplot log_Array1k_19-09-2019_12-13-49
 ```
+
+This will generate a file called `log_Array1k_19-09-2019_12-13-49.pdf`.
+
+# Save results to a SQL database
+
+See [Add SQL support readme](add_sql_support_readme.md) for instructions and implementation details.
 
 # Batch run experiments (for advanced users)
 

@@ -33,11 +33,10 @@ import jinja2
 
 import pandas
 
+from .generate_plots import generate_figures
+
 
 __version__ = '0.1.0'
-
-
-GETRUSAGE = '\\href{http://man7.org/linux/man-pages/man2/getrusage.2.html}{man getrusage}'
 
 
 def sanitize(val):
@@ -101,7 +100,7 @@ def create_layout(header, dataframe):
         'Logfile name', 'Experiment id', 'Communication mean', 'Publishing rate',
         'Topic name', 'Number of publishers', 'Number of subscribers', 'Maximum runtime (sec)',
         'DDS domain id', 'QOS', 'Use ros SHM', 'Use single participant', 'Not using waitset',
-        'Not using Connext DDS Micro INTRA',
+        'Not using Connext DDS Micro INTRA', 'Performance Test Version',
     }
 
     header.update(dict('QOS {}'.format(x).split(': ')
@@ -111,7 +110,7 @@ def create_layout(header, dataframe):
     y11 = dataframe['latency_min (ms)'].tolist()
     y12 = dataframe['latency_max (ms)'].tolist()
     y13 = dataframe['latency_mean (ms)'].tolist()
-    y14 = (dataframe['latency_variance (ms)'] * 100).tolist()
+    y14 = dataframe['latency_variance (ms)'].tolist()
 
     yr11 = (dataframe['ru_maxrss'] / 1e3).tolist()
 
@@ -128,47 +127,20 @@ def create_layout(header, dataframe):
             create_kv(header, 'Experiment id'),
             create_kv(header, 'Communication mean'),
         ],
-        'figures': [
-            {
-                'caption': 'Latencies',
-                'xlabel': 'time',
-                'ylabel': 'latency (ms)',
-                'traces': [
-                    {'name': 'min', 'x': xaxis, 'y': y11},
-                    {'name': 'max', 'x': xaxis, 'y': y12},
-                    {'name': 'mean', 'x': xaxis, 'y': y13},
-                    {'name': 'variance * 100', 'x': xaxis, 'y': y14},
-                ],
-                'xrange': [min(xaxis) - 5, max(xaxis) + 5],
-                'yrange': [min([*y11, *y12, *y13, *y14]) - .5, max([*y11, *y12, *y13, *y14]) + .5],
-                'axis2': {
-                    'ylabel': 'maxrss (MB)',
-                    'traces': [
-                        {'name': 'maxrss (MB)', 'x': xaxis, 'y': yr11},
-                    ],
-                    'xrange': [min(xaxis) - 5, max(xaxis) + 5],
-                    'yrange': [min([*yr11]) - .5, max([*yr11]) + .5],
-                },
-            },
-            {
-                'caption': 'Resource usage ({})'.format(GETRUSAGE),
-                'xlabel': 'time',
-                'ylabel': 'usage',
-                'traces': [
-                    {'name': 'ru_minflt', 'x': xaxis, 'y': y21},
-                    {'name': 'ru_majflt', 'x': xaxis, 'y': y22},
-                    {'name': 'ru_nivcsw', 'x': xaxis, 'y': y23},
-                ],
-                'xrange': [min(xaxis) - 5, max(xaxis) + 5],
-                'yrange': [min([*y21, *y22, *y23]) - 2500, max([*y21, *y22, *y23]) + 2500],
-                'axis2': {
-                    'traces': [
-                    ],
-                },
-            },
-        ],
+        'figures': generate_figures(
+            xaxis,
+            y11,
+            y12,
+            y13,
+            y14,
+            yr11,
+            y21,
+            y22,
+            y23
+        ),
         'categories': [
             {'name': 'test setup', 'items': [
+                create_kv(header, 'Performance Test Version'),
                 create_kv(header, 'Publishing rate'),
                 create_kv(header, 'Topic name'),
                 create_kv(header, 'Number of publishers'),
@@ -179,25 +151,37 @@ def create_layout(header, dataframe):
                 create_kv(header, 'Use single participant', boolish=True),
                 create_kv(header, 'Not using waitset', boolish=True),
                 create_kv(header, 'Not using Connext DDS Micro INTRA', boolish=True),
-                create_kv(header, 'QOS Reliability'),
-                create_kv(header, 'QOS Durability'),
-                create_kv(header, 'QOS History kind'),
-                create_kv(header, 'QOS History depth'),
             ]},
             {'name': 'average results', 'items': [
+                {'key': 'Experiment Status', 'value': 'success' if xaxis else 'failed'},
                 *[create_kv(means, key) for key in means.keys()
                   if key != 'T_experiment' and not key.startswith('ru_')],
             ]},
             {'name': 'environment', 'items': [
-                *[create_kv(header, key) for key in set(header.keys()) - header_fields],
+                *[create_kv(header, key) for key in sorted(set(header.keys()) - header_fields)],
             ]},
         ],
     }
 
 
-def render(template, filename, skip_head=0, skip_tail=0):
+def render(template, filepath, skip_head=0, skip_tail=0):
     """Render one file into a pdf."""
-    header, dataframe = load_logfile(filename)
+    filename = os.path.basename(filepath)
+    header, dataframe = load_logfile(filepath)
+
+    # Valudate the dataframe.  We are expected to produce a plot if there is no data, but if the
+    # user gave us silly command line arguments like "skip more data than we recorded" we can
+    # still error out
+    if skip_head + skip_tail > len(dataframe):
+        print(
+            "ERROR: Told to skip {} rows from the start and {} rows from the end "
+            "but there are only {} rows or data".format(
+                skip_head,
+                skip_tail,
+                len(dataframe)
+            )
+        )
+        sys.exit(1)
 
     dataframe.drop(dataframe.index[0:skip_head], inplace=True)
     dataframe.drop(dataframe.index[len(dataframe) - skip_tail:len(dataframe)], inplace=True)
@@ -209,7 +193,7 @@ def render(template, filename, skip_head=0, skip_tail=0):
         with open(texname, 'w') as fhandle:
             fhandle.write(tex)
 
-        print('Running tex for {}'.format(filename))
+        print('Running tex for {}'.format(filepath))
         cmd = ['lualatex', '--interaction=nonstopmode', texname]
         ret = subprocess.run(cmd, cwd=dirname, stdout=subprocess.PIPE)
         if ret.returncode:
@@ -218,12 +202,14 @@ def render(template, filename, skip_head=0, skip_tail=0):
             sys.exit(2)
 
         pdfname = os.path.join(dirname, '{}.pdf'.format(filename))
-        shutil.copy(pdfname, os.path.dirname(os.path.abspath(filename)))
+        shutil.copy(pdfname, os.path.dirname(os.path.abspath(filepath)))
 
 
 @click.command()
-@click.option('--skip-head', default=0, help='Number of head rows to skip.')
-@click.option('--skip-tail', default=0, help='Number of tail rows to skip.')
+@click.option('--skip-head', type=click.IntRange(0, float('inf')),
+              default=0, help='Number of head rows to skip.')
+@click.option('--skip-tail', type=click.IntRange(0, float('inf')),
+              default=0, help='Number of tail rows to skip.')
 @click.argument('filenames', type=click.Path(exists=True), nargs=-1, required=True)
 def plot_logfiles(skip_head, skip_tail, filenames):
     """CLI entrypoint for plotting multiple files."""
@@ -233,7 +219,8 @@ def plot_logfiles(skip_head, skip_tail, filenames):
 
     template = load_template()
     for filename in filenames:
-        render(template, filename, skip_head, skip_tail)
+        abs_path = os.path.abspath(filename)
+        render(template, abs_path, skip_head, skip_tail)
 
 
 if __name__ == '__main__':

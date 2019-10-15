@@ -244,4 +244,23 @@ void ResourceManager::connext_dds_micro_subscriber(
   }
 }
 #endif
+
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+dds_entity_t ResourceManager::cyclonedds_participant() const
+{
+  std::lock_guard<std::mutex> lock(m_global_mutex);
+
+  dds_entity_t result = 0;
+
+  if (!m_ec.use_single_participant()) {
+    result = dds_create_participant(DDS_DOMAIN_DEFAULT, nullptr, nullptr);
+  } else {
+    if (!m_cyclonedds_participant) {
+      result = dds_create_participant(DDS_DOMAIN_DEFAULT, nullptr, nullptr);
+    }
+    result = m_cyclonedds_participant;
+  }
+  return result;
+}
+#endif
 }  // namespace performance_test

@@ -21,12 +21,20 @@
 
 #include "../communication_abstractions/ros2_callback_communicator.hpp"
 
+#ifdef PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED
+  #include "../communication_abstractions/ros2_waitset_communicator.hpp"
+#endif
+
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
   #include "../communication_abstractions/fast_rtps_communicator.hpp"
 #endif
 
 #ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   #include "../communication_abstractions/connext_dds_micro_communicator.hpp"
+#endif
+
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+  #include "../communication_abstractions/cyclonedds_communicator.hpp"
 #endif
 
 #include "data_runner.hpp"
@@ -50,6 +58,10 @@ std::shared_ptr<DataRunnerBase> DataRunnerFactory::get(
         }
         if (com_mean == CommunicationMean::ROS2) {
           ptr = std::make_shared<DataRunner<ROS2CallbackCommunicator<T>>>(run_type);
+#ifdef PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED
+        } else if (com_mean == CommunicationMean::ROS2PollingSubscription) {
+          ptr = std::make_shared<DataRunner<ROS2WaitsetCommunicator<T>>>(run_type);
+#endif
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
         } else if (com_mean == CommunicationMean::FASTRTPS) {
           ptr = std::make_shared<DataRunner<FastRTPSCommunicator<T>>>(run_type);
@@ -57,6 +69,10 @@ std::shared_ptr<DataRunnerBase> DataRunnerFactory::get(
 #ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
         } else if (com_mean == CommunicationMean::CONNEXTDDSMICRO) {
           ptr = std::make_shared<DataRunner<RTIMicroDDSCommunicator<T>>>(run_type);
+#endif
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+        } else if (com_mean == CommunicationMean::CYCLONEDDS) {
+          ptr = std::make_shared<DataRunner<CycloneDDSCommunicator<T>>>(run_type);
 #endif
         }
       }

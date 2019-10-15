@@ -28,6 +28,10 @@
   #include <rti_me_cpp.hxx>
 #endif
 
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+  #include <dds/dds.h>
+#endif
+
 #include <cstdlib>
 #include <memory>
 #include <mutex>
@@ -82,6 +86,11 @@ public:
   void connext_dds_micro_subscriber(DDSSubscriber * & subscriber, DDS_DataReaderQos & dr_qos) const;
 #endif
 
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+  /// Returns Cyclone DDS participant.
+  dds_entity_t cyclonedds_participant() const;
+#endif
+
 private:
   ResourceManager()
   : m_ec(ExperimentConfiguration::get()),
@@ -91,6 +100,9 @@ private:
 #endif
 #ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
     , m_connext_dds_micro_participant(nullptr)
+#endif
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+    , m_cyclonedds_participant(0)
 #endif
   {}
 
@@ -104,6 +116,10 @@ private:
 
 #ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
   mutable DDSDomainParticipant * m_connext_dds_micro_participant;
+#endif
+
+#ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
+  mutable dds_entity_t m_cyclonedds_participant;
 #endif
 
   mutable std::mutex m_global_mutex;

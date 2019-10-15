@@ -26,14 +26,19 @@ The tool has a fully documented command line interface which can be accessed by 
 To run more extensive tests, the following script can be used and adapted:
 `helper_scripts/run_experiment.py`
 
-The logfiles can be visualized using the following python script:
-`helper_scripts/performance_test_file_reader.py`
-Note that `pandas` is required to run this script.
+The logfiles can be visualized using the apex_performance_plotter module:
+```
+pip3 install performance_test/helper_scripts/apex_performance_plotter
+perfplot NAME_OF_LOG_FILE
+```
 
 ##### CMAKE options
 
 * `-DPERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED` Enable Connext DDS Micro support. Enabled by default.
 * `-DPERFORMANCE_TEST_FASTRTPS_ENABLED` Enables FastRTPS support. Enabled by default.
+* `-DPERFORMANCE_TEST_CYCLONEDDS_ENABLED` Enables CycloneDDS support. Enabled by default.
+* `-DODB_FOR_SQL_ENABLED` Enables saving results to SQL database format. Disabled by default.
+* `-DPERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED` Enables ROS2 Waitset support. Disabled by default.
 
 > ROS 2 support is always enabled.
 
@@ -91,6 +96,3 @@ https://gitlab.apex.ai/ApexAI/grand_central/issues/957
 https://gitlab.apex.ai/ApexAI/grand_central/issues/1305
 https://gitlab.apex.ai/ApexAI/grand_central/issues/1382
 https://gitlab.apex.ai/ApexAI/grand_central/issues/1305
-
-
-
