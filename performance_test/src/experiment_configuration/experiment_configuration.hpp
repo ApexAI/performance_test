@@ -128,6 +128,12 @@ public:
   bool is_with_security() const;
   /// \returns Returns the roundtrip mode.
   RoundTripMode roundtrip_mode() const;
+  /// \returns Returns current rmw_implementation. This will throw if the experiment configuration
+  /// is not set up.
+  std::string rmw_implementation() const;
+  /// \returns Returns current performance test version. This will throw if the experiment
+  // configuration is not set up.
+  std::string perf_test_version() const;
   /// \returns Returns the publishing topic postfix
   std::string pub_topic_postfix() const;
   /// \returns Returns the subscribing topic postfix
@@ -226,6 +232,9 @@ private:
   bool m_with_security;
 
   RoundTripMode m_roundtrip_mode;
+
+  std::string m_rmw_implementation;
+  std::string m_perf_test_version;
 
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #pragma db value_not_null inverse(m_configuration)

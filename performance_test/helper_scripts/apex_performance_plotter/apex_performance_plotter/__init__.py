@@ -100,7 +100,7 @@ def create_layout(header, dataframe):
         'Logfile name', 'Experiment id', 'Communication mean', 'Publishing rate',
         'Topic name', 'Number of publishers', 'Number of subscribers', 'Maximum runtime (sec)',
         'DDS domain id', 'QOS', 'Use ros SHM', 'Use single participant', 'Not using waitset',
-        'Not using Connext DDS Micro INTRA', 'perf_test version',
+        'Not using Connext DDS Micro INTRA', 'Performance Test Version',
     }
 
     header.update(dict('QOS {}'.format(x).split(': ')
@@ -140,7 +140,7 @@ def create_layout(header, dataframe):
         ),
         'categories': [
             {'name': 'test setup', 'items': [
-                create_kv(header, 'perf_test version'),
+                create_kv(header, 'Performance Test Version'),
                 create_kv(header, 'Publishing rate'),
                 create_kv(header, 'Topic name'),
                 create_kv(header, 'Number of publishers'),

@@ -16,6 +16,7 @@
 
 #include <boost/program_options.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <rmw/rmw.h>
 
 #include <iostream>
 #include <iomanip>
@@ -45,9 +46,10 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
   if (e.is_setup()) {
     return stream <<
            "Experiment id: " << e.id() <<
-           "\nperf_test version: " << version <<
+           "\nPerformance Test Version: " << e.perf_test_version() <<
            "\nLogfile name: " << e.logfile_name() <<
            "\nCommunication mean: " << e.com_mean() <<
+           "\nRMW Implementation: " << e.rmw_implementation() <<
            "\nDDS domain id: " << e.dds_domain_id() <<
            "\nQOS: " << e.qos() <<
            "\nPublishing rate: " << e.rate() <<
@@ -126,6 +128,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
+  m_perf_test_version = version;
 
   try {
     if (vm.count("topic_list")) {
@@ -137,7 +140,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     }
 
     if (vm.count("help")) {
-      std::cout << "Version: " << version << "\n";
+      std::cout << "Version: " << perf_test_version() << "\n";
       std::cout << desc << "\n";
       exit(0);
     }
@@ -297,6 +300,8 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
         throw std::invalid_argument("Invalid roundtrip mode: " + mode);
       }
     }
+    m_rmw_implementation = rmw_get_implementation_identifier();
+
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
     if (vm.count("db_name")) {
       m_db_name = vm["db_name"].as<std::string>();
@@ -449,6 +454,18 @@ ExperimentConfiguration::RoundTripMode ExperimentConfiguration::roundtrip_mode()
 {
   check_setup();
   return m_roundtrip_mode;
+}
+
+std::string ExperimentConfiguration::rmw_implementation() const
+{
+  check_setup();
+  return m_rmw_implementation;
+}
+
+std::string ExperimentConfiguration::perf_test_version() const
+{
+  check_setup();
+  return m_perf_test_version;
 }
 
 std::string ExperimentConfiguration::pub_topic_postfix() const
