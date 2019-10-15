@@ -128,7 +128,8 @@ public:
   bool is_with_security() const;
   /// \returns Returns the roundtrip mode.
   RoundTripMode roundtrip_mode() const;
-  /// \returns Returns current rmw_implementation. This will throw if the experiment configuration is not set up.
+  /// \returns Returns current rmw_implementation. This will throw if the experiment configuration
+  /// is not set up.
   std::string rmw_implementation() const;
   /// \returns Returns current performance test version. This will throw if the experiment
   // configuration is not set up.

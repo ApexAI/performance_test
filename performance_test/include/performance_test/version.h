@@ -16,9 +16,9 @@
 #define PERFORMANCE_TEST__VERSION_H_
 
 #ifdef PERFORMANCE_TEST_VERSION
-const std::string version = PERFORMANCE_TEST_VERSION;
+const char * version = PERFORMANCE_TEST_VERSION;
 #else
-const std::string version = "unknown";
+const char * version = "unknown";
 #endif
 
 #endif  // PERFORMANCE_TEST__VERSION_H_
