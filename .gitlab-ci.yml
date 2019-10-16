@@ -29,7 +29,8 @@ build:
     - '
       apt-get install -y
           ros-dashing-osrf-testing-tools-cpp
-          default-jre
+          default-jdk
+          maven
       '
     - pip3 install -U colcon-common-extensions pytest
     - git clone https://github.com/eclipse-cyclonedds/cyclonedds.git
