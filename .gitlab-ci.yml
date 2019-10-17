@@ -42,6 +42,7 @@ build:
     - cmake --build .
     - sudo cmake --build . --target install
     - find /opt/cyclonedds
+    - cd $CI_PROJECT_DIR
     - mkdir -p /opt/performance_test
     - '
       colcon build
