@@ -24,7 +24,7 @@ def generate_figures(xaxis,
                      minflt_ydata,
                      majflt_ydata,
                      nivcsw_ydata,
-                     cpusage_ydata,
+                     cpu_usage_ydata,
                      ):
     """
     Generate the figures for a perf_plot PDF.
@@ -64,10 +64,10 @@ def generate_figures(xaxis,
                 {'name': 'ru_minflt', 'x': xaxis, 'y': minflt_ydata},
                 {'name': 'ru_majflt', 'x': xaxis, 'y': majflt_ydata},
                 {'name': 'ru_nivcsw', 'x': xaxis, 'y': nivcsw_ydata},
-                {'name': 'cpu(%)', 'x': xaxis, 'y': cpusage_ydata},
+                {'name': 'cpu(%)', 'x': xaxis, 'y': cpu_usage_ydata},
             ],
             'xrange': get_range(5, xaxis),
-            'yrange': get_range(2500, minflt_ydata, majflt_ydata, nivcsw_ydata, cpusage_ydata),
+            'yrange': get_range(2500, minflt_ydata, majflt_ydata, nivcsw_ydata, cpu_usage_ydata),
             'axis2': {
                 'ylabel': 'maxrss (MB)',
                 'traces': [

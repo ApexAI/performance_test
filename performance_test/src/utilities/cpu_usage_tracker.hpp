@@ -39,6 +39,107 @@ public:
     m_prev_total_time(0),
     proc_stat_file("/proc/stat", std::ifstream::in) {}
 
+
+  /**
+* \brief Computes the CPU load % as (process_active_time/total_cpu_time)*100
+* This throws an exception if the total time is not updated
+*
+*/
+  void get_load()
+  {
+    // get process cpu times from http://man7.org/linux/man-pages/man2/times.2.html
+    auto retval = times(&m_process_cpu_times);
+    if (retval == -1) {
+      throw std::runtime_error("Could not get process CPU times.");
+    }
+
+    // compute total process time
+    const int64_t process_active_time = m_process_cpu_times.tms_cstime + m_process_cpu_times
+      .tms_cutime +
+      m_process_cpu_times.tms_stime + m_process_cpu_times.tms_utime;
+
+    // get total CPU times from http://man7.org/linux/man-pages/man5/proc.5.html
+    read_total_cpu_times();
+    const int64_t cpu_total_time = m_cpu_total_time;
+
+    // active time and total time are valid
+    if ((process_active_time > 0) &&
+      (cpu_total_time > 0) &&
+      (cpu_total_time >= process_active_time))
+    {
+      // The CPU times should always be incrementing
+      if ((process_active_time >= m_prev_active_time) &&
+        (cpu_total_time >= m_prev_total_time))
+      {
+        // The diff should never be negative
+        const int64_t active_time_diff = process_active_time - m_prev_active_time;
+        const int64_t total_time_diff = cpu_total_time - m_prev_total_time;
+        // compute CPU load
+        if (active_time_diff != 0) {  // if the active time diff is non zero
+          if (total_time_diff != 0) {  // if the total time diff is non zero
+            m_cpu_load =
+              (static_cast<float_t>(active_time_diff) /
+              static_cast<float_t>(total_time_diff)) * 100.0F;
+          } else {  // when the total time diff is 0
+            // this should never happen
+            throw std::runtime_error("get_load: CPU times are not updated!");
+          }
+        } else {
+          if (total_time_diff != 0) {
+            // when the active time diff is 0 and total time diff is non 0
+            // CPU if completely idle (ideal case)
+            m_cpu_load = 0.0F;
+          } else {  // when the total time diff is 0
+            // this should never happen
+            throw std::runtime_error("get_load: CPU times are not updated!");
+          }
+        }
+
+        // update previous times
+        m_prev_active_time = process_active_time;
+        m_prev_total_time = cpu_total_time;
+
+      } else {
+        throw std::invalid_argument("get_load: time travelled backwards.");
+      }
+    } else {
+      throw std::invalid_argument("get_load: process_active_time > cpu_total_time");
+    }
+  }
+
+  /// Returns the total cpu cores on current machine
+  uint32_t cpu_cores() const
+  {
+    return m_cpu_cores;
+  }
+
+  /// Returns the total CPU time since boot
+  int64_t cpu_total_time() const
+  {
+    return m_cpu_total_time;
+  }
+
+  /// Returns the CPU load of the current process
+  float_t cpu_load() const
+  {
+    return m_cpu_load;
+  }
+
+  /// Returns the CPU time of the current process
+  tms & process_cpu_times()
+  {
+    return m_process_cpu_times;
+  }
+
+private:
+  uint32_t m_cpu_cores;
+  int64_t m_cpu_total_time;
+  int64_t m_prev_active_time;
+  int64_t m_prev_total_time;
+  float_t m_cpu_load;
+  tms m_process_cpu_times;
+  std::ifstream proc_stat_file;
+
   /**
  * \brief Enums for specifying CPU Time states.
  *
@@ -87,14 +188,17 @@ public:
     int64_t cpu_time_array[static_cast<uint8_t>(CpuTimeState::CPU_TIME_STATES_NUM)];
   } cpu_info_obj;
 
+
+  std::vector<CPUsageTracker::cpu_info> m_entries;
+
   /**
  * \brief Reads the total cpu time.
  *
  *  This function parses the output of /proc/stat which contains information on cpu time spent
- *  since boot. It computes the total CPU time since boot and updates the  m_cpu_total_time.
+ *  since boot. It computes the total CPU time since boot and updates the m_cpu_total_time.
  *
  */
-  void read_cpu_times()
+  void read_total_cpu_times()
   {
     std::string line;
     const std::string cpu_string("cpu");
@@ -123,7 +227,7 @@ public:
       }
     }
     // compute cpu total time
-    // Guest and Guest_nice are not included in the total time calculation since, they are
+    // Guest and Guest_nice are not included in the total time calculation since they are
     // already accounted in user and nice.
 
     m_cpu_total_time = (m_entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_USER)] +
@@ -141,114 +245,6 @@ public:
     proc_stat_file.clear();
     proc_stat_file.seekg(0, std::ifstream::beg);
   }
-
-  /**
-* \brief Computes the CPU load
-* This throws an exception if the total time is not updated
-*  \param[in] active_time : CPU time taken by current process
-*  \param[in] total_time : current CPU total time
-*
-*/
-  void get_load()
-  {
-    // get process cpu times from http://man7.org/linux/man-pages/man2/times.2.html
-    auto retval = times(&m_process_cpu_times);
-    if (retval == -1) {
-      throw std::runtime_error("Could not get process CPU times.");
-    }
-
-    // compute total process time
-    const int64_t p_active_time = m_process_cpu_times.tms_cstime + m_process_cpu_times.tms_cutime +
-      m_process_cpu_times.tms_stime + m_process_cpu_times.tms_utime;
-
-    // get total CPU times from http://man7.org/linux/man-pages/man5/proc.5.html
-    read_cpu_times();
-    const int64_t total_time = m_cpu_total_time;
-
-    // active time and total time are valid
-    if ((p_active_time > 0) &&
-      (total_time > 0) &&
-      (total_time >= p_active_time))
-    {
-      // The CPU times should always be incrementing
-      if ((p_active_time >= m_prev_active_time) &&
-        (total_time >= m_prev_total_time))
-      {
-        // The diff should never be negative
-        const int64_t active_time_diff = p_active_time - m_prev_active_time;
-        const int64_t total_time_diff = total_time - m_prev_total_time;
-        // compute CPU load
-        if (active_time_diff != 0) {  // if the active time diff is non zero
-          if (total_time_diff != 0) {  // if the total time diff is non zero
-            m_cpu_load =
-              (static_cast<float_t>(active_time_diff) /
-              static_cast<float_t>(total_time_diff)) * 100.0F;
-          } else {  // when the total time diff is 0
-            // this should never happen
-            throw std::runtime_error("get_load: CPU times are not updated!");
-          }
-        } else {
-          if (total_time_diff != 0) {
-            // when the active time diff is 0 and total time diff is non 0
-            // CPU if completely idle (ideal case)
-            m_cpu_load = 0.0F;
-          } else {  // when the total time diff is 0
-            // this should never happen
-            throw std::runtime_error("get_load: CPU times are not updated!");
-          }
-        }
-
-        // update previous times
-        m_prev_active_time = p_active_time;
-        m_prev_total_time = total_time;
-
-      } else {
-        throw std::invalid_argument("get_load: time travelled backwards.");
-      }
-    } else {
-      throw std::invalid_argument("get_load: active time > total time");
-    }
-  }
-
-  /// Returns the total cpu cores on current machine
-  uint32_t cpu_cores() const
-  {
-    return m_cpu_cores;
-  }
-
-  /// Returns the total CPU time since boot
-  int64_t cpu_total_time() const
-  {
-    return m_cpu_total_time;
-  }
-
-  /// Returns the CPU load of thr current process
-  float_t cpu_load() const
-  {
-    return m_cpu_load;
-  }
-
-  /// Returns the CPU time of the current process
-  tms & process_cpu_times()
-  {
-    return m_process_cpu_times;
-  }
-
-  /// Returns the parsed output from `proc/stat`
-  std::vector<CPUsageTracker::cpu_info> entries() const
-  {
-    return m_entries;
-  }
-
-private:
-  uint32_t m_cpu_cores;
-  int64_t m_cpu_total_time;
-  int64_t m_prev_active_time;
-  int64_t m_prev_total_time;
-  float_t m_cpu_load;
-  tms m_process_cpu_times;
-  std::ifstream proc_stat_file;
-  std::vector<CPUsageTracker::cpu_info> m_entries;
 };
 }  // namespace performance_test
 

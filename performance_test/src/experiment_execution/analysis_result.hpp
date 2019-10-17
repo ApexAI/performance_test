@@ -160,7 +160,7 @@ private:
 #pragma db transient
 #endif
   rusage m_sys_usage;
-  const float_t m_cpu_load;
+  const float_t m_cpu_load = {};
 };
 
 }  // namespace performance_test

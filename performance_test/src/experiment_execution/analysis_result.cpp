@@ -19,7 +19,6 @@
 #include <iomanip>
 #include <string>
 #include <iostream>
-#include <fstream>
 
 namespace performance_test
 {
