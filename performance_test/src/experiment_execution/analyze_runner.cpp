@@ -172,6 +172,9 @@ void AnalyzeRunner::analyze(
     sum_data_received += e->sum_data_received();
   }
 
+  // Get the CPU load
+  cpu_usage_tracker.get_load();
+
   auto result = std::make_shared<AnalysisResult>(
     experiment_diff_start,
     loop_diff_start,
@@ -181,7 +184,8 @@ void AnalyzeRunner::analyze(
     sum_data_received,
     StatisticsTracker(latency_vec),
     StatisticsTracker(ltr_pub_vec),
-    StatisticsTracker(ltr_sub_vec)
+    StatisticsTracker(ltr_sub_vec),
+    cpu_usage_tracker.cpu_load()
   );
 
   m_ec.log(result->to_csv_string(true));

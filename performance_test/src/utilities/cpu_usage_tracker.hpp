@@ -18,6 +18,7 @@
 
 #include <sys/times.h>
 #include <sys/types.h>
+
 #include <unistd.h>
 
 #include <fstream>
@@ -33,7 +34,10 @@ public:
   CPUsageTracker()
   : m_cpu_cores(0U),
     m_cpu_total_time(0),
-    m_cpu_load(0.0) {}
+    m_cpu_load(0.0),
+    m_prev_active_time(0),
+    m_prev_total_time(0),
+    proc_stat_file("/proc/stat", std::ifstream::in) {}
 
   /**
  * \brief Enums for specifying CPU Time states.
@@ -92,11 +96,9 @@ public:
  */
   void read_cpu_times()
   {
-    std::ifstream proc_stat_file("/proc/stat");
     std::string line;
     const std::string cpu_string("cpu");
     const std::size_t cpu_string_len = cpu_string.size();
-
     while (std::getline(proc_stat_file, line)) {
       // cpu stats line found
       if (!line.compare(0, cpu_string_len, cpu_string)) {
@@ -120,7 +122,6 @@ public:
         }
       }
     }
-
     // compute cpu total time
     // Guest and Guest_nice are not included in the total time calculation since, they are
     // already accounted in user and nice.
@@ -133,6 +134,12 @@ public:
       m_entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_IRQ)] +
       m_entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_SOFTIRQ)] +
       m_entries[0].cpu_time_array[static_cast<uint8_t>(CpuTimeState::CS_STEAL)]);
+
+    // Clear entries vector for next iteration
+    m_entries.clear();
+    // Reset the eof file flag and move file pointer to beginning for next read
+    proc_stat_file.clear();
+    proc_stat_file.seekg(0, std::ifstream::beg);
   }
 
   /**
@@ -142,20 +149,34 @@ public:
 *  \param[in] total_time : current CPU total time
 *
 */
-  void get_load(const int64_t active_time, const int64_t total_time)
+  void get_load()
   {
+    // get process cpu times from http://man7.org/linux/man-pages/man2/times.2.html
+    auto retval = times(&m_process_cpu_times);
+    if (retval == -1) {
+      throw std::runtime_error("Could not get process CPU times.");
+    }
+
+    // compute total process time
+    const int64_t p_active_time = m_process_cpu_times.tms_cstime + m_process_cpu_times.tms_cutime +
+      m_process_cpu_times.tms_stime + m_process_cpu_times.tms_utime;
+
+    // get total CPU times from http://man7.org/linux/man-pages/man5/proc.5.html
+    read_cpu_times();
+    const int64_t total_time = m_cpu_total_time;
+
     // active time and total time are valid
-    if ((active_time > 0) &&
+    if ((p_active_time > 0) &&
       (total_time > 0) &&
-      (total_time >= active_time))
+      (total_time >= p_active_time))
     {
       // The CPU times should always be incrementing
-      if ((active_time >= CPUsageTracker::m_prev_active_time) &&
-        (total_time >= CPUsageTracker::m_prev_total_time))
+      if ((p_active_time >= m_prev_active_time) &&
+        (total_time >= m_prev_total_time))
       {
         // The diff should never be negative
-        const int64_t active_time_diff = active_time - CPUsageTracker::m_prev_active_time;
-        const int64_t total_time_diff = total_time - CPUsageTracker::m_prev_total_time;
+        const int64_t active_time_diff = p_active_time - m_prev_active_time;
+        const int64_t total_time_diff = total_time - m_prev_total_time;
         // compute CPU load
         if (active_time_diff != 0) {  // if the active time diff is non zero
           if (total_time_diff != 0) {  // if the total time diff is non zero
@@ -178,8 +199,8 @@ public:
         }
 
         // update previous times
-        CPUsageTracker::m_prev_active_time = active_time;
-        CPUsageTracker::m_prev_total_time = total_time;
+        m_prev_active_time = p_active_time;
+        m_prev_total_time = total_time;
 
       } else {
         throw std::invalid_argument("get_load: time travelled backwards.");
@@ -222,11 +243,12 @@ public:
 private:
   uint32_t m_cpu_cores;
   int64_t m_cpu_total_time;
+  int64_t m_prev_active_time;
+  int64_t m_prev_total_time;
   float_t m_cpu_load;
   tms m_process_cpu_times;
+  std::ifstream proc_stat_file;
   std::vector<CPUsageTracker::cpu_info> m_entries;
-  inline static int64_t m_prev_active_time = 0;
-  inline static int64_t m_prev_total_time = 0;
 };
 }  // namespace performance_test
 

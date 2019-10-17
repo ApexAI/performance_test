@@ -38,7 +38,8 @@ AnalysisResult::AnalysisResult(
   const std::size_t total_data_received,
   const StatisticsTracker latency,
   const StatisticsTracker pub_loop_time_reserve,
-  const StatisticsTracker sub_loop_time_reserve
+  const StatisticsTracker sub_loop_time_reserve,
+  const float_t cpu_load
 )
 : m_experiment_start(experiment_start),
   m_loop_start(loop_start),
@@ -48,7 +49,8 @@ AnalysisResult::AnalysisResult(
   m_total_data_received(total_data_received),
   m_latency(latency),
   m_pub_loop_time_reserve(pub_loop_time_reserve),
-  m_sub_loop_time_reserve(sub_loop_time_reserve)
+  m_sub_loop_time_reserve(sub_loop_time_reserve),
+  m_cpu_load(cpu_load)
 {
   const auto ret = getrusage(RUSAGE_SELF, &m_sys_usage);
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
@@ -63,23 +65,6 @@ AnalysisResult::AnalysisResult(
                              + std::to_string(m_num_samples_received) + " / "
                              + std::to_string(m_latency.n()));*/
   }
-
-  // get process cpu times from http://man7.org/linux/man-pages/man2/times.2.html
-  auto retval = times(&m_cpu_usage_tracker.process_cpu_times());
-  if (retval == -1) {
-    throw std::runtime_error("Could not get process CPU times.");
-  }
-
-  // get total CPU times from http://man7.org/linux/man-pages/man5/proc.5.html
-  m_cpu_usage_tracker.read_cpu_times();
-
-  // compute total process time
-  const int64_t p_active_time = m_cpu_usage_tracker.process_cpu_times().tms_cstime +
-    m_cpu_usage_tracker.process_cpu_times().tms_cutime + m_cpu_usage_tracker.process_cpu_times()
-    .tms_stime + m_cpu_usage_tracker.process_cpu_times().tms_utime;
-
-  // compute process CPU load
-  m_cpu_usage_tracker.get_load(p_active_time, m_cpu_usage_tracker.cpu_total_time());
 }
 
 
@@ -195,7 +180,7 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   ss << m_sys_usage.ru_nvcsw << st;
   ss << m_sys_usage.ru_nivcsw << st;
 
-  ss << m_cpu_usage_tracker.cpu_load() << st;
+  ss << m_cpu_load << st;
 
   return ss.str();
 }
