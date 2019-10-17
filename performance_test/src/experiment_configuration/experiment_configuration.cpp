@@ -127,7 +127,13 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 #endif
   ;
   po::variables_map vm;
+#ifdef ROS_ELOQUENT
+  // ROS eloquent adds by default --ros-args to ros2 launch and no value for that argument
+  // is valid, so we allow unregistered options so boost doesn't complain about it.
   po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm);
+#else
+  po::store(parse_command_line(argc, argv, desc), vm);
+#endif
   m_perf_test_version = version;
 
   try {
