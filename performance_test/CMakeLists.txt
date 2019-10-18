@@ -35,6 +35,28 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
   add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
+# Use ODB support to create SQL database
+option(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
+
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
+  add_definitions(-DPERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
+  option(PERFORMANCE_TEST_ODB_SQLITE "Select DB type" ON)
+  option(PERFORMANCE_TEST_ODB_MYSQL "Select DB type" OFF)
+  option(PERFORMANCE_TEST_ODB_PGSQL "Select DB type" OFF)
+  if(PERFORMANCE_TEST_ODB_SQLITE)
+    add_definitions(-DPERFORMANCE_TEST_ODB_SQLITE)
+    set(DB_TYPE sqlite)
+  endif()
+  if(PERFORMANCE_TEST_ODB_MYSQL)
+    add_definitions(-DPERFORMANCE_TEST_ODB_MYSQL)
+    set(DB_TYPE mysql)
+  endif()
+  if(PERFORMANCE_TEST_ODB_PGSQL)
+    add_definitions(-DPERFORMANCE_TEST_ODB_PGSQL)
+    set(DB_TYPE pgsql)
+  endif()
+endif()
+
 find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
 find_package(builtin_interfaces REQUIRED)
@@ -94,6 +116,19 @@ if(CycloneDDS_FOUND)
   include_directories(${CYCLONEDDS_IDL_INCLUDE_DIR})
 endif()
 
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+  find_package(ODB REQUIRED COMPONENTS sqlite OPTIONAL_COMPONENTS mysql pgsql)
+  include(${ODB_USE_FILE})
+endif()
+
+set(${PROJECT_NAME}_SOURCES
+    src/experiment_execution/analyze_runner.cpp)
+
+set(${PROJECT_NAME}_HEADERS
+    src/experiment_configuration/experiment_configuration.hpp
+    src/experiment_execution/analysis_result.hpp)
+
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
     "src/msg/Array4k.msg"
@@ -129,31 +164,47 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
     DEPENDENCIES builtin_interfaces std_msgs sensor_msgs)
 
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
+  odb_compile(${PROJECT_NAME}_SOURCES FILES ${${PROJECT_NAME}_HEADERS} DB "${DB_TYPE}"
+      GENERATE_QUERY GENERATE_SESSION GENERATE_SCHEMA SCHEMA_FORMAT embedded INCLUDE
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
+      STANDARD c++11 PROFILE boost/uuid X_CPP_OPTION -DPERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
+endif()
+
 set(sources
     src/main.cpp
     src/communication_abstractions/communicator.hpp
     src/communication_abstractions/communicator.cpp
     src/communication_abstractions/resource_manager.cpp
     src/communication_abstractions/resource_manager.hpp
+    src/communication_abstractions/ros2_communicator.hpp
     src/communication_abstractions/ros2_callback_communicator.hpp
     src/experiment_configuration/topics.hpp
     src/data_running/data_runner.hpp
     src/data_running/data_runner_base.hpp
     src/data_running/data_runner_factory.cpp
     src/data_running/data_runner_factory.hpp
-    src/experiment_execution/analyze_runner.cpp
     src/experiment_execution/analyze_runner.hpp
     src/experiment_execution/analysis_result.cpp
-    src/experiment_execution/analysis_result.hpp
     src/experiment_configuration/communication_mean.hpp
     src/experiment_configuration/qos_abstraction.cpp
     src/experiment_configuration/qos_abstraction.hpp
     src/experiment_configuration/experiment_configuration.cpp
-    src/experiment_configuration/experiment_configuration.hpp
     src/utilities/rt_enabler.hpp
     src/utilities/spin_lock.hpp
     src/utilities/statistics_tracker.hpp
 )
+
+# ROS2 Waitset
+option(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED "Option to enable Polling Subscription Plugin.
+  The plugin can only work if ApexOS is present, otherwise it will fail." OFF)
+
+if(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
+    add_definitions(-DPERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED)
+    set(sources ${sources}
+      src/communication_abstractions/ros2_waitset_communicator.hpp
+    )
+endif()
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
     set(sources ${sources}
@@ -167,9 +218,26 @@ if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
     )
 endif()
 
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
+    include_directories(${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_configuration
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment_execution
+        ${ODB_INCLUDE_DIRS})
+endif()
+
 set(EXE_NAME perf_test)
-add_executable(${EXE_NAME} ${sources})
+
+add_executable(${EXE_NAME} ${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAME}_HEADERS})
+
 set_compile_options(${EXE_NAME})
+
+# Try to bake the githash into the perf_test EXE:
+execute_process(
+  COMMAND ./version_check.bash
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE PERF_TEST_VERSION
+)
+add_definitions(-DPERFORMANCE_TEST_VERSION="${PERF_TEST_VERSION}")
 
 rosidl_target_interfaces(${EXE_NAME} ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
@@ -179,6 +247,29 @@ ament_target_dependencies(${EXE_NAME}
 target_link_libraries(${EXE_NAME}
     ${Boost_LIBRARIES}
     ${OPTIONAL_LIBRARIES})
+
+if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
+  target_link_libraries(${EXE_NAME} ${ODB_LIBRARIES})
+  target_include_directories(${EXE_NAME}
+      PRIVATE
+        ${ODB_INCLUDE_DIRS}
+        ${ODB_COMPILE_OUTPUT_DIR})
+  if(PERFORMANCE_TEST_ODB_SQLITE)
+  target_compile_definitions(${EXE_NAME}
+      PRIVATE
+        DATABASE_SQLITE)
+  endif()
+  if(PERFORMANCE_TEST_ODB_MYSQL)
+  target_compile_definitions(${EXE_NAME}
+      PRIVATE
+        DATABASE_MYSQL)
+  endif()
+  if(PERFORMANCE_TEST_ODB_PGSQL)
+    target_compile_definitions(${EXE_NAME}
+      PRIVATE
+        DATABASE_PGSQL)
+  endif()
+endif()
 
 if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
   target_link_libraries(${EXE_NAME}
@@ -196,6 +287,9 @@ endif()
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
     ament_lint_auto_find_test_dependencies()
+    list(APPEND AMENT_LINT_AUTO_EXCLUDE ament_cmake_copyright)
+    ament_copyright(${${PROJECT_NAME}_SOURCES} ${sources} ${${PROJECT_NAME}_HEADERS})
+
     set(APEX_PERFORMANCE_TEST_GTEST apex_performance_test_gtest)
 
     find_package(ament_cmake_gtest REQUIRED)
@@ -209,13 +303,10 @@ if(BUILD_TESTING)
     set_compile_options(${APEX_PERFORMANCE_TEST_GTEST})
 endif()
 
-
-
 install(TARGETS
     ${EXE_NAME}
     DESTINATION lib/${PROJECT_NAME})
 
 install(PROGRAMS
-    helper_scripts/performance_test_file_reader.py
     DESTINATION lib/${PROJECT_NAME})
 ament_package()

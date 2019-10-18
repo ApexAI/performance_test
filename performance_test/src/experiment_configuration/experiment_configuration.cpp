@@ -15,8 +15,8 @@
 #include "experiment_configuration.hpp"
 
 #include <boost/program_options.hpp>
-
 #include <rclcpp/rclcpp.hpp>
+#include <rmw/rmw.h>
 
 #include <iostream>
 #include <iomanip>
@@ -24,6 +24,8 @@
 #include <string>
 
 #include "topics.hpp"
+
+#include "performance_test/version.h"
 
 namespace performance_test
 {
@@ -44,8 +46,10 @@ std::ostream & operator<<(std::ostream & stream, const ExperimentConfiguration &
   if (e.is_setup()) {
     return stream <<
            "Experiment id: " << e.id() <<
+           "\nPerformance Test Version: " << e.perf_test_version() <<
            "\nLogfile name: " << e.logfile_name() <<
            "\nCommunication mean: " << e.com_mean() <<
+           "\nRMW Implementation: " << e.rmw_implementation() <<
            "\nDDS domain id: " << e.dds_domain_id() <<
            "\nQOS: " << e.qos() <<
            "\nPublishing rate: " << e.rate() <<
@@ -74,7 +78,9 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "Optionally specify a logfile.")("rate,r", po::value<uint32_t>()->default_value(1000),
     "The rate data should be published. Defaults to 1000 Hz. 0 means publish as fast as possible.")(
     "communication,c", po::value<std::string>()->required(),
-    "Communication plugin to use (ROS2, FastRTPS, ConnextDDSMicro, CycloneDDS)")("topic,t",
+    "Communication plugin to use (ROS2, FastRTPS, ConnextDDSMicro, CycloneDDS, "
+    "ROS2PollingSubscription)")(
+    "topic,t",
     po::value<std::string>()->required(),
     "Topic to use. Use --topic_list to get a list.")("topic_list",
     "Prints list of available topics and exits.")("dds_domain_id",
@@ -107,9 +113,22 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     "with_security", "Enables the security with ROS2")("roundtrip_mode",
     po::value<std::string>()->default_value("None"),
     "Selects the round trip mode (None, Main, Relay).")
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  ("db_name", po::value<std::string>()->default_value("db_name"),
+  "Name of the SQL database.")
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+  ("db_user", po::value<std::string>()->default_value("user"),
+  "User name to login to the SQL database.")("db_password",
+    po::value<std::string>()->default_value("password"),
+    "Password to login to the SQL database.")("db_host",
+    po::value<std::string>()->default_value("127.0.0.1"), "IP address of SQL server.")("db_port",
+    po::value<unsigned int>()->default_value(3306), "Port for SQL protocol.")
+#endif
+#endif
   ;
   po::variables_map vm;
   po::store(parse_command_line(argc, argv, desc), vm);
+  m_perf_test_version = version;
 
   try {
     if (vm.count("topic_list")) {
@@ -121,6 +140,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     }
 
     if (vm.count("help")) {
+      std::cout << "Version: " << perf_test_version() << "\n";
       std::cout << desc << "\n";
       exit(0);
     }
@@ -140,6 +160,14 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 
     if (vm["communication"].as<std::string>() == "ROS2") {
       m_com_mean = CommunicationMean::ROS2;
+    } else if (vm["communication"].as<std::string>() == "ROS2PollingSubscription") {
+#ifdef PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED
+      m_com_mean = CommunicationMean::ROS2PollingSubscription;
+#else
+      throw std::invalid_argument(
+              "You must compile with PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED flag as ON to "
+              "enable it as communication mean.");
+#endif
     } else if (vm["communication"].as<std::string>() == "FastRTPS") {
 #ifdef PERFORMANCE_TEST_FASTRTPS_ENABLED
       m_com_mean = CommunicationMean::FASTRTPS;
@@ -272,6 +300,27 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
         throw std::invalid_argument("Invalid roundtrip mode: " + mode);
       }
     }
+    m_rmw_implementation = rmw_get_implementation_identifier();
+
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+    if (vm.count("db_name")) {
+      m_db_name = vm["db_name"].as<std::string>();
+    }
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+    if (vm.count("db_user")) {
+      m_db_user = vm["db_user"].as<std::string>();
+    }
+    if (vm.count("db_password")) {
+      m_db_password = vm["db_password"].as<std::string>();
+    }
+    if (vm.count("db_host")) {
+      m_db_host = vm["db_host"].as<std::string>();
+    }
+    if (vm.count("db_port")) {
+      m_db_port = vm["db_port"].as<unsigned int>();
+    }
+#endif
+#endif
     m_is_setup = true;
     // Logfile needs to be opened at the end, as the experiment configuration influences the
     // filename.
@@ -317,6 +366,31 @@ std::string ExperimentConfiguration::topic_name() const
   check_setup();
   return m_topic_name;
 }
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+std::string ExperimentConfiguration::db_name() const
+{
+  check_setup();
+  return m_db_name;
+}
+#if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+std::string ExperimentConfiguration::db_user() const
+{
+  return m_db_user;
+}
+std::string ExperimentConfiguration::db_password() const
+{
+  return m_db_password;
+}
+std::string ExperimentConfiguration::db_host() const
+{
+  return m_db_host;
+}
+unsigned int ExperimentConfiguration::db_port() const
+{
+  return m_db_port;
+}
+#endif
+#endif
 uint64_t ExperimentConfiguration::max_runtime() const
 {
   check_setup();
@@ -380,6 +454,17 @@ ExperimentConfiguration::RoundTripMode ExperimentConfiguration::roundtrip_mode()
 {
   check_setup();
   return m_roundtrip_mode;
+}
+
+std::string ExperimentConfiguration::rmw_implementation() const
+{
+  check_setup();
+  return m_rmw_implementation;
+}
+
+std::string ExperimentConfiguration::perf_test_version() const
+{
+  return m_perf_test_version;
 }
 
 std::string ExperimentConfiguration::pub_topic_postfix() const
