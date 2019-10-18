@@ -38,13 +38,6 @@ endif()
 # Use ODB support to create SQL database
 option(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
-# Build code using ROS Eloquent packages
-option(ROS_ELOQUENT_ENABLED "Use ROS Eloquent" OFF)
-
-if(ROS_ELOQUENT_ENABLED)
-  add_definitions(-DROS_ELOQUENT)
-endif()
-
 if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   add_definitions(-DPERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   option(PERFORMANCE_TEST_ODB_SQLITE "Select DB type" ON)

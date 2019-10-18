@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
-import itertools
 import os
 import signal
 import subprocess
 import sys
+import itertools
+from enum import Enum
 
 experiment_length = 120  # In seconds
 
@@ -99,7 +99,7 @@ class Instance:
             os.makedirs(dir_name)
         fixed_args = ' --communication ROS2 '
         dyn_args = \
-            "-l \'" + dir_name + "/log\' " + '--topic ' + \
+            '-l \'' + dir_name + '/log\' ' + '--topic ' + \
             c[0] + ' --rate ' + c[1] + ' -s ' + c[2] + ' ' + c[3] + ' ' + c[4]
 
         return command + ' ' + fixed_args + dyn_args + pubs_args

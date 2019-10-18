@@ -19,11 +19,10 @@
 
 """Performance test plotter."""
 
-from collections import OrderedDict
 import io
 import os
 import re
-
+from collections import OrderedDict
 from setuptools import find_packages, setup
 
 NAME = 'apex-performance-plotter'
