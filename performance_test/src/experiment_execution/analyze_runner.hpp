@@ -45,7 +45,7 @@ public:
   /**
    * \brief Runs the experiment.
    */
-  void run() const;
+  void run();
 
 private:
   /**
@@ -56,7 +56,7 @@ private:
 
   void analyze(
     const std::chrono::nanoseconds loop_diff_start,
-    const std::chrono::nanoseconds experiment_diff_start) const;
+    const std::chrono::nanoseconds experiment_diff_start);
 
   /**
    * \brief Checks if the experiment is finished.
@@ -70,7 +70,7 @@ private:
   std::vector<std::shared_ptr<DataRunnerBase>> m_pub_runners;
   std::vector<std::shared_ptr<DataRunnerBase>> m_sub_runners;
   mutable bool m_is_first_entry;
-  mutable CPUsageTracker cpu_usage_tracker;
+  CPUsageTracker cpu_usage_tracker;
 
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   std::unique_ptr<odb::core::database> m_db;

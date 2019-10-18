@@ -38,7 +38,7 @@ AnalysisResult::AnalysisResult(
   const StatisticsTracker latency,
   const StatisticsTracker pub_loop_time_reserve,
   const StatisticsTracker sub_loop_time_reserve,
-  const float_t cpu_load
+  const CpuInfo cpu_info
 )
 : m_experiment_start(experiment_start),
   m_loop_start(loop_start),
@@ -49,7 +49,7 @@ AnalysisResult::AnalysisResult(
   m_latency(latency),
   m_pub_loop_time_reserve(pub_loop_time_reserve),
   m_sub_loop_time_reserve(sub_loop_time_reserve),
-  m_cpu_load(cpu_load)
+  m_cpu_info(cpu_info)
 {
   const auto ret = getrusage(RUSAGE_SELF, &m_sys_usage);
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
@@ -179,7 +179,7 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
   ss << m_sys_usage.ru_nvcsw << st;
   ss << m_sys_usage.ru_nivcsw << st;
 
-  ss << m_cpu_load << st;
+  ss << m_cpu_info.m_cpu_usage << st;
 
   return ss.str();
 }
