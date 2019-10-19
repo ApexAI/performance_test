@@ -152,6 +152,10 @@ private:
   mutable eprosima::fastrtps::Participant * m_fastrtps_participant;
 #endif
 
+#ifdef PERFORMANCE_TEST_CONNEXTDDSMICRO_ENABLED
+mutable DDSDomainParticipant * m_connext_dds_micro_participant;
+#endif
+
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
   mutable DDS::DomainParticipant_ptr  m_opendds_participant;
 #endif
