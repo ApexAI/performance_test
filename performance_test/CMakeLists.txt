@@ -347,7 +347,7 @@ if (PERFORMANCE_TEST_OPENDDS_ENABLED)
                      ${PARENT_ACE_ROOT}/lib/libTAO_PI.so
                      ${PARENT_ACE_ROOT}/lib/libTAO_CodecFactory.so
                      ${PARENT_ACE_ROOT}/lib/libTAO_AnyTypeCode.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_BiDirGIOP.so
+                     ${PARENT_ACE_ROOT}/lib/libTAO_BiDirGIOP.so)
 
     set(DDS_DYN_LIBS ${PARENT_DDS_ROOT_LIBS}/libACE.so 
                      ${PARENT_DDS_ROOT_LIBS}/libTAO.so
