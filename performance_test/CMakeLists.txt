@@ -38,11 +38,10 @@ endif()
 # Use ODB support to create SQL database
 option(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
-# Build code using ROS Eloquent packages
-option(ROS_ELOQUENT_ENABLED "Use ROS Eloquent" OFF)
-
-if(ROS_ELOQUENT_ENABLED)
-  add_definitions(-DROS_ELOQUENT)
+if(DEFINED ENV{ROS_DISTRO})
+  if ($ENV{ROS_DISTRO} STREQUAL "eloquent")
+    add_definitions(-DROS_ELOQUENT)
+  endif()
 endif()
 
 if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
