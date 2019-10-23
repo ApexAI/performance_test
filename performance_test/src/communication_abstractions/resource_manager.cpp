@@ -245,7 +245,6 @@ void ResourceManager::connext_dds_micro_subscriber(
 }
 #endif
 
-<<<<<<< HEAD
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
 dds_entity_t ResourceManager::cyclonedds_participant() const
 {
@@ -265,8 +264,6 @@ dds_entity_t ResourceManager::cyclonedds_participant() const
   }
 #endif
 
-=======
->>>>>>> openDDS integration by I
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
 DDS::DomainParticipant_ptr
 ResourceManager::opendds_participant() const
@@ -338,10 +335,6 @@ ResourceManager::opendds_subscriber(DDS::Subscriber_ptr & subscriber, DDS::DataR
   ret = subscriber->get_default_datareader_qos(dr_qos);
   if (ret != DDS::RETCODE_OK)
     throw std::runtime_error("Failed to get default datareader qos");
-<<<<<<< HEAD
-
-=======
->>>>>>> openDDS integration by I
 }
 #endif
 }  // namespace performance_test

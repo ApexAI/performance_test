@@ -138,11 +138,11 @@ private:
 #ifdef PERFORMANCE_TEST_CYCLONEDDS_ENABLED
     , m_cyclonedds_participant(0)
 #endif
-  {}
+
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
     ,m_opendds_participant(nullptr)
 #endif
-
+  {}
 
   const ExperimentConfiguration & m_ec;
 
