@@ -12,7 +12,68 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Script to compare result trees of apex experiments."""
+"""
+Script to compare result trees of apex experiments.
+
+This scripts takes a target directory and compares its results against a
+reference, also given by a directory. Both these directories are expected to
+contain full results obtained with `run_experiment.py`.
+Let's say there is a reference directory with structure:
+```
+reference/
+├──rate_1000
+├──rate_20
+└──rate_50
+```
+And a target directory:
+```
+target/
+├──rate_1000
+├──rate_20
+└──rate_50
+```
+
+Then, the results can be compared running:
+```
+python3 apex_compare_tree.py reference/ target/
+```
+
+An output example (not complete) would be:
+```
+###################################################
+       RUNNING COMPARISON WITH CONFIGURATION
+###################################################
+Reference file: reference/rate_20/subs_1/results_file
+Target file: target/rate_20/subs_1/results_file
+Columns of interest: ['latency_min (ms)', 'ru_maxrss', 'latency_max (ms)']
+Latency threshold: 5
+RSS threshold: 5
+Jitter threshold: 5
+Print results: True
+###################################################
+RESULTS
+---------------------------------------------------
+REFERENCE FILE:   reference/rate_20/subs_1/results_file
+Min Latency (ms): 0.07144
+Max RSS (KB):     44848.0
+Max Jitter (ms):  44.70930
+---------------------------------------------------
+TARGET FILE:      target/rate_20/subs_1/results_file
+Min Latency (ms): 0.07144
+Max RSS (KB):     44848.0
+Max Jitter (ms):  44.70930
+---------------------------------------------------
+COMPARISON:
+SIMILAR Latency (ms): 0.00000 (0.00000 %)
+SIMILAR RSS (KB):     0.00000 (0.00000 %)
+SIMILAR Jitter (ms):  0.00000 (0.00000 %)
+---------------------------------------------------
+FINAL RESULT
+Comparison passed =)
+---------------------------------------------------
+[...]
+```
+"""
 import argparse
 import sys
 
