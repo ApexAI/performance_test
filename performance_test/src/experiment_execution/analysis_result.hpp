@@ -81,6 +81,7 @@ private:
 #pragma db value(RusageTracker) definition
 #pragma db value(rusage) definition
 #pragma db value(timeval) definition
+#pragma db value(CpuInfo) definition
 
 /// Represents the results of an experiment iteration.
 #pragma db object pointer(std::shared_ptr)

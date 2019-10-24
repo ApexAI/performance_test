@@ -26,6 +26,10 @@
 #include <string>
 #include <vector>
 
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+#include <odb/core.hxx>
+#endif
+
 namespace performance_test
 {
 
@@ -33,6 +37,10 @@ struct CpuInfo
 {
   CpuInfo(uint32_t cpu_cores, float_t cpu_usage)
   : m_cpu_cores(cpu_cores), m_cpu_usage(cpu_usage) {}
+
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  CpuInfo() {}
+#endif
 
   uint32_t cpu_cores() const
   {
@@ -45,6 +53,9 @@ struct CpuInfo
   }
 
 private:
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  friend class odb::access;
+#endif
   uint32_t m_cpu_cores;
   float_t m_cpu_usage;
 };
