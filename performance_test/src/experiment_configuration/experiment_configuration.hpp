@@ -41,8 +41,8 @@ namespace performance_test
  * configuration by command line arguments are supported.
  */
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+#pragma db model version(1, 1)
 class AnalysisResult;
-
   #pragma db value(QOSAbstraction) definition
   #pragma db object
 #endif

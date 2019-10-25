@@ -90,13 +90,30 @@ AnalyzeRunner::AnalyzeRunner()
           m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
 #endif
     {
-      odb::core::transaction t(m_db->begin());
-      try {
-        m_db->query<ExperimentConfiguration>(false);
-      } catch (const odb::exception & e) {
+      odb::core::schema_version v(m_db->schema_version());
+      odb::core::schema_version bv(odb::core::schema_catalog::base_version(*m_db));
+      odb::core::schema_version cv(odb::core::schema_catalog::current_version(*m_db));
+
+      if (v == 0) {
+        odb::core::transaction t(m_db->begin());
         odb::core::schema_catalog::create_schema(*m_db);
+        t.commit();
+      } else if (v < cv) {
+        if (v < bv) {
+          std::cout << "Error: migration from this version is no longer supported." << std::endl;
+        }
+        for (v = odb::core::schema_catalog::next_version(*m_db, v); v <= cv; v =
+          odb::core::schema_catalog::next_version(*m_db, v))
+        {
+          odb::core::transaction t(m_db->begin());
+          odb::core::schema_catalog::migrate_schema_pre(*m_db, v);
+          // Data migration goes here.
+          odb::core::schema_catalog::migrate_schema_post(*m_db, v);
+          t.commit();
+        }
+      } else if (v > cv) {
+        std::cout << "Error: old application trying to access new database." << std::endl;
       }
-      t.commit();
     }
   }
 #endif

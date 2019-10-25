@@ -56,7 +56,9 @@ private:
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   friend class odb::access;
 #endif
+#pragma db default(0)
   uint32_t m_cpu_cores;
+#pragma db default(0.0)
   float_t m_cpu_usage;
 };
 
