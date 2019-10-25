@@ -57,7 +57,7 @@ set(MICRO_C_LIBS rti_me_rhsm${RTI_LIB_SUFFIX_STATIC}
         rti_me${RTI_LIB_SUFFIX_STATIC})
 
 
-link_directories(${DDS_ROOT}/lib ${ACE_ROOT}/lib)
+link_directories(${DDS_ROOT}/../../lib)
 include_directories(${IDL_GEN_ROOT} ${DDS_ROOT}/../../include/)
 
 foreach(idl ${IDL_SOURCE_C})
@@ -91,8 +91,6 @@ foreach(idl ${IDL_SOURCE_C})
           COMMAND ${OPENDDS_IDL} -o ${IDL_GEN_ROOT}/. ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
           DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${idl}
           COMMENT "Regeneration type support plugin from ${idl}")
-
-  message ("${DDS_ROOT}/../../include/dds" = ${DDS_ROOT}/../../include/dds)
 
   add_custom_command(OUTPUT ${IDL_GEN_ROOT}/${basename}TypeSupport.idl ${TAO_IDL_GEN_CPP_SECOND_STAGE} ${TAO_IDL_GEN_H_SECOND_STAGE}
           COMMAND ${TAO_IDL} -o ${IDL_GEN_ROOT}/. -I${CMAKE_CURRENT_SOURCE_DIR}/.. -I${DDS_ROOT}/../../include/tao -I${DDS_ROOT}/../../include/ ${IDL_GEN_ROOT}/${basename}TypeSupport.idl

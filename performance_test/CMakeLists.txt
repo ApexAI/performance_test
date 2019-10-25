@@ -91,8 +91,8 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
 if(PERFORMANCE_TEST_OPENDDS_ENABLED)
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     add_subdirectory(src/idlgen/opendds)
-    message("PARENT ACE_ROOT = " ${PARENT_ACE_ROOT})
     include_directories(${OPENDDS_IDL_INCLUDE_DIR} ${PARENT_DDS_ROOT_INCLUDE})
 endif()
 
@@ -141,36 +141,6 @@ set(${PROJECT_NAME}_SOURCES
 set(${PROJECT_NAME}_HEADERS
     src/experiment_configuration/experiment_configuration.hpp
     src/experiment_execution/analysis_result.hpp)
-
-
-find_package(opendds_cmake_module QUIET)
-if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
-    find_package(OpenDDS MODULE)
-    if(OpenDDS_FOUND)
-        set(PERFORMANCE_TEST_OPENDDS_ENABLED)
-
-        add_definitions(-DPERFORMANCE_TEST_OPENDDS_ENABLED)
-        add_subdirectory(src/idlgen/opendds)
-
-        #include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-        #ament_export_definitions(${MicroDDS_DEFINITIONS})
-    endif()
-endif()
-
-#find_package(opendds_cmake_module QUIET REQUIRED)
-#if(${opendds_cmake_module_FOUND_AMENT_PACKAGE})
-#    find_package(OpenDDS MODULE REQUIRED)
-#    if(OpenDDS_FOUND)
-#        set(PERFORMANCE_TEST_OPENDDS_ENABLED)
-#
-#        add_definitions(-DPERFORMANCE_TEST_OPENDDS_ENABLED)
-#        add_subdirectory(src/idlgen/opendds)
-#
-#        #include_directories(${RTI_MICRO_IDL_INCLUDE_DIR})
-#        #ament_export_definitions(${MicroDDS_DEFINITIONS})
-#    endif()
-#endif()
-
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "src/msg/Array1k.msg"
@@ -336,19 +306,6 @@ if(PERFORMANCE_TEST_CYCLONEDDS_ENABLED)
       CycloneDDS::ddsc)
 endif()
 if (PERFORMANCE_TEST_OPENDDS_ENABLED)
-    target_link_libraries(${EXE_NAME} opendds_idl)
-    set(DDS_DYN_LIBS ${PARENT_ACE_ROOT}/lib/libACE.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO.so
-                     ${PARENT_DDS_ROOT}/lib/libOpenDDS_Dcps.so
-                     ${PARENT_DDS_ROOT}/lib/libOpenDDS_Rtps.so
-                     ${PARENT_DDS_ROOT}/lib/libOpenDDS_Rtps_Udp.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_PortableServer.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_PortableServer.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_PI.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_CodecFactory.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_AnyTypeCode.so
-                     ${PARENT_ACE_ROOT}/lib/libTAO_BiDirGIOP.so)
-
     set(DDS_DYN_LIBS ${PARENT_DDS_ROOT_LIBS}/libACE.so 
                      ${PARENT_DDS_ROOT_LIBS}/libTAO.so
                      ${PARENT_DDS_ROOT_LIBS}/libOpenDDS_Dcps.so
