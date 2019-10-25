@@ -38,12 +38,6 @@ endif()
 # Use ODB support to create SQL database
 option(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
-if(DEFINED ENV{ROS_DISTRO})
-  if ($ENV{ROS_DISTRO} STREQUAL "eloquent")
-    add_definitions(-DROS_ELOQUENT)
-  endif()
-endif()
-
 if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   add_definitions(-DPERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   option(PERFORMANCE_TEST_ODB_SQLITE "Select DB type" ON)
@@ -80,6 +74,14 @@ if(${osrf_testing_tools_cpp_FOUND})
     list(APPEND OPTIONAL_AMENT_DEPENDENCES "osrf_testing_tools_cpp")
     list(APPEND OPTIONAL_LIBRARIES osrf_testing_tools_cpp::memory_tools)
     add_definitions(-DPERFORMANCE_TEST_MEMORYTOOLS_ENABLED)
+endif()
+
+# Dashing version looks like 0.7.X.
+if(${rclcpp_VERSION_MINOR} STRGREATER "7")
+  message(STATUS "Ros Eloquent detected")
+  add_definitions(-DROS_ELOQUENT)
+else()
+  message(STATUS "Ros Dashing detected")
 endif()
 
 ament_export_include_directories(include)
