@@ -67,7 +67,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/objs/${RTIME_TARG
 find_program(FASTRTPS_BIN "fastrtpsgen")
 if(NOT FASTRTPS_BIN)
   message(WARNING "Could not find program 'fastrtpsgen' in path. Trying to use bundled version")
-  find_program(FASTRTPS_BIN "fastrtpsgen" PATHS "${CMAKE_SOURCE_DIR}/bin")
+  find_program(FASTRTPS_BIN "fastrtpsgen" PATHS "${PROJECT_SOURCE_DIR}/bin")
   if(NOT FASTRTPS_BIN)
     message(FATAL_ERROR "Could not find program 'fastrtpsgen'")
   endif()

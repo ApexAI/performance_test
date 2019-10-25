@@ -13,10 +13,10 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.5)
-
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
-include(compile_options)
 project(performance_test)
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+include(compile_options)
 
 set(OPTIONAL_AMENT_DEPENDENCES)
 set(OPTIONAL_LIBRARIES)
@@ -117,7 +117,7 @@ if(CycloneDDS_FOUND)
 endif()
 
 if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
   find_package(ODB REQUIRED COMPONENTS sqlite OPTIONAL_COMPONENTS mysql pgsql)
   include(${ODB_USE_FILE})
 endif()
@@ -235,7 +235,7 @@ set_compile_options(${EXE_NAME})
 # Try to bake the githash into the perf_test EXE:
 execute_process(
   COMMAND ./version_check.bash
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   OUTPUT_VARIABLE PERF_TEST_VERSION
 )
 add_definitions(-DPERFORMANCE_TEST_VERSION="${PERF_TEST_VERSION}")
