@@ -190,7 +190,7 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
               "You must compile with CycloneDDS support to enable it as communication mean.");
     } else if (vm["communication"].as<std::string>() == "OpenDDS") {
 #endif
-      #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
       m_com_mean = CommunicationMean::OPENDDS;
 #else
       throw std::invalid_argument(

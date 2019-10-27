@@ -137,6 +137,7 @@
 #ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
   #include <dds/DdsDcpsTopicC.h>
   #include <opendds/Array1k_TypeSupportImpl.h>
+  #include <opendds/Array16k_TypeSupportImpl.h>
 #endif
 
 #include <algorithm>
@@ -248,6 +249,17 @@ public:
   static const dds_topic_descriptor_t * CycloneDDSDesc()
   {
     return &performance_test_msgs_msg_dds__Array16k__desc;
+  }
+#endif
+
+#ifdef PERFORMANCE_TEST_OPENDDS_ENABLED
+  using OpenDDSTopicType = performance_test_msgs::msg::dds_::Array16k_;
+  using OpenDDSDataWriterType = performance_test_msgs::msg::dds_::Array16k_DataWriter;
+  using OpenDDSDataReaderType = performance_test_msgs::msg::dds_::Array16k_DataReader;
+  using OpenDDSDataTypeSeq = performance_test_msgs::msg::dds_::Array16k_Seq;
+
+  static DDS::TypeSupport_ptr get_type_support() {
+	  return new performance_test_msgs::msg::dds_::Array16k_TypeSupportImpl();
   }
 #endif
 
@@ -765,7 +777,7 @@ using TopicTypeList = boost::mpl::list<Array1k, Array4k, Array16k, Array32k, Arr
     PointCloud4m,
     Range, NavSatFix, RadarDetection, RadarTrack>;
 #else
-using TopicTypeList = boost::mpl::list<Array1k>;
+using TopicTypeList = boost::mpl::list<Array1k,Array16k>;
 #endif
 
 /// Returns a vector of supported topic names.

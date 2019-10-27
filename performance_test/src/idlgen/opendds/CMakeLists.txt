@@ -24,7 +24,8 @@ set(OPENDDS_IDL DDS_ROOT=${DDS_ROOT} ACE_ROOT=${ACE_ROOT} TAO_ROOT=${TAO_ROOT} M
 set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
 
 set(IDL_SOURCE_C
-    ../Array1k_.idl
+  ../Array1k_.idl
+  ../Array16k_.idl
 )
 
 set(IDL_GEN_ROOT ${CMAKE_CURRENT_BINARY_DIR}/gen/opendds)

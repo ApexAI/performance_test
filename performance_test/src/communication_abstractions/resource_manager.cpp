@@ -271,7 +271,7 @@ ResourceManager::opendds_participant() const
   std::lock_guard<std::mutex> lock(m_global_mutex);
   
   if (CORBA::is_nil(m_opendds_participant)) {
-   DDS::DomainParticipantFactory_var dpf = TheParticipantFactory;
+    DDS::DomainParticipantFactory_var dpf = TheParticipantFactory;
 
     OpenDDS::DCPS::TransportConfig_rch config = OpenDDS::DCPS::TransportRegistry::instance()->create_config("ApexAiConfig");
     OpenDDS::DCPS::TransportInst_rch inst = OpenDDS::DCPS::TransportRegistry::instance()->create_inst("rtps_tran","rtps_udp");
