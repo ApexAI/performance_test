@@ -92,7 +92,7 @@ if __name__ == '__main__':
     exit_value = 0  # An exit value of 0 means signifies
     try:
         # Create comparison instance
-        comparison = ApexComparison.ApexComparison(
+        comparision = ApexComparison.ApexComparision(
             logger,
             ref_file,
             target_file,
@@ -103,7 +103,7 @@ if __name__ == '__main__':
             jitter_threshold=jitter_threshold,
             print_enable=print_results
         )
-        if comparison.compare() is False:
+        if comparision.compare() is False:
             exit_value = 1  # An exit value of 1 signifies failure
     except Exception as e:
         logger.warning('Exception occurred: {}'.format(e))
