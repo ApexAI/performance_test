@@ -24,7 +24,7 @@ from os.path import join
 import time
 
 
-class ApexComparison():
+class ApexComparision():
     """Class to perform a comparison between 2 test log files."""
 
     WORSE = 'WORSE'
