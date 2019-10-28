@@ -1,49 +1,32 @@
-# Copyright 2017 Apex.AI, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 """Provives tools to compare 2 apex performance log files."""
 import csv
-from datetime import datetime
 import itertools
 import logging
+import sys
+import time
+
+from datetime import datetime
 from os import listdir
 from os.path import isfile
 from os.path import join
-import time
-
 
 class ApexComparision():
     """Class to perform a comparison between 2 test log files."""
-
-    def __init__(self, logger, ref_file, target_file, columns_ids,
-                 columns_of_interest, latency_threshold=5, rss_threshold=0,
-                 jitter_threshold=5, print_enable=True):
-        """
-        Initialize class attributes.
-
-        :param logger (logging.logger): The logger to use
-        :param ref_file (str): The reference file
-        :param target_file (str): The reference file
-        :param columns_ids (list): The ids of the columns present in the files
-        :param columns_of_interest (list): The ids of the columns to compare
-        :param lantency_threshold (float): A tolerance percentage over the
-            reference latency
-        :param rss_threshold (float): A tolerance percentage over the reference
-            rss
-        :param jitter_threshold (float): A tolerance percentage over the
-            reference jitter
-        :param print_enable (bool): Enable result printing and logging
+    def __init__(self, logger, ref_file, target_file, columns_ids, columns_of_interest,
+                 latency_threshold=5, rss_threshold=0, jitter_threshold=5,
+                 print_enable=True):
+        """Initialize class attributes.
+        
+        Args:
+            logger (logging.logger): The logger to use
+            ref_file (str): The reference file
+            target_file (str): The reference file
+            columns_ids (list): The ids of the columns present in the files
+            columns_of_interest (list): The ids of the columns to compare
+            lantency_threshold (float): A tolerance percentage over the reference latency
+            rss_threshold (float): A tolerance percentage over the reference rss
+            jitter_threshold (float): A tolerance percentage over the reference jitter
+            print_enable (bool): Enable result printing and logging
         """
         self.logger = logger
         self.ref_file = ref_file
@@ -56,29 +39,29 @@ class ApexComparision():
         self.rss_threshold = rss_threshold
         self.jitter_threshold = jitter_threshold
         self.print_enable = print_enable
-        self.WORSE = 'WORSE'
-        self.SIMILAR = 'SIMILAR'
-        self.BETTER = 'BETTER'
+        self.WORSE = "WORSE"
+        self.SIMILAR = "SIMILAR"
+        self.BETTER = "BETTER"
 
     def _read_file_results(self, file):
-        """
-        Extract the results from a test log file.
-
-        :return: A dictionary containing the results grouped by columns
+        """Extract the results from a test log file.
+        
+        Returns:
+            A dictionary containing the results grouped by columns
         """
         results = {}
         for col in self.columns_of_interest:
             results[col] = []
 
         with open(file, 'r') as f:
-            csv_reader = csv.DictReader(f, delimiter=',',
+            csv_reader = csv.DictReader(f, delimiter=",",
                                         fieldnames=self.columns_ids)
             line_count = 0
             experiment_start = False
             for row in csv_reader:
                 # Experiment NOT started
                 if not experiment_start:
-                    if '--EXPERIMENT-START---' not in row[self.columns_ids[0]]:
+                    if "--EXPERIMENT-START---" not in row[self.columns_ids[0]]:
                         continue
                     else:
                         experiment_start = True
@@ -91,12 +74,13 @@ class ApexComparision():
         return results
 
     def _calc_jitter(self, latencies):
-        """
-        Calculate the jitter of a set of latencies.
-
-        :param latencies (list): The set of latencies
-
-        :return: A list containing the jitters
+        """Calculate the jitter of a set of latencies.
+        
+        Args:
+            latencies (list): The set of latencies
+        
+        Returns:
+            A list containing the jitters
         """
         jitter = []
         prev_i = 0
@@ -118,12 +102,12 @@ class ApexComparision():
         return max(results[self.columns_of_interest[1]])
 
     def _analyse(self):
-        """
-        Analyse the results.
-
-        :return: The result of the analysis:
-            0 if comparison yields better results than the reference
-            1 otherwise.
+        """Analyse the results.
+        
+        Returns:
+            The result of the analysis:
+                0 if comparison yields better results than the reference,
+                1 otherwise.
         """
         return_value = 0
 
@@ -162,71 +146,58 @@ class ApexComparision():
     def _print_results(self):
         """Print and logs the results."""
         # Show results
-        self.logger.info('RESULTS')
-        self.logger.info('---------------------------------------------------')
-        self.logger.info('REFERENCE FILE:   {}'.format(self.ref_file))
-        self.logger.info(
-            'Min Latency (ms): {:.5f}'.format(self.ref_latency_min)
-        )
-        self.logger.info('Max RSS (KB):     {}'.format(self.ref_max_rss))
-        self.logger.info(
-            'Max Jitter (ms):  {:.5f}'.format(self.max_ref_jitter)
-        )
-        self.logger.info('---------------------------------------------------')
-        self.logger.info('TARGET FILE:      {}'.format(self.target_file))
-        self.logger.info(
-            'Min Latency (ms): {:.5f}'.format(self.target_latency_min)
-        )
-        self.logger.info('Max RSS (KB):     {}'.format(self.target_max_rss))
-        self.logger.info(
-            'Max Jitter (ms):  {:.5f}'.format(self.max_target_jitter)
-        )
-        self.logger.info('---------------------------------------------------')
-        self.logger.info('COMPARISON:')
-        self.logger.info('{} Latency (ms): {:.5f} ({:.5f} %)'.format(
+        self.logger.info("RESULTS")
+        self.logger.info("--------------------------------------------------------")
+        self.logger.info("REFERENCE FILE:   {}".format(self.ref_file))
+        self.logger.info("Min Latency (ms): {:.5f}".format(self.ref_latency_min))
+        self.logger.info("Max RSS (KB):     {}".format(self.ref_max_rss))
+        self.logger.info("Max Jitter (ms):  {:.5f}".format(self.max_ref_jitter))
+        self.logger.info("--------------------------------------------------------")
+        self.logger.info("TARGET FILE:      {}".format(self.target_file))
+        self.logger.info("Min Latency (ms): {:.5f}".format(self.target_latency_min))
+        self.logger.info("Max RSS (KB):     {}".format(self.target_max_rss))
+        self.logger.info("Max Jitter (ms):  {:.5f}".format(self.max_target_jitter))
+        self.logger.info("--------------------------------------------------------")
+        self.logger.info("COMPARISON:")
+        self.logger.info("{} Latency (ms): {:.5f} ({:.5f} %)".format(
             self.lat_analysis, self.lat_diff, self.lat_perc)
         )
-        self.logger.info('{} RSS (KB):     {:.5f} ({:.5f} %)'.format(
+        self.logger.info("{} RSS (KB):     {:.5f} ({:.5f} %)".format(
             self.rss_analysis, self.rss_diff, self.rss_perc)
         )
-        self.logger.info('{} Jitter (ms):  {:.5f} ({:.5f} %)'.format(
+        self.logger.info("{} Jitter (ms):  {:.5f} ({:.5f} %)".format(
             self.ref_jitternalysis, self.jitter_diff, self.jitter_perc)
         )
-        self.logger.info('---------------------------------------------------')
-        self.logger.info('FINAL RESULT')
+        self.logger.info("--------------------------------------------------------")
+        self.logger.info("FINAL RESULT")
         if self.return_value == 0:
-            self.logger.info('Comparison passed =)')
+            self.logger.info("Comparison passed =)")
         else:
-            self.logger.warning('Comparison failed =(')
-        self.logger.info('---------------------------------------------------')
-        self.logger.debug('')
+            self.logger.warning("Comparison failed =(")
+        self.logger.info("--------------------------------------------------------")
+        self.logger.debug("")
 
     def _print_start(self):
         """Print and log the configuration."""
-        self.logger.debug('')
-        self.logger.info('###################################################')
-        self.logger.info('       RUNNING COMPARISON WITH CONFIGURATION       ')
-        self.logger.info('###################################################')
-        self.logger.info('Reference file: {}'.format(self.ref_file))
-        self.logger.info('Target file: {}'.format(self.target_file))
-        self.logger.info(
-            'Columns of interest: {}'.format(self.columns_of_interest)
-        )
-        self.logger.info(
-            'Latency threshold: {}'.format(self.latency_threshold)
-        )
-        self.logger.info('RSS threshold: {}'.format(self.rss_threshold))
-        self.logger.info('Jitter threshold: {}'.format(self.jitter_threshold))
-        self.logger.info('Print results: {}'.format(self.print_enable))
-        self.logger.info('###################################################')
+        self.logger.debug("")
+        self.logger.info("########################################################")
+        self.logger.info("         RUNNING COMPARISON WITH CONFIGURATION          ")
+        self.logger.info("########################################################")
+        self.logger.info("Reference file: {}".format(self.ref_file))
+        self.logger.info("Target file: {}".format(self.target_file))
+        self.logger.info("Columns of interest: {}".format(self.columns_of_interest))
+        self.logger.info("Latency threshold: {}".format(self.latency_threshold))
+        self.logger.info("RSS threshold: {}".format(self.rss_threshold))
+        self.logger.info("Jitter threshold: {}".format(self.jitter_threshold))
+        self.logger.info("Print results: {}".format(self.print_enable))
+        self.logger.info("########################################################")
 
     def compare(self):
-        """
-        Compare the files.
-
-        :return: The result of the analysis.
-            0 if comparison yields better results than the reference
-            1 otherwise
+        """Compare the files.
+        
+        Returns:
+            The result of the analysis. 0 if comparison yields better results than the reference,
+            1 otherwise.
         """
         self._print_start()
 
@@ -259,22 +230,23 @@ class ApexComparision():
 
 
 def bool_cast(string):
-    """
-    Cast a string to a boolean.
-
-    :param string (str): The string to cast. Supported values are:
-            - yes, y, true, y, 1, no, n, false, f, 0. Both lower and upper case
-    :return: The boolean representation of the string.
-    :raise: ValueError if the argument is not a string or
-        if it is not supported.
+    """Cast a string to a boolean.
+    
+    Args:
+        string (str): The string to cast. Supported values are:
+            - yes, y, true, y, 1, no, n, false, f, 0. Both in lower and upper case.
+    Returns:
+        The boolean representation of the string.
+    Raises:
+        ValueError if the argument is not a string or if it is not supported.
     """
     # Check whether input is a string
     if not isinstance(string, str):
         raise ValueError
     # Convert to lower case
     string = string.lower()
-    true_tuple = ('yes', 'y', 'true', 't', '1')
-    false_tuple = ('no', 'n', 'false', 'f', '0')
+    true_tuple = ("yes", "y", "true", "t", "1")
+    false_tuple = ("no", "n", "false", "f", "0")
 
     if string not in true_tuple and string not in false_tuple:
         raise ValueError
@@ -283,43 +255,35 @@ def bool_cast(string):
 
 
 def print_help_tree(logger, script_name):
+    """Prints and logs script help.
+    
+    Args:
+        logger (logging.logger): The logger to use.
+        script_name (str): The name of the script to show.
     """
-    Print and logs script help.
-
-    :param logger (logging.logger): The logger to use.
-    :param script_name (str): The name of the script to show.
-    """
-    logger.debug(
-        'USAGE: python3 {} <ref_dir> <target_dir> [OPTIONS]'.format(
-            script_name
-        )
-    )
+    logger.debug('USAGE: python3 {} <ref_dir> <target_dir> [OPTIONS]'.format(script_name))
     logger.debug('  Allowed options:')
     logger.debug('    --latency_threshold arg (=5)')
     logger.debug('    --rss_threshold arg (=0)')
     logger.debug('    --jitter_threshold arg (=5)')
     logger.debug('    --print_results arg (=True)')
-    logger.debug('')
+    logger.debug("")
 
 
 def print_help(logger, script_name):
+    """Prints and logs script help.
+    
+    Args:
+        logger (logging.logger): The logger to use.
+        script_name (str): The name of the script to show.
     """
-    Print and logs script help.
-
-    :param logger (logging.logger): The logger to use.
-    :param script_name (str): The name of the script to show.
-    """
-    logger.debug(
-        'USAGE: python3 {} <ref_file> <target_file> [OPTIONS]'.format(
-            script_name
-        )
-    )
+    logger.debug('USAGE: python3 {} <ref_file> <target_file> [OPTIONS]'.format(script_name))
     logger.debug('  Allowed options:')
     logger.debug('    --latency_threshold arg (=5)')
     logger.debug('    --rss_threshold arg (=0)')
     logger.debug('    --jitter_threshold arg (=5)')
     logger.debug('    --print_results arg (=True)')
-    logger.debug('')
+    logger.debug("")
 
 
 def get_logger():
@@ -350,16 +314,15 @@ def get_logger():
 
 
 def parse_arguments(logger, arguments):
-    """
-    Parse the script arguments for Apex Comparisons.
-
-    :param logger (logging.logger): The logger to use.
-    :param arguments (list): The script arguments.
-
-    :return:
+    """Parse the script arguments for Apex Comparisons.
+    
+    Args:
+        logger (logging.logger): The logger to use.
+        arguments (list): The script arguments.
+    
+    Returns:
         A dictionary containing the script arguments.
         None if there are wrong arguments.
-
     """
     # Supported ptional arguments
     valid_args = [
@@ -374,25 +337,26 @@ def parse_arguments(logger, arguments):
     rss_threshold = 0
     jitter_threshold = 5
     print_results = True
-
+    
     # Get arguments
     script_name = arguments[0]
 
     number_of_arguments = len(arguments)
     # Wrong number of arguments
     if number_of_arguments < 3 or number_of_arguments > 11:
-        logger.error('Wrong number of arguments')
+        logger.error("Wrong number of arguments")
         return None
     # Parse arguments
     else:
         # Get directories
         ref_dir = arguments[1]
-        if ref_dir.endswith('/'):
+        if ref_dir.endswith("/"):
             ref_dir = ref_dir[:-1]  # Remove last frontslash
 
         target_dir = arguments[2]
-        if target_dir.endswith('/'):
+        if target_dir.endswith("/"):
             target_dir = target_dir[:-1]  # Remove last frontslash
+
 
         # Loop optional arguments
         i = 3
@@ -402,7 +366,7 @@ def parse_arguments(logger, arguments):
             if argument in valid_args:
                 # Check that there is a next argument
                 if number_of_arguments <= i + 1:
-                    logger.error('Cannot find value for "{}"'.format(argument))
+                    logger.error("Cannot find value for '{}'".format(argument))
                     return None
                 # Check if value is latency_threshold
                 elif argument == valid_args[0]:
@@ -473,7 +437,7 @@ def parse_arguments(logger, arguments):
 
             # Increase loop counter
             i += 1
-
+    
     ret = {
         'script_name': script_name,
         'ref_dir': ref_dir,
@@ -490,57 +454,56 @@ def parse_arguments(logger, arguments):
 def get_column_ids():
     """Get a list of log file column ids."""
     columns_ids = [
-        'T_experiment', 'T_loop', 'received', 'sent', 'lost', 'relative_loss',
-        'data_received', 'latency_min (ms)', 'latency_max (ms)',
-        'latency_mean (ms)', 'latency_variance (ms)', 'pub_loop_res_min (ms)',
-        'pub_loop_res_max (ms)', 'pub_loop_res_mean (ms)',
-        'pub_loop_res_variance (ms)', 'sub_loop_res_min (ms)',
-        'sub_loop_res_max (ms)', 'sub_loop_res_mean (ms)',
-        'sub_loop_res_variance (ms)', 'ru_utime', 'ru_stime', 'ru_maxrss',
-        'ru_ixrss', 'ru_idrss', 'ru_isrss', 'ru_minflt', 'ru_majflt',
-        'ru_nswap', 'ru_inblock', 'ru_oublock', 'ru_msgsnd', 'ru_msgrcv',
-        'ru_nsignals', 'ru_nvcsw', 'ru_nivcsw'
+        "T_experiment", "T_loop", "received", "sent", "lost", "relative_loss",
+        "data_received", "latency_min (ms)", "latency_max (ms)",
+        "latency_mean (ms)", "latency_variance (ms)", "pub_loop_res_min (ms)",
+        "pub_loop_res_max (ms)", "pub_loop_res_mean (ms)",
+        "pub_loop_res_variance (ms)", "sub_loop_res_min (ms)",
+        "sub_loop_res_max (ms)", "sub_loop_res_mean (ms)",
+        "sub_loop_res_variance (ms)", "ru_utime", "ru_stime", "ru_maxrss",
+        "ru_ixrss", "ru_idrss", "ru_isrss", "ru_minflt", "ru_majflt",
+        "ru_nswap", "ru_inblock", "ru_oublock", "ru_msgsnd", "ru_msgrcv",
+        "ru_nsignals", "ru_nvcsw", "ru_nivcsw"
     ]
     return columns_ids
 
 
 def get_subdirectories(rates, num_subs):
-    """
-    Get the list of expected subdirectories in every directory.
-
+    """Get the list of expected subdirectories in every directory.
+    
     The expected subdirectories are obtaines from the Cartesian product
     of the elements of rates and num_subs.
 
-    :param rates (list): The sending rates
-    :param num_subs (list): All the different number of subscribers.
-
-    :return:
+    Args:
+        rates (list): The sending rates
+        num_subs (list): All the different number of subscribers.
+    
+    Returns:
         A list containing the path of all the subdirectories.
-
     """
     # Get subdirectory names
     combinations = list(itertools.product(rates, num_subs))
     sub_dirs = []
     for combination in combinations:
-        sub_dirs.append('rate_{}/subs_{}'.format(
+        sub_dirs.append("rate_{}/subs_{}".format(
             combination[0], combination[1])
         )
     return sub_dirs
 
 
 def get_file_names(directory, sub_dirs):
-    """
-    Get the file name of all the files in every subdirectory of directory.
-
-    :param directory (str): The main directory.
-    :param sub_dirs (list): A list of subdirectories to look for files.
-
-    :return: A list of file names in the form:
-        'directory/subdirectory/filename'
+    """Get the file name of all the files in every subdirectory of directory.
+    
+    Args:
+        directory (str): The main directory.
+        sub_dirs (list): A list of subdirectories to look for files.
+    
+    Returns:
+        A list of file names in the form: 'directory/subdirectory/filename'
     """
     files = {}
     for sub_dir in sub_dirs:
-        dir_name = '{}/{}'.format(directory, sub_dir)
+        dir_name = "{}/{}".format(directory, sub_dir)
 
         files_l = [f for f in listdir(dir_name) if isfile(join(dir_name, f))]
         files_l.sort()
@@ -549,6 +512,6 @@ def get_file_names(directory, sub_dirs):
     files_list = []
     for sub_dir in sub_dirs:
         for f in files[sub_dir]:
-            files_list.append('{}/{}/{}'.format(directory, sub_dir, f))
-
+            files_list.append("{}/{}/{}".format(directory, sub_dir, f))
+    
     return files_list
