@@ -1,0 +1,17 @@
+# copied from ament_package/template/environment_hook/library_path.sh
+_ODB_LIBRARY_DIR="@ODB_LIBRARY_DIRECTORY@"
+
+# detect if running on Darwin platform
+_UNAME=`uname -s`
+_IS_DARWIN=0
+if [ "$_UNAME" = "Darwin" ]; then
+  _IS_DARWIN=1
+fi
+unset _UNAME
+
+if [ $_IS_DARWIN -eq 0 ]; then
+  ament_prepend_unique_value LD_LIBRARY_PATH "$_ODB_LIBRARY_DIR"
+else
+  ament_prepend_unique_value DYLD_LIBRARY_PATH "$_ODB_LIBRARY_DIR"
+fi
+unset _IS_DARWIN

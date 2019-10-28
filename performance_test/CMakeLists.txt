@@ -120,6 +120,10 @@ if(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
   find_package(ODB REQUIRED COMPONENTS sqlite OPTIONAL_COMPONENTS mysql pgsql)
   include(${ODB_USE_FILE})
+
+  # Get the setup.sh to update the LD_LIBRARY_PATH
+  get_filename_component(ODB_LIBRARY_DIRECTORY ${ODB_LIBODB_LIBRARIES} DIRECTORY)
+  ament_environment_hooks(env_hook/odb_library_path.sh.in)
 endif()
 
 set(${PROJECT_NAME}_SOURCES
