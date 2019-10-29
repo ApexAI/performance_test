@@ -16,7 +16,7 @@
 #define UTILITIES__RT_ENABLER_HPP_
 
 #include <sys/mman.h>
-#include <malloc.h>
+#include <cstdlib>
 #include <unistd.h>
 #include <sched.h>
 #include <sys/types.h>
