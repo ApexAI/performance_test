@@ -314,4 +314,7 @@ install(TARGETS
 
 install(PROGRAMS
     DESTINATION lib/${PROJECT_NAME})
+
+install(FILES  mapping_rules.yaml
+    DESTINATION share/${PROJECT_NAME})
 ament_package()

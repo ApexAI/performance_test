@@ -14,7 +14,7 @@ int main(int argc, char**argv)
     100
   );
 
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(100);
 
   uint64_t id = 0;
 
