@@ -1,0 +1,15 @@
+<package>
+  <name>performance_test_ros1_msgs</name>
+  <version>1.0.0</version>
+  <description>
+    ROS1 versions of performance_test messages to use when testing with a ROS1 bridge
+  </description>
+  <maintainer email="pete.baughman@apex.ai">Pete Baughman</maintainer>
+  <license>Apache 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>message_generation</build_depend>
+
+  <run_depend>message_runtime</run_depend>
+</package>
