@@ -82,6 +82,7 @@ if(${rclcpp_VERSION_MINOR} STRGREATER "7")
   add_definitions(-DROS_ELOQUENT)
 else()
   message(STATUS "Ros Dashing detected")
+  add_definitions(-DUSE_LEGACY_QOS_API)
 endif()
 
 ament_export_include_directories(include)
