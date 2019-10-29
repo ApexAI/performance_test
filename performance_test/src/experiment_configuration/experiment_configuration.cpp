@@ -117,12 +117,12 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
   ("db_name", po::value<std::string>()->default_value("db_name"),
   "Name of the SQL database.")
 #if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
-  ("db_user", po::value<std::string>()->default_value("user"),
+  ("db_user", po::value<std::string>()->required(),
   "User name to login to the SQL database.")("db_password",
-    po::value<std::string>()->default_value("password"),
+    po::value<std::string>()->required(),
     "Password to login to the SQL database.")("db_host",
-    po::value<std::string>()->default_value("127.0.0.1"), "IP address of SQL server.")("db_port",
-    po::value<unsigned int>()->default_value(3306), "Port for SQL protocol.")
+    po::value<std::string>()->required(), "IP address of SQL server.")("db_port",
+    po::value<unsigned int>()->required(), "Port for SQL protocol.")
 #endif
 #endif
   ;
@@ -319,6 +319,14 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     if (vm.count("db_port")) {
       m_db_port = vm["db_port"].as<unsigned int>();
     }
+    if (!vm.count("db_user") || !vm.count("db_password") || !vm.count("db_host") ||
+      !vm.count("db_port"))
+    {
+      m_use_odb = false;
+      std::cout <<
+        "Required database information not provided, running the experiment without SQL support!" <<
+        std::endl;
+    }
 #endif
 #endif
     m_is_setup = true;
@@ -371,6 +379,10 @@ std::string ExperimentConfiguration::db_name() const
 {
   check_setup();
   return m_db_name;
+}
+bool ExperimentConfiguration::use_odb() const
+{
+  return m_use_odb;
 }
 #if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
 std::string ExperimentConfiguration::db_user() const

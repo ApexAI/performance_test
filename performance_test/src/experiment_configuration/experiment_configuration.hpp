@@ -152,6 +152,7 @@ public:
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   std::string db_name() const;
 #if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL
+  bool use_odb() const;
   std::string db_user() const;
   std::string db_password() const;
   std::string db_host() const;
@@ -239,7 +240,8 @@ private:
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   #pragma db value_not_null inverse(m_configuration)
   mutable std::vector<std::shared_ptr<AnalysisResult>> m_results;
-
+  #pragma db transient
+  bool m_use_odb = true;
   #pragma db transient
   std::string m_db_name;
 #if defined PERFORMANCE_TEST_ODB_MYSQL || defined PERFORMANCE_TEST_ODB_PGSQL

@@ -162,6 +162,9 @@ private:
 #pragma db transient
 #endif
   rusage m_sys_usage;
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+#pragma db transient
+#endif
   const CpuInfo m_cpu_info;
 };
 
