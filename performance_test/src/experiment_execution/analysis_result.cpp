@@ -35,9 +35,9 @@ AnalysisResult::AnalysisResult(
   const uint64_t num_samples_sent,
   const uint64_t num_samples_lost,
   const std::size_t total_data_received,
-  const StatisticsTracker latency,
-  const StatisticsTracker pub_loop_time_reserve,
-  const StatisticsTracker sub_loop_time_reserve,
+  StatisticsTracker latency,
+  StatisticsTracker pub_loop_time_reserve,
+  StatisticsTracker sub_loop_time_reserve,
   const CpuInfo cpu_info
 )
 : m_experiment_start(experiment_start),
@@ -183,5 +183,14 @@ std::string AnalysisResult::to_csv_string(const bool pretty_print, std::string s
 
   return ss.str();
 }
+
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+void AnalysisResult::check_values()
+{
+  m_latency.check_value();
+  m_pub_loop_time_reserve.check_value();
+  m_sub_loop_time_reserve.check_value();
+}
+#endif
 
 }  // namespace performance_test

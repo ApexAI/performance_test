@@ -89,6 +89,21 @@ public:
     m_M2 = var_t * (n_total - 1.0);
     m_variance = m_M2 / m_n;
   }
+
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+// check if variables are not out of range or NaNs
+  void check_value()
+  {
+    if (m_variance > std::numeric_limits<double>::max()) {
+      m_variance = std::numeric_limits<double>::max();
+    } else if (m_variance < std::numeric_limits<double>::min()) {
+      m_variance = std::numeric_limits<double>::min();
+    } else if (std::isnan(std::abs(m_variance))) {
+      m_variance = std::numeric_limits<double>::max();
+    }
+  }
+#endif
+
   /// Adds a sample to consider in the metrics.
   void add_sample(const double x)
   {
