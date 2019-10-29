@@ -76,40 +76,37 @@ AnalyzeRunner::AnalyzeRunner()
       RunType::SUBSCRIBER));
   }
 
+
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  if (m_ec.use_odb()) {
 #ifdef PERFORMANCE_TEST_ODB_SQLITE
-  m_db = std::unique_ptr<odb::core::database>(new odb::sqlite::database(
-        m_ec.db_name(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
+    m_db = std::unique_ptr<odb::core::database>(new odb::sqlite::database(
+          m_ec.db_name(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
 #elif PERFORMANCE_TEST_ODB_MYSQL
-  m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(
-        m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
+    m_db = std::unique_ptr<odb::core::database>(new odb::mysql::database(
+          m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
 #elif PERFORMANCE_TEST_ODB_PGSQL
-  m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(
-        m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
+    m_db = std::unique_ptr<odb::core::database>(new odb::pgsql::database(
+          m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
 #endif
-  {
-    odb::core::transaction t(m_db->begin());
-    try {
-      m_db->query<ExperimentConfiguration>(false);
-    } catch (const odb::exception & e) {
-      odb::core::schema_catalog::create_schema(*m_db);
+    {
+      odb::core::transaction t(m_db->begin());
+      try {
+        m_db->query<ExperimentConfiguration>(false);
+      } catch (const odb::exception & e) {
+        odb::core::schema_catalog::create_schema(*m_db);
+      }
+      t.commit();
     }
-    t.commit();
   }
 #endif
 }
-
 void AnalyzeRunner::run()
 {
   m_ec.log("---EXPERIMENT-START---");
   m_ec.log(AnalysisResult::csv_header(true));
 
   const auto experiment_start = std::chrono::steady_clock::now();
-
-  #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
-  odb::core::transaction t(m_db->begin());
-  #endif
-
   while (!check_exit(experiment_start)) {
     const auto loop_start = std::chrono::steady_clock::now();
 
@@ -131,8 +128,11 @@ void AnalyzeRunner::run()
   }
 
   #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
-  m_db->persist(m_ec);
-  t.commit();
+  if (m_ec.use_odb()) {
+    odb::core::transaction t(m_db->begin());
+    m_db->persist(m_ec);
+    t.commit();
+  }
   #endif
 }
 
@@ -188,10 +188,14 @@ void AnalyzeRunner::analyze(
   m_ec.log(result->to_csv_string(true));
 
   #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
-  result->set_configuration(&m_ec);
-  m_ec.get_results().push_back(result);
-  result->check_values();
-  m_db->persist(result);
+  if (m_ec.use_odb()) {
+    odb::core::transaction t(m_db->begin());
+    result->set_configuration(&m_ec);
+    m_ec.get_results().push_back(result);
+    result->check_values();
+    m_db->persist(result);
+    t.commit();
+  }
   #endif
 }
 
