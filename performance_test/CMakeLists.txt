@@ -35,6 +35,15 @@ if(PERFORMANCE_TEST_FASTRTPS_ENABLED)
   add_definitions(-DPERFORMANCE_TEST_FASTRTPS_ENABLED)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(PERFORMANCE_TEST_RT_ENABLED_DEFAULT OFF)
+else()
+  set(PERFORMANCE_TEST_RT_ENABLED_DEFAULT ON)
+endif()
+option(PERFORMANCE_TEST_RT_ENABLED
+  "Enable options for thread and memory optimization. This may not build on all platforms"
+  PERFORMANCE_TEST_RT_ENABLED_DEFAULT)
+
 # Use ODB support to create SQL database
 option(PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED "Enable ODB for SQL" OFF)
 
@@ -194,11 +203,15 @@ set(sources
     src/experiment_configuration/qos_abstraction.cpp
     src/experiment_configuration/qos_abstraction.hpp
     src/experiment_configuration/experiment_configuration.cpp
-    src/utilities/rt_enabler.hpp
     src/utilities/spin_lock.hpp
     src/utilities/statistics_tracker.hpp
     src/utilities/cpu_usage_tracker.hpp
 )
+
+IF(PERFORMANCE_TEST_RT_ENABLED)
+  add_definitions(-DPERFORMANCE_TEST_RT_ENABLED)
+  list(APPEND sources src/utilities/rt_enabler.hpp)
+endif()
 
 # ROS2 Waitset
 option(PERFORMANCE_TEST_POLLING_SUBSCRIPTION_ENABLED "Option to enable Polling Subscription Plugin.

@@ -124,70 +124,74 @@ inline void post_proc_rt_init()
   free(buf);
 }
 
-///
-/// CPU affinity related pre initialization to increase determinism and
-/// thereby reduce latency for the entire process
-/// NOTE: This is is still very raw and under development
-///
-/// \brief Perform some RT related process initialization
-/// \param[in] cpu_bit_mask_in Default cpu affinity of all the threads in the process
-/// \param[in] prio default prio of all the threads in the process
-/// \return 0 on success, throw an exception on error
-inline void pre_proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
-{
-  int32_t res = 0;
 
-  uint32_t cpu_bit_mask = cpu_bit_mask_in;
+ ///
+ /// CPU affinity related pre initialization to increase determinism and
+ /// thereby reduce latency for the entire process
+ /// NOTE: This is is still very raw and under development
+ ///
+ /// \brief Perform some RT related process initialization
+ /// \param[in] cpu_bit_mask_in Default cpu affinity of all the threads in the process
+ /// \param[in] prio default prio of all the threads in the process
+ /// \return 0 on success, throw an exception on error
+ inline void pre_proc_rt_init(const uint32_t cpu_bit_mask_in, const int32_t prio)
+ {
+   int32_t res = 0;
 
-  //
-  // Set the is_rt flag if any of the proc RT params are set
-  //
-  proc_rt_info.is_rt = false;
-  proc_rt_info.proc_cpu_bit_mask = 0U;
-  proc_rt_info.proc_prio = 0;
-  if ((cpu_bit_mask > 0U) || (prio > 0)) {
-    proc_rt_info.is_rt = true;
-    proc_rt_info.proc_cpu_bit_mask = cpu_bit_mask;
-    proc_rt_info.proc_prio = prio;
-  }
+   uint32_t cpu_bit_mask = cpu_bit_mask_in;
 
-  if (proc_rt_info.is_rt) {
-    //
-    // Set prio for all the tasks of the process
-    //
-    if (proc_rt_info.proc_prio > 0) {
-      struct sched_param param;
-      memset(&param, 0, sizeof(param));
-      param.sched_priority = proc_rt_info.proc_prio;
-      res = sched_setscheduler(getpid(), SCHED_FIFO, &param);
-      if (res < 0) {
-        std::cerr << "proc rt init prio setting failed" << strerror(errno) << std::endl;
-        throw std::runtime_error("proc rt init prio setting failed");
-      }
-    }
+   // Dan Rose: I don't think this works. Thread attributes are supposed to be passed to pthread_create
+   // not modified on an existing instance.
 
-    //
-    // Set thread-cpu affinity
-    //
-    if (proc_rt_info.proc_cpu_bit_mask > 0U) {
-      cpu_set_t set;
-      uint32_t cpu_cnt = 0U;
-      CPU_ZERO(&set);
-      while (cpu_bit_mask > 0U) {
-        if ((cpu_bit_mask & 0x1U) > 0) {
-          CPU_SET(cpu_cnt, &set);
-        }
-        cpu_bit_mask = (cpu_bit_mask >> 1U);
-        cpu_cnt++;
-      }
-      res = sched_setaffinity(getpid(), sizeof(set), &set);
-      if (res < 0) {
-        std::cerr << "proc rt init affinity setting failed" << strerror(errno) << std::endl;
-        throw std::runtime_error("proc rt init affinity setting failed");
-      }
-    }
-  }
-}
+   //
+   // Set the is_rt flag if any of the proc RT params are set
+   //
+   proc_rt_info.is_rt = false;
+   proc_rt_info.proc_cpu_bit_mask = 0U;
+   proc_rt_info.proc_prio = 0;
+   if ((cpu_bit_mask > 0U) || (prio > 0)) {
+     proc_rt_info.is_rt = true;
+     proc_rt_info.proc_cpu_bit_mask = cpu_bit_mask;
+     proc_rt_info.proc_prio = prio;
+   }
+
+   if (proc_rt_info.is_rt) {
+     //
+     // Set prio for all the tasks of the process
+     //
+     if (proc_rt_info.proc_prio > 0) {
+       struct sched_param param;
+       memset(&param, 0, sizeof(param));
+       param.sched_priority = proc_rt_info.proc_prio;
+       res = sched_setscheduler(getpid(), SCHED_FIFO, &param);
+       if (res < 0) {
+         std::cerr << "proc rt init prio setting failed" << strerror(errno) << std::endl;
+         throw std::runtime_error("proc rt init prio setting failed");
+       }
+     }
+
+     //
+     // Set thread-cpu affinity
+     //
+     if (proc_rt_info.proc_cpu_bit_mask > 0U) {
+       cpu_set_t set;
+       uint32_t cpu_cnt = 0U;
+       CPU_ZERO(&set);
+       while (cpu_bit_mask > 0U) {
+         if ((cpu_bit_mask & 0x1U) > 0) {
+           CPU_SET(cpu_cnt, &set);
+         }
+         cpu_bit_mask = (cpu_bit_mask >> 1U);
+         cpu_cnt++;
+       }
+       res = sched_setaffinity(getpid(), sizeof(set), &set);
+       if (res < 0) {
+         std::cerr << "proc rt init affinity setting failed" << strerror(errno) << std::endl;
+         throw std::runtime_error("proc rt init affinity setting failed");
+       }
+     }
+   }
+ }
 
 }  // namespace performance_test
 

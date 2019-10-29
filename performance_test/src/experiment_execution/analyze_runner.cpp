@@ -118,11 +118,13 @@ void AnalyzeRunner::run()
     std::for_each(m_pub_runners.begin(), m_pub_runners.end(), [](auto & a) {a->sync_reset();});
     std::for_each(m_sub_runners.begin(), m_sub_runners.end(), [](auto & a) {a->sync_reset();});
 
+    #if PERFORMANCE_TEST_RT_ENABLED
     /// Id drivepx_rt is set and this is the first loop, set the post RT init settings
     if (m_is_first_entry && m_ec.is_drivepx_rt()) {
       post_proc_rt_init();
       m_is_first_entry = false;
     }
+    #endif
 
     auto now = std::chrono::steady_clock::now();
     auto loop_diff_start = now - loop_start;
