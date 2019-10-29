@@ -108,9 +108,9 @@ public:
     const uint64_t num_samples_sent,
     const uint64_t num_samples_lost,
     const std::size_t total_data_received,
-    const StatisticsTracker latency,
-    const StatisticsTracker pub_loop_time_reserve,
-    const StatisticsTracker sub_loop_time_reserve,
+    StatisticsTracker latency,
+    StatisticsTracker pub_loop_time_reserve,
+    StatisticsTracker sub_loop_time_reserve,
     const CpuInfo cpu_info
   );
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
@@ -133,6 +133,8 @@ public:
   std::string to_csv_string(const bool pretty_print = false, std::string st = ",") const;
 
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  void check_values();
+
   void set_configuration(const ExperimentConfiguration * ec)
   {
     m_configuration = ec;
@@ -154,14 +156,17 @@ private:
   const uint64_t m_num_samples_lost = {};
   const std::size_t m_total_data_received = {};
 
-  const StatisticsTracker m_latency;
-  const StatisticsTracker m_pub_loop_time_reserve;
-  const StatisticsTracker m_sub_loop_time_reserve;
+  StatisticsTracker m_latency;
+  StatisticsTracker m_pub_loop_time_reserve;
+  StatisticsTracker m_sub_loop_time_reserve;
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   RusageTracker m_sys_tracker;
 #pragma db transient
 #endif
   rusage m_sys_usage;
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+#pragma db transient
+#endif
   const CpuInfo m_cpu_info;
 };
 

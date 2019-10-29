@@ -190,7 +190,7 @@ void AnalyzeRunner::analyze(
   #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
   result->set_configuration(&m_ec);
   m_ec.get_results().push_back(result);
-
+  result->check_values();
   m_db->persist(result);
   #endif
 }
