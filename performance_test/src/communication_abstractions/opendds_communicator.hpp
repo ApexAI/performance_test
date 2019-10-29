@@ -21,6 +21,9 @@
 #include "communicator.hpp"
 #include "resource_manager.hpp"
 
+#define BLOCK_SEC 10
+#define BLOCK_NANO_SEC 0
+
 namespace performance_test
 {
 
@@ -30,6 +33,7 @@ namespace performance_test
  * The reason that this class is constructed like this is that one usually gets a partially specified QOS from the topic
  * or similar higher level entity and just changes some settings from these.
  */
+
 class OpenDdsQOSAdapter
 {
 public:
@@ -52,6 +56,8 @@ public:
       qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
     } else if (m_qos.reliability == QOSAbstraction::Reliability::RELIABLE) {
       qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+      qos.reliability.max_blocking_time.sec = BLOCK_SEC;
+      qos.reliability.max_blocking_time.nanosec = BLOCK_NANO_SEC; 
     } else {
       throw std::runtime_error("Unsupported QOS!");
     }
@@ -65,8 +71,6 @@ public:
     }
 
     if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_ALL) {
-      // TODO(andreas.pasternak): Crash on keep all qos.
-      // qos.history.kind = DDS_KEEP_ALL_HISTORY_QOS;
       qos.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
     } else if (m_qos.history_kind == QOSAbstraction::HistoryKind::KEEP_LAST) {
       qos.history.kind = DDS::KEEP_LAST_HISTORY_QOS;
@@ -87,6 +91,8 @@ public:
       qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
     } else if (m_qos.reliability == QOSAbstraction::Reliability::RELIABLE) {
       qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+      qos.reliability.max_blocking_time.sec = BLOCK_SEC;
+      qos.reliability.max_blocking_time.nanosec = BLOCK_NANO_SEC; 
     } else {
       throw std::runtime_error("Unsupported QOS!");
     }
