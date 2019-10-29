@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format='2'>
+  <name>performance_test_ros1_publisher</name>
+  <version>1.0.0</version>
+  <description>A ROS1 publisher to use with performance_test</description>
+  <maintainer email="pete.baughman@apex.ai">Pete Baughman</maintainer>
+  <license>Apache 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>performance_test_ros1_msgs</build_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>performance_test_ros1_msgs</exec_depend>
+</package>
