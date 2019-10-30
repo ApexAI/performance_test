@@ -40,9 +40,8 @@ function(odb_compile outvar)
       STANDARD SLOC_LIMIT DEFAULT_POINTER
       HEADER_PROLOGUE INLINE_PROLOGUE SOURCE_PROLOGUE
       HEADER_EPILOGUE INLINE_EPILOGUE SOURCE_EPILOGUE
-      MULTI_DATABASE
-      X_CPP_OPTION)
-  set(multiValueParams FILES INCLUDE DB PROFILE)
+      MULTI_DATABASE)
+  set(multiValueParams FILES INCLUDE DB PROFILE X_CPP_OPTION)
 
   cmake_parse_arguments(PARAM "${options}" "${oneValueParams}" "${multiValueParams}" ${ARGN})
 
@@ -137,9 +136,9 @@ function(odb_compile outvar)
     list(APPEND ODB_ARGS --profile "${profile}")
   endforeach()
 
-  if(PARAM_X_CPP_OPTION)
-    list(APPEND ODB_ARGS -x "${PARAM_X_CPP_OPTION}")
-  endif()
+  foreach(option ${PARAM_X_CPP_OPTION})
+    list(APPEND ODB_ARGS -x "${option}")
+  endforeach()
 
   list(APPEND ODB_ARGS --output-dir "${ODB_COMPILE_OUTPUT_DIR}")
   list(APPEND ODB_ARGS --hxx-suffix "${ODB_COMPILE_HEADER_SUFFIX}")

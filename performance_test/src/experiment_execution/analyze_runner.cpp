@@ -90,6 +90,9 @@ AnalyzeRunner::AnalyzeRunner()
           m_ec.db_user(), m_ec.db_password(), m_ec.db_name(), m_ec.db_host(), m_ec.db_port()));
 #endif
     {
+#ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+      std::cout << "version" << PERFORMANCE_TEST_DB_SCHEMA_VERSION << std::endl;
+#endif
       odb::core::schema_version v(m_db->schema_version());
       odb::core::schema_version bv(odb::core::schema_catalog::base_version(*m_db));
       odb::core::schema_version cv(odb::core::schema_catalog::current_version(*m_db));

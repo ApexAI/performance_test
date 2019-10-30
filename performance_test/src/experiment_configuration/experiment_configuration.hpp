@@ -41,7 +41,7 @@ namespace performance_test
  * configuration by command line arguments are supported.
  */
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
-#pragma db model version(1, 1)
+#pragma db model version(1, PERFORMANCE_TEST_DB_SCHEMA_VERSION)
 class AnalysisResult;
   #pragma db value(QOSAbstraction) definition
   #pragma db object
@@ -238,6 +238,9 @@ private:
   std::string m_perf_test_version;
 
 #ifdef PERFORMANCE_TEST_ODB_FOR_SQL_ENABLED
+  #pragma db transient
+  uint32_t m_schema_version{PERFORMANCE_TEST_DB_SCHEMA_VERSION};
+
   #pragma db value_not_null inverse(m_configuration)
   mutable std::vector<std::shared_ptr<AnalysisResult>> m_results;
   #pragma db transient
