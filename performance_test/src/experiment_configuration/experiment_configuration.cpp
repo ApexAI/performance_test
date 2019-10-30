@@ -145,9 +145,9 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
       exit(0);
     }
 
-    if (!vm.count("topic")) {
-      throw std::invalid_argument("--topic is required!");
-    }
+    // validate argumens and raise an errors if invalid
+    po::notify(vm);
+
     m_topic_name = vm["topic"].as<std::string>();
 
     if (vm.count("rate")) {
@@ -191,11 +191,9 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
 #endif
     }
 
-    if (vm.count("dds_domain_id")) {
-      m_dds_domain_id = vm["dds_domain_id"].as<uint32_t>();
-      if (m_com_mean == CommunicationMean::ROS2 && m_dds_domain_id != 0) {
-        throw std::invalid_argument("ROS 2 does not support setting the domain ID.");
-      }
+    m_dds_domain_id = vm["dds_domain_id"].as<uint32_t>();
+    if (m_com_mean == CommunicationMean::ROS2 && m_dds_domain_id != 0) {
+      throw std::invalid_argument("ROS 2 does not support setting the domain ID.");
     }
 
     if (vm.count("reliable")) {
@@ -281,24 +279,21 @@ void ExperimentConfiguration::setup(int argc, char ** argv)
     m_with_security = false;
     if (vm.count("with_security")) {
       if (m_com_mean != CommunicationMean::ROS2) {
-        throw std::invalid_argument(
-                "Only ROS2 supports security!");
+        throw std::invalid_argument("Only ROS2 supports security!");
       } else {
         m_with_security = true;
       }
     }
     m_roundtrip_mode = RoundTripMode::NONE;
-    if (vm.count("roundtrip_mode")) {
-      const auto mode = vm["roundtrip_mode"].as<std::string>();
-      if (mode == "None") {
-        m_roundtrip_mode = RoundTripMode::NONE;
-      } else if (mode == "Main") {
-        m_roundtrip_mode = RoundTripMode::MAIN;
-      } else if (mode == "Relay") {
-        m_roundtrip_mode = RoundTripMode::RELAY;
-      } else {
-        throw std::invalid_argument("Invalid roundtrip mode: " + mode);
-      }
+    const auto mode = vm["roundtrip_mode"].as<std::string>();
+    if (mode == "None") {
+      m_roundtrip_mode = RoundTripMode::NONE;
+    } else if (mode == "Main") {
+      m_roundtrip_mode = RoundTripMode::MAIN;
+    } else if (mode == "Relay") {
+      m_roundtrip_mode = RoundTripMode::RELAY;
+    } else {
+      throw std::invalid_argument("Invalid roundtrip mode: " + mode);
     }
     m_rmw_implementation = rmw_get_implementation_identifier();
 
